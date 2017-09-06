@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.Threading;
 
 public class GameManager : NetworkBehaviour {
 
@@ -16,12 +17,13 @@ public class GameManager : NetworkBehaviour {
     public Image powerupBarLines4;
     public Image shieldbarImage;
     public GameObject GameOverPrefab;
+    public HUDManager hud;
 
     public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
 
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;
-
+    
     /// <summary>
     /// Ensures there's only one GameManager
     /// </summary>
@@ -32,6 +34,24 @@ public class GameManager : NetworkBehaviour {
         } else if (Instance != this) {
             DestroyImmediate(gameObject);
         }
+    }
+
+    void Start()
+    {
+        hud = FindObjectOfType<HUDManager> ();
+    }
+    public void UpdateHealthBar(float health, float maxHealth)
+    {
+        hud.UpdateHealthBar(health, maxHealth);
+    }
+
+    public void UpdateShieldBar(float shield, float maxHealth)
+    {
+        hud.UpdateShieldBar(shield, maxHealth);
+    }
+
+    public void UpdatePowerUp() {
+        hud.UpdatePowerUp(Player.GetComponent<PowerUpHandler>().CurrentPowerUp);
     }
 
     public int GetPlayerNum(NetworkInstanceId playerid) {

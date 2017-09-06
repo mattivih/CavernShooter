@@ -278,8 +278,10 @@ public class Ship : NetworkBehaviour {
                 damage -= Shield;
                 Shield = 0;
             }
+            GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
+        GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         if (Health <= 0) {
             //Is Dead
             GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
