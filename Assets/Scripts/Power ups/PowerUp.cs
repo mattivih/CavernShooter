@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PowerUp : NetworkBehaviour {
+public class PowerUp : NetworkBehaviour
+{
 
     public float MaxUnits;
     public float Units;
@@ -22,25 +23,29 @@ public class PowerUp : NetworkBehaviour {
     public AudioClip clipActivate;
     public AudioSource audioActivate;
 
-    public enum PowerUpMode {
+    public enum PowerUpMode
+    {
         Normal,
         Spawn,
         Controller
     }
 
-    public enum StackMode {
+    public enum StackMode
+    {
         Add,
         None,
         Shield
     }
 
-    public enum SpawnLocation {
+    public enum SpawnLocation
+    {
         Center,
         Inner,
         Outer
     }
 
-    public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
+    public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol)
+    {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();
         newAudio.clip = clip;
         newAudio.loop = loop;
@@ -49,17 +54,21 @@ public class PowerUp : NetworkBehaviour {
         return newAudio;
     }
 
-    void Update() {
-        if (dying && readyToDie) {
+    void Update()
+    {
+        if (dying && readyToDie)
+        {
             Die();
         }
-        if (Units <= 0) {
+        if (Units <= 0)
+        {
             Die();
         }
     }
 
 
-    public void Start() {
+    public void Start()
+    {
         //Ensure that the icon is always right size
         Icon.GetComponent<RectTransform>().sizeDelta = new Vector2(75, 75);
         Icon.GetComponent<RectTransform>().localScale = Vector3.one;
@@ -68,13 +77,17 @@ public class PowerUp : NetworkBehaviour {
     /// <summary>
     /// Uses one unit of powerup or starts continuous usage of the power up.
     /// </summary>
-    public void Use(NetworkInstanceId id) {
-        if (Units > 0) {
+    public void Use(NetworkInstanceId id)
+    {
+        if (Units > 0)
+        {
             audioActivate = AddAudio(clipActivate, false, false, 1f);
             audioActivate.Play();
             UsePowerUp(id);
             Units--;
-        } else {
+        }
+        else
+        {
             Die();
         }
     }
@@ -82,14 +95,17 @@ public class PowerUp : NetworkBehaviour {
     /// <summary>
     /// Stops using the power up if it's a continuous power up
     /// </summary>
-    public virtual void Stop() {
-        if (ownerId.Value != 0) {
+    public virtual void Stop()
+    {
+        if (ownerId.Value != 0)
+        {
             readyToDie = false;
             CmdStop();
         }
     }
     [Command]
-    public void CmdStop() {
+    public void CmdStop()
+    {
         RpcStop();
     }
     [ClientRpc]
@@ -98,8 +114,10 @@ public class PowerUp : NetworkBehaviour {
     /// <summary>
     /// called when powerup is used up (=units goes to 0)
     /// </summary>
-    public void Die() {
-        if (ownerId.Value != 0) {
+    public void Die()
+    {
+        if (ownerId.Value != 0)
+        {
             ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
         }
         Debug.Log("Die");
@@ -107,36 +125,53 @@ public class PowerUp : NetworkBehaviour {
         CmdDie();
     }
     [Command]
-    public void CmdDie() {
+    public void CmdDie()
+    {
         RpcStop();
         RpcDieAfterStop();
     }
     [Command]
-    void CmdDieAfterStop() {
-        if (ownerId.Value != 0) {
-            GameObject p = NetworkServer.FindLocalObject(ownerId);
-            if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {
-                NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
-            }
+    void CmdDieAfterStop()
+    {
+        if (ownerId.Value != 0)
+        {
+            Invoke("customDestroy", 0.5f);
+            /*  GameObject p = NetworkServer.FindLocalObject(ownerId);
+              if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {               
+                  NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
+              }*/
+        }
+        //  NetworkServer.Destroy(gameObject);
+    }
+
+    void customDestroy()
+    {
+        if (controllerReference != null && NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference))
+        {
+            NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
         }
         NetworkServer.Destroy(gameObject);
     }
+
     [ClientRpc]
-    void RpcDieAfterStop() {
+    void RpcDieAfterStop()
+    {
         CmdDieAfterStop();
     }
 
     /// <summary>
     /// Uses the power up that was previously picked up.
     /// </summary>
-    public virtual void UsePowerUp(NetworkInstanceId id) {
+    public virtual void UsePowerUp(NetworkInstanceId id)
+    {
         GameObject player = GameManager.Instance.Player;
         Vector3 pos = player.transform.position;
         Quaternion rot = player.transform.rotation;
         //Debug.Log("player: " + player.name + ", id: " + id.Value);
         CmdUseNormalPowerUp(id);
 
-        switch (mode) {
+        switch (mode)
+        {
             case PowerUpMode.Normal:
                 UseNormalPowerUp();
                 break;
@@ -144,13 +179,19 @@ public class PowerUp : NetworkBehaviour {
                 CmdSpawnPowerUp(id, pos, rot);
                 break;
             case PowerUpMode.Controller:
-                if (controllerReference != null) {
-                    if (!player.GetComponentInChildren(controllerReference)) {
+                if (controllerReference != null)
+                {
+                    if (!player.GetComponentInChildren(controllerReference))
+                    {
                         CmdSpawnPowerUp(id, pos, rot);
-                    } else {
+                    }
+                    else
+                    {
                         CmdUsePowerUp();
                     }
-                } else {
+                }
+                else
+                {
                     Debug.LogError("Controller power up without controller reference");
                 }
                 break;
@@ -160,7 +201,8 @@ public class PowerUp : NetworkBehaviour {
     }
 
     [Command]
-    public void CmdSpawnPowerUp(NetworkInstanceId id, Vector3 position, Quaternion rotation) {
+    public void CmdSpawnPowerUp(NetworkInstanceId id, Vector3 position, Quaternion rotation)
+    {
         GameObject p = NetworkServer.FindLocalObject(id);
         GameObject controller = Instantiate(spawn, position, rotation);
         NetworkServer.SpawnWithClientAuthority(controller, p);
@@ -170,7 +212,8 @@ public class PowerUp : NetworkBehaviour {
     public virtual void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) { }
 
     [Command]
-    public virtual void CmdUsePowerUp() {
+    public virtual void CmdUsePowerUp()
+    {
         RpcUsePowerUp();
     }
     [ClientRpc]
@@ -178,7 +221,8 @@ public class PowerUp : NetworkBehaviour {
 
     public virtual void UseNormalPowerUp() { }
     [Command]
-    public virtual void CmdUseNormalPowerUp(NetworkInstanceId id) {
+    public virtual void CmdUseNormalPowerUp(NetworkInstanceId id)
+    {
         RpcUseNormalPowerUp(id);
     }
     [ClientRpc]

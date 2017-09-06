@@ -68,7 +68,7 @@ public class PowerUpSpawn : NetworkBehaviour {
     }
 
     public GameObject NewPickUp() {
-        int random = Random.Range(0, PowerUpPrefabs.Count - 1);
+        int random = Random.Range(0, PowerUpPrefabs.Count);
         //Debug.Log(random);
         return PowerUpPrefabs[random];
     }

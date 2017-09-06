@@ -13,6 +13,7 @@ public class GameManager : NetworkBehaviour {
     public Image healthbarImage;
     public Image powerupBarImage;
     public Image powerupBarLines;
+    public Image powerupBarLines4;
     public Image shieldbarImage;
     public GameObject GameOverPrefab;
 
