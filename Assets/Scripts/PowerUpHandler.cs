@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PowerUpHandler : NetworkBehaviour
 {
@@ -57,12 +58,21 @@ public class PowerUpHandler : NetworkBehaviour
                 CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
                 SetId(GetComponent<NetworkIdentity>().netId, collider.GetComponent<NetworkIdentity>().netId);
                 //Change icon to HUD
-                if (_currentPowerUpIcon)
-                {
-                    Destroy(_currentPowerUpIcon);
-                }
-                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
+                if (!_currentPowerUpIcon)
+                    _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
 
+                    _currentPowerUpIcon.GetComponent<Image>().enabled = true;
+                    GameManager.powerupPickups[] values = (GameManager.powerupPickups[])GameManager.powerupPickups.GetValues(typeof(GameManager.powerupPickups));
+ 
+                    for(int i = 0; i < values.Length; i++)
+                    {
+                    Debug.Log(values[i]);
+                    Debug.Log(CurrentPowerUp.name);
+                    if (values[i].ToString() + "(Clone)" == CurrentPowerUp.name)
+                        _currentPowerUpIcon.GetComponent<Image>().sprite = GameManager.Instance.powerupImages[i];                   
+                }
+
+                //Destroy(_currentPowerUpIcon);
 
             }
             else if (CurrentPowerUp)
@@ -105,7 +115,7 @@ public class PowerUpHandler : NetworkBehaviour
 
     public void PowerUpDepleted()
     {
-        Destroy(_currentPowerUpIcon);
+        _currentPowerUpIcon.GetComponent<Image>().enabled = false;
         audioDepleted.Play();
     }
 

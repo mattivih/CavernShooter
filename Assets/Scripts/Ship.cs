@@ -37,6 +37,7 @@ public class Ship : NetworkBehaviour {
 
     void Awake() {
         ThrusterScript = GetComponentInChildren<Thruster>();
+        GameManager.Instance.powerupBarImage.fillAmount = 0;
     }
 
     public override void OnStartClient() {

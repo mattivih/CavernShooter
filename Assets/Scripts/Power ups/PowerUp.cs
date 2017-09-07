@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class PowerUp : NetworkBehaviour
 {
-
+    
     public float MaxUnits;
     public float Units;
     public GameObject Icon;
@@ -119,10 +119,15 @@ public class PowerUp : NetworkBehaviour
         if (ownerId.Value != 0)
         {
             ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+            GameManager.Instance.powerupBarLines.enabled = false;
+            GameManager.Instance.powerupBarLines4.enabled = false;
         }
         Debug.Log("Die");
         dying = true;
         CmdDie();
+
+    
+
     }
     [Command]
     public void CmdDie()

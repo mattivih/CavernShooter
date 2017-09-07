@@ -62,4 +62,6 @@ public class HUDManager : NetworkBehaviour {
         GameManager.Instance.shieldbarImage.fillAmount = shield / maxHealth;
         /*}*/
     }
+
+
 }

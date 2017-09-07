@@ -11,6 +11,18 @@ public class GameManager : NetworkBehaviour {
     //Register an active player game object in the scene
     public GameObject Player;
     public GameObject Background;
+    public Sprite[] powerupImages;
+    public enum powerupPickups
+    {
+        DistortionRayPowerUp = 0,
+        FlamethrowerPowerUp = 1,
+        HealthPowerup = 2,
+        LaserPowerUp = 3,
+        MinePowerUp = 4,
+        ShieldPowerup = 5,
+        TorpedoPowerup = 6,
+        ZeroGravityPowerup = 7
+    }
     public Image healthbarImage;
     public Image powerupBarImage;
     public Image powerupBarLines;
@@ -36,7 +48,8 @@ public class GameManager : NetworkBehaviour {
         }
     }
 
-    void Start()
+
+void Start()
     {
         hud = FindObjectOfType<HUDManager> ();
     }
@@ -65,6 +78,7 @@ public class GameManager : NetworkBehaviour {
     public void CallEndGame(string[] deadPlayers) {
         RpcShowMatchResult(deadPlayers);
     }
+
 
     [ClientRpc]
     public void RpcShowMatchResult(string[] deadPlayers)
