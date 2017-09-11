@@ -19,6 +19,8 @@ public class PowerUp : NetworkBehaviour
 
     public bool readyToDie = true;
     public bool dying = false;
+    public bool dieDelay = false;
+    public bool isUsed = false;
 
     public AudioClip clipActivate;
     public AudioSource audioActivate;
@@ -116,16 +118,23 @@ public class PowerUp : NetworkBehaviour
     /// </summary>
     public void Die()
     {
-        if (ownerId.Value != 0)
+        if (dieDelay)
         {
-            ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
-            GameManager.Instance.powerupBarLines.enabled = false;
-            GameManager.Instance.powerupBarLines4.enabled = false;
+            StartCoroutine (delayedDeath());
         }
-        Debug.Log("Die");
-        dying = true;
-        CmdDie();
+        else
+        {
+            if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+                GameManager.Instance.powerupBarLines.enabled = false;
+                GameManager.Instance.powerupBarLines4.enabled = false;
+            }
+            Debug.Log("Die");
+            dying = true;
+            CmdDie();
 
+        }
     
 
     }
@@ -233,4 +242,18 @@ public class PowerUp : NetworkBehaviour
     [ClientRpc]
     public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
 
+   
+    IEnumerator delayedDeath()
+    {
+        yield return new WaitForSeconds(15);
+        if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+                GameManager.Instance.powerupBarLines.enabled = false;
+                GameManager.Instance.powerupBarLines4.enabled = false;
+            }
+        Debug.Log("Die");
+        dying = true;
+        CmdDie();
+    }
 }

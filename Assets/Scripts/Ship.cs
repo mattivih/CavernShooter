@@ -166,8 +166,19 @@ public class Ship : NetworkBehaviour {
         if (GameManager.Instance.powerupBarImage) {
             GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
             if (CurrentPowerUp) {
-                float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
+                {
+                    float waitTime = 15f;
+                    GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+
+                }
+
+                else
+                {
+                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
+                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                }
+   
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
                     GameManager.Instance.powerupBarLines.enabled = true;
                 } else {
