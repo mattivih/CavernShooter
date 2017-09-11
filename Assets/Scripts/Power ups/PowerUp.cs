@@ -149,7 +149,7 @@ public class PowerUp : NetworkBehaviour
     {
         if (ownerId.Value != 0)
         {
-            Invoke("customDestroy", 0.5f);
+            Invoke("customDestroy", 0.25f);
             /*  GameObject p = NetworkServer.FindLocalObject(ownerId);
               if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {               
                   NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
@@ -158,13 +158,14 @@ public class PowerUp : NetworkBehaviour
         //  NetworkServer.Destroy(gameObject);
     }
 
-    void customDestroy()
+    public void customDestroy()
     {
-        if (controllerReference != null && NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference))
-        {
-            NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
-        }
+            if (controllerReference != null && NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference))
+            {
+                NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
+            }
         NetworkServer.Destroy(gameObject);
+   
     }
 
     [ClientRpc]

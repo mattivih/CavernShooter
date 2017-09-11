@@ -10,13 +10,17 @@ public class ZeroGravityGenerator : PowerUp {
     float originalGravity;
 
     void Awake() {
+        dieDelay = true;
         audioActivate = AddAudio(clipActivate, false, false, 1f);
-
+      
     }
 
     public override void UseNormalPowerUp() {
+        isUsed = true;
+        GameManager.Instance.powerupBarImage.fillAmount = 1;    
         if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
             originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;
+    
         }
         GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
         Invoke("NormalGravity", ZeroGravityTime);

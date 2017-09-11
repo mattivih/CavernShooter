@@ -48,8 +48,10 @@ public class PowerUpHandler : NetworkBehaviour
             {
                 if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
-                    //PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    // powerup.Die();
+                    PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+                    powerup.Die();
+                    //powerup.customDestroy();
+                   
                     CurrentPowerUp = collider.gameObject;
                 }
                 audioPickUp.Play();
