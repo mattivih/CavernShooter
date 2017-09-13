@@ -21,6 +21,7 @@ public class Ship : NetworkBehaviour {
     private Thruster ThrusterScript;
     private GameObject lastDamageSource;
 
+
     public AudioClip[] musicArray;
     private AudioSource music; 
 
@@ -167,7 +168,8 @@ public class Ship : NetworkBehaviour {
             GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
             if (CurrentPowerUp) {
                 if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
-                {
+                { 
+                   
                     float waitTime = 15f;
                     GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
 

@@ -49,7 +49,7 @@ public class PowerUpHandler : NetworkBehaviour
                 if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    powerup.Die();
+                    powerup.CmdDie();
                     //powerup.customDestroy();
                    
                     CurrentPowerUp = collider.gameObject;
@@ -85,6 +85,11 @@ public class PowerUpHandler : NetworkBehaviour
                                 Debug.LogError("Stacking mode is shield without being shield prefab");
                             }
                             break;
+                        case PowerUp.StackMode.ZeroGravity:
+                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+                            CurrentPowerUp.GetComponent<PowerUp>().Units++;
+                            break;
+                        
                         default:
                             break;
                     }

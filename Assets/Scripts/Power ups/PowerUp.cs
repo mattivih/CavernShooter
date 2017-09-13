@@ -17,6 +17,7 @@ public class PowerUp : NetworkBehaviour
     public SpawnLocation location;
     public NetworkInstanceId ownerId;
 
+    public static bool zGravityOn = false;
     public bool readyToDie = true;
     public bool dying = false;
     public bool dieDelay = false;
@@ -36,7 +37,8 @@ public class PowerUp : NetworkBehaviour
     {
         Add,
         None,
-        Shield
+        Shield,
+        ZeroGravity
     }
 
     public enum SpawnLocation

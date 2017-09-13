@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
+
 public class ZeroGravityGenerator : PowerUp {
 
 	public GameObject ZeroGravityEffect;
-    public float ZeroGravityTime = 20f;
+    public float ZeroGravityTime = 15f;
     float originalGravity;
 
     void Awake() {
@@ -19,25 +21,38 @@ public class ZeroGravityGenerator : PowerUp {
         isUsed = true;
         GameManager.Instance.powerupBarImage.fillAmount = 1;    
         if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
-            originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;
-    
+            originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;   
         }
+
         GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
-        Invoke("NormalGravity", ZeroGravityTime);
+        zGravityOn = true;
+        if (zGravityOn)
+            zGravityOn = false;
+        Invoke("NormalGravity", ZeroGravityTime);    
         readyToDie = false;
     }
 
     public void NormalGravity() {
-        GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
-        readyToDie = true;
-        Die();
+        if (zGravityOn)
+        {
+            GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
+            readyToDie = true;
+            Die();
+            zGravityOn = false;
+        }
+    
     }
 
 	public override void RpcUseNormalPowerUp(NetworkInstanceId id){
-        GameObject i = ClientScene.FindLocalObject (id);
+        if (GameManager.Instance.powerupBarImage.fillAmount > 0.01f)
+        {
+               GameObject i = ClientScene.FindLocalObject (id);
         AudioSource.PlayClipAtPoint(clipActivate, i.transform.position);
 		GameObject o = GameObject.Instantiate (ZeroGravityEffect, i.transform);
 		o.transform.localPosition = new Vector3 (0, i.GetComponent<Ship> ().PowerUpEffectYOffSet, -1);
 		Destroy (o, ZeroGravityTime);
+        }
+     
 	}
+
 }
