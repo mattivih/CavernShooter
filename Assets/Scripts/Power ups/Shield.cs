@@ -23,6 +23,12 @@ public class Shield : PowerUp
     public override void RpcUseNormalPowerUp(NetworkInstanceId id)
     {
         GameObject i = ClientScene.FindLocalObject(id);
+        for(int j = 0; j < i.transform.childCount; j++)
+        {
+            if (i.transform.GetChild(j).name == "ShieldEffect(Clone)")
+                return;
+        }
+     
         GameObject o = GameObject.Instantiate(ShieldEffect, i.transform);
         o.transform.localPosition = new Vector3(0, i.GetComponent<Ship>().PowerUpEffectYOffSet, -1);
     }

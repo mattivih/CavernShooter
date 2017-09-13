@@ -21,6 +21,7 @@ public class Ship : NetworkBehaviour {
     private Thruster ThrusterScript;
     private GameObject lastDamageSource;
 
+
     public AudioClip[] musicArray;
     private AudioSource music; 
 
@@ -37,6 +38,7 @@ public class Ship : NetworkBehaviour {
 
     void Awake() {
         ThrusterScript = GetComponentInChildren<Thruster>();
+        GameManager.Instance.powerupBarImage.fillAmount = 0;
     }
 
     public override void OnStartClient() {
@@ -165,8 +167,20 @@ public class Ship : NetworkBehaviour {
         if (GameManager.Instance.powerupBarImage) {
             GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
             if (CurrentPowerUp) {
-                float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
+                { 
+                   
+                    float waitTime = 15f;
+                    GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+
+                }
+
+                else
+                {
+                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
+                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                }
+   
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
                     GameManager.Instance.powerupBarLines.enabled = true;
                 } else {

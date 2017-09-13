@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class PowerUp : NetworkBehaviour
 {
-
+    
     public float MaxUnits;
     public float Units;
     public GameObject Icon;
@@ -17,8 +17,11 @@ public class PowerUp : NetworkBehaviour
     public SpawnLocation location;
     public NetworkInstanceId ownerId;
 
+    public static bool zGravityOn = false;
     public bool readyToDie = true;
     public bool dying = false;
+    public bool dieDelay = false;
+    public bool isUsed = false;
 
     public AudioClip clipActivate;
     public AudioSource audioActivate;
@@ -34,7 +37,8 @@ public class PowerUp : NetworkBehaviour
     {
         Add,
         None,
-        Shield
+        Shield,
+        ZeroGravity
     }
 
     public enum SpawnLocation
@@ -116,13 +120,25 @@ public class PowerUp : NetworkBehaviour
     /// </summary>
     public void Die()
     {
-        if (ownerId.Value != 0)
+        if (dieDelay)
         {
-            ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+            StartCoroutine (delayedDeath());
         }
-        Debug.Log("Die");
-        dying = true;
-        CmdDie();
+        else
+        {
+            if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+                GameManager.Instance.powerupBarLines.enabled = false;
+                GameManager.Instance.powerupBarLines4.enabled = false;
+            }
+            Debug.Log("Die");
+            dying = true;
+            CmdDie();
+
+        }
+    
+
     }
     [Command]
     public void CmdDie()
@@ -135,7 +151,7 @@ public class PowerUp : NetworkBehaviour
     {
         if (ownerId.Value != 0)
         {
-            Invoke("customDestroy", 0.5f);
+            Invoke("customDestroy", 0.25f);
             /*  GameObject p = NetworkServer.FindLocalObject(ownerId);
               if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {               
                   NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
@@ -144,13 +160,14 @@ public class PowerUp : NetworkBehaviour
         //  NetworkServer.Destroy(gameObject);
     }
 
-    void customDestroy()
+    public void customDestroy()
     {
-        if (controllerReference != null && NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference))
-        {
-            NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
-        }
+            if (controllerReference != null && NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference))
+            {
+                NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
+            }
         NetworkServer.Destroy(gameObject);
+   
     }
 
     [ClientRpc]
@@ -228,4 +245,18 @@ public class PowerUp : NetworkBehaviour
     [ClientRpc]
     public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
 
+   
+    IEnumerator delayedDeath()
+    {
+        yield return new WaitForSeconds(15);
+        if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+                GameManager.Instance.powerupBarLines.enabled = false;
+                GameManager.Instance.powerupBarLines4.enabled = false;
+            }
+        Debug.Log("Die");
+        dying = true;
+        CmdDie();
+    }
 }

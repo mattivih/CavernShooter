@@ -37,9 +37,19 @@ public class PowerUpSpawn : NetworkBehaviour {
             }
             active = true;
             if (active) {
-                CenterTimer -= Time.deltaTime;
-                InnerTimer -= Time.deltaTime;
-                OuterTimer -= Time.deltaTime;
+
+                if(CenterSpawn.childCount == 0) {                
+                     CenterTimer -= Time.deltaTime;
+                }
+                if (InnerCount < 4)
+                {
+                    InnerTimer -= Time.deltaTime;
+                }
+                if (OuterCount < 4)
+                {
+                    OuterTimer -= Time.deltaTime;
+                }
+
 
                 if (CenterTimer <= 0) {
                     if (CenterSpawn.childCount == 0) {

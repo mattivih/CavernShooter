@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PowerUpHandler : NetworkBehaviour
 {
@@ -48,7 +49,10 @@ public class PowerUpHandler : NetworkBehaviour
                 if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    powerup.Die();
+                    powerup.CmdDie();
+                    //powerup.customDestroy();
+                   
+                    CurrentPowerUp = collider.gameObject;
                 }
                 audioPickUp.Play();
                 CmdHidePowerUp(collider.GetComponent<NetworkIdentity>().netId);
@@ -56,13 +60,6 @@ public class PowerUpHandler : NetworkBehaviour
                 CmdSetAuthority(collider.GetComponent<NetworkIdentity>());
                 CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
                 SetId(GetComponent<NetworkIdentity>().netId, collider.GetComponent<NetworkIdentity>().netId);
-                //Change icon to HUD
-                if (_currentPowerUpIcon)
-                {
-                    Destroy(_currentPowerUpIcon);
-                }
-                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
-
 
             }
             else if (CurrentPowerUp)
@@ -88,11 +85,15 @@ public class PowerUpHandler : NetworkBehaviour
                                 Debug.LogError("Stacking mode is shield without being shield prefab");
                             }
                             break;
+                        case PowerUp.StackMode.ZeroGravity:
+                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+                            CurrentPowerUp.GetComponent<PowerUp>().Units++;
+                            break;
+                        
                         default:
                             break;
                     }
-                    // CurrentPowerUp = collider.gameObject;
-                    //  collider.GetComponent<PowerUp>().Die();
+
                     return;
                 }
                 else
@@ -100,12 +101,23 @@ public class PowerUpHandler : NetworkBehaviour
                     powerup.Die();
                 }
             }
+            //Change icon to HUD
+            if (!_currentPowerUpIcon)
+                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
+
+            _currentPowerUpIcon.GetComponent<Image>().enabled = true;
+            GameManager.powerupPickups[] values = (GameManager.powerupPickups[])GameManager.powerupPickups.GetValues(typeof(GameManager.powerupPickups));
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (values[i].ToString() + "(Clone)" == CurrentPowerUp.name)
+                    _currentPowerUpIcon.GetComponent<Image>().sprite = GameManager.Instance.powerupImages[i];
+            }
         }
     }
 
     public void PowerUpDepleted()
     {
-        Destroy(_currentPowerUpIcon);
+        _currentPowerUpIcon.GetComponent<Image>().enabled = false;
         audioDepleted.Play();
     }
 
