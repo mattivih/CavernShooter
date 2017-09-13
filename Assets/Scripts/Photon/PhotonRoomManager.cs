@@ -10,7 +10,7 @@ public class PhotonRoomManager : Photon.PunBehaviour {
     #region Public Methods
 
     public void Start() {
-        if (Instance = null) {
+        if (Instance == null) {
             Instance = this;
         }
     }

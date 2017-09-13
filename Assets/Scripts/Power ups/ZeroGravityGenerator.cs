@@ -6,15 +6,15 @@ public class ZeroGravityGenerator : PowerUp {
 
 	public GameObject ZeroGravityEffect;
     public float ZeroGravityTime = 20f;
-    float originalGravity;
+
+    private float _originalGravity;
+    private bool _dieDelay, _isUsed, _readyToDie;
 
     void Awake() {
-        dieDelay = true;
-        audioActivate = AddAudio(clipActivate, false, false, 1f);
-      
+        _dieDelay = true;
+       // audioActivate = AddAudio(clipActivate, false, false, 1f);
     }
 
-<<<<<<< HEAD
     //public override void UseNormalPowerUp() {
     //    if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
     //        originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;
@@ -22,26 +22,24 @@ public class ZeroGravityGenerator : PowerUp {
     //    GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
     //    Invoke("NormalGravity", ZeroGravityTime);
     //    readyToDie = false;
-    //}
-=======
-    public override void UseNormalPowerUp() {
-        isUsed = true;
-        GameManager.Instance.powerupBarImage.fillAmount = 1;    
-        if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
-            originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;
+    ////}
+    //public override void UseNormalPowerUp() {
+    //    _isUsed = true;
+    //    GameManager.Instance.powerupBarImage.fillAmount = 1;    
+    //    if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
+    //        _originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;
     
-        }
-        GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
-        Invoke("NormalGravity", ZeroGravityTime);
-        readyToDie = false;
-    }
->>>>>>> origin/Bugfixes
+    //    }
+    //    GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
+    //    Invoke("NormalGravity", ZeroGravityTime);
+    //    _readyToDie = false;
+    //}
 
-    public void NormalGravity() {
-        GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
-        readyToDie = true;
-        //Die();
-    }
+    //public void NormalGravity() {
+    //    GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = _originalGravity;
+    //    _readyToDie = true;
+    //    //Die();
+    //}
 
 	//public override void RpcUseNormalPowerUp(NetworkInstanceId id){
  //       GameObject i = ClientScene.FindLocalObject (id);

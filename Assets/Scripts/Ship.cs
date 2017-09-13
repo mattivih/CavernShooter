@@ -1,24 +1,25 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections.Generic;
+using System;
 
 public class Ship : MonoBehaviour {
-    public float Rotation, MaxRotation = 30f, Speed, ProjectileSpeed = 50f, FireRate = 0.1f, MaxSpeed, DamageMultiplier = 1f;
+    //public float Rotation, MaxRotation = 30f, Speed,ProjectileSpeed = 50f; -> Moved to ship input handler
+    public float DamageMultiplier = 1f;
     public float MaxHealth;
-    public float AccelDrag = 1, FreeDrag = 0;
+    //public float AccelDrag = 1, FreeDrag = 0; -> Moved to ship input handler
     public float PowerUpEffectYOffSet;
     public GameObject LaserPrefab;
-    public GameObject[] Firepoints;
+    //public GameObject[] Firepoints; -> Moved to ship input handler
     public GameObject PowerUpPosition;
-    public Transform mesh;
+    public Transform mesh; 
     public GameObject ShipExplosionPrefab;
     public int playerNum = 0;
     public Material shipColorMaterial;
     public Color[] shipColors;
 
     private Vector3 originalMeshRotation;
-    private float timer = 0.5f;
-    private Thruster ThrusterScript;
+    //private float timer = 0.5f;-> Moved to ship input handler
+    //private Thruster ThrusterScript;  -> Moved to ship input handler
     private GameObject lastDamageSource;
 
     public AudioClip[] musicArray;
@@ -30,13 +31,13 @@ public class Ship : MonoBehaviour {
     //[SyncVar(hook = "OnChangeShield")]
     public float Shield;
 
-    private Rigidbody2D _rigid;
+    //private Rigidbody2D _rigid; -> Moved to ship input handler
 
-    private int laserCounter;
+    //private int laserCounter; -> Moved to ship input handler
 
 
     void Awake() {
-        ThrusterScript = GetComponentInChildren<Thruster>();
+        //ThrusterScript = GetComponentInChildren<Thruster>();
         GameManager.Instance.powerupBarImage.fillAmount = 0;
     }
 
@@ -77,12 +78,14 @@ public class Ship : MonoBehaviour {
 
     //public override void OnStartLocalPlayer() {
         void Start() {
-        music = AddAudio(musicArray[Random.Range(0, musicArray.Length)], true, false, 1f);
-        music.Play();
+        //music = AddAudio(musicArray[Random.Range(0, musicArray.Length)], true, false, 1f);
+        //music.Play();
 
         Camera.main.GetComponent<CameraController>().Ship = gameObject;
+
         //Registers the ship to the Game Manager
         GameManager.Instance.Player = gameObject;
+
         foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background")) {
             float xOffset = (o.GetComponent<Parallax>().Scale * transform.position.x * -1) / 4;
             float yOffset = (o.GetComponent<Parallax>().Scale * transform.position.y * -1) / 4;
@@ -93,13 +96,23 @@ public class Ship : MonoBehaviour {
 
 
     //TODO: Refactor with !photonView.isMine
-    void Update() {
+  //  void Update() {
         //if (!isLocalPlayer)
         //{
         //    tag = "Enemy";
         //    gameObject.layer = 11; //enemy layer
         //    return;
         //}
+
+        //if (!photonView.isMine && PhotonNetwork.connected)
+        //{
+        //    //TODO: Tag enemies
+        //    return;
+        //}
+
+        /*
+         *      INPUT HANDLING REFACTORED TO 'ShipInputHandler'
+         * /
 
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
@@ -121,8 +134,6 @@ public class Ship : MonoBehaviour {
             }
         }
 
-        //TODO: Rotates ship too quickly in build
-        // Make not dependent on framerate 
         if (horizontal != 0) {
             transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
             //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
@@ -150,6 +161,7 @@ public class Ship : MonoBehaviour {
             //GetComponent<PowerUpHandler>().Stop();
         }
 
+        //TODO: refactor to HUDManager
         if (GameManager.Instance.healthbarImage) {
             float healthFraction = (Health / MaxHealth);
             healthFraction *= 0.92f;
@@ -286,6 +298,12 @@ public class Ship : MonoBehaviour {
         //    return;
         //}
         //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
+
+        if (!photonView.isMine)
+        {
+            return;
+        }
+
         lastDamageSource = source;
         if (Shield > 0) {
             if (damage < Shield) {
@@ -363,4 +381,16 @@ public class Ship : MonoBehaviour {
         newAudio.volume = vol;
         return newAudio;
     }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            //This is local player: send other players our data
+        }
+        else {
+            //This is remote player: receive data
+        }
+    }
 }
+*/

@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-<<<<<<< HEAD
     //public int GetPlayerNum(NetworkInstanceId playerid) {
     //    if (!players.Contains(playerid)) {
     //        players.Add(playerid);
@@ -70,7 +69,7 @@ public class GameManager : MonoBehaviour {
     //        result.FillPlayerInfo(deadPlayers[i]);
     //    }
     //}
-=======
+
 
 void Start()
     {
@@ -90,28 +89,28 @@ void Start()
         hud.UpdatePowerUp(Player.GetComponent<PowerUpHandler>().CurrentPowerUp);
     }
 
-    public int GetPlayerNum(NetworkInstanceId playerid) {
-        if (!players.Contains(playerid)) {
-            players.Add(playerid);
-        }
-        List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
-        return sortedList.IndexOf(playerid);
-    }
+    //    public int GetPlayerNum(NetworkInstanceId playerid) {
+    //        if (!players.Contains(playerid)) {
+    //            players.Add(playerid);
+    //        }
+    //        List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
+    //        return sortedList.IndexOf(playerid);
+    //    }
 
-    public void CallEndGame(string[] deadPlayers) {
-        RpcShowMatchResult(deadPlayers);
-    }
+    //    public void CallEndGame(string[] deadPlayers) {
+    //        RpcShowMatchResult(deadPlayers);
+    //    }
 
 
-    [ClientRpc]
-    public void RpcShowMatchResult(string[] deadPlayers)
-    {
-        GameObject gameOverScreen = Instantiate(GameOverPrefab);
-        MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
-        for (int i = deadPlayers.Length - 1; i >= 0; i--)
-        {
-            result.FillPlayerInfo(deadPlayers[i]);
-        }
-    }
->>>>>>> origin/Bugfixes
+    //    [ClientRpc]
+    //    public void RpcShowMatchResult(string[] deadPlayers)
+    //    {
+    //        GameObject gameOverScreen = Instantiate(GameOverPrefab);
+    //        MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
+    //        for (int i = deadPlayers.Length - 1; i >= 0; i--)
+    //        {
+    //            result.FillPlayerInfo(deadPlayers[i]);
+    //        }
+    //    }
+    //
 }

@@ -4,15 +4,15 @@ using UnityEngine.SceneManagement;
 public class CameraController : MonoBehaviour {
 
     public GameObject Ship;
-    private float _xRange, _yRange;
     public SpriteRenderer LevelSprite;
-
     public float Margin;
-
-    float _xMax, _xMin, _yMax, _yMin;
     public float YOffset {get;set;}
 
+    private float _xMax, _xMin, _yMax, _yMin;
+    private float _xRange, _yRange;
     private string _levelName;
+
+
 
     /// <summary>
     /// calculate map edges using level's outer edge and applies margin to those limits
