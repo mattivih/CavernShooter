@@ -37,6 +37,7 @@ public class Ship : MonoBehaviour {
 
     void Awake() {
         ThrusterScript = GetComponentInChildren<Thruster>();
+        GameManager.Instance.powerupBarImage.fillAmount = 0;
     }
 
     //public override void OnStartClient() {
@@ -166,13 +167,28 @@ public class Ship : MonoBehaviour {
         if (GameManager.Instance.powerupBarImage) {
             GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
             if (CurrentPowerUp) {
-                float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
+                {
+                    float waitTime = 15f;
+                    GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+
+                }
+
+                else
+                {
+                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
+                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                }
+   
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
                     GameManager.Instance.powerupBarLines.enabled = true;
                 } else {
                     GameManager.Instance.powerupBarLines.enabled = false;
                 }
+                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)               
+                    GameManager.Instance.powerupBarLines4.enabled = true;              
+                else
+                    GameManager.Instance.powerupBarLines4.enabled = false;
             }
         }
 
@@ -279,8 +295,10 @@ public class Ship : MonoBehaviour {
                 damage -= Shield;
                 Shield = 0;
             }
+            GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
+        GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         if (Health <= 0) {
             //Is Dead
             //GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
