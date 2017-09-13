@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
-public class Ship : NetworkBehaviour {
+public class Ship : MonoBehaviour {
     public float Rotation, MaxRotation = 30f, Speed, ProjectileSpeed = 50f, FireRate = 0.1f, MaxSpeed, DamageMultiplier = 1f;
     public float MaxHealth;
     public float AccelDrag = 1, FreeDrag = 0;
@@ -25,9 +25,9 @@ public class Ship : NetworkBehaviour {
     private AudioSource music; 
 
 
-    [SyncVar]
+    //[SyncVar]
     public float Health;
-    [SyncVar(hook = "OnChangeShield")]
+    //[SyncVar(hook = "OnChangeShield")]
     public float Shield;
 
     private Rigidbody2D _rigid;
@@ -39,43 +39,43 @@ public class Ship : NetworkBehaviour {
         ThrusterScript = GetComponentInChildren<Thruster>();
     }
 
-    public override void OnStartClient() {
-        _rigid = GetComponentInChildren<Rigidbody2D>();
-        Health = MaxHealth;
-        originalMeshRotation = mesh.localEulerAngles;
-        //CmdSpawnPlayer(GetComponent<NetworkIdentity>().netId);
-        playerNum = GameManager.Instance.GetPlayerNum(GetComponent<NetworkIdentity>().netId);
+    //public override void OnStartClient() {
+    //    _rigid = GetComponentInChildren<Rigidbody2D>();
+    //    Health = MaxHealth;
+    //    originalMeshRotation = mesh.localEulerAngles;
+    //    //CmdSpawnPlayer(GetComponent<NetworkIdentity>().netId);
+    //    playerNum = GameManager.Instance.GetPlayerNum(GetComponent<NetworkIdentity>().netId);
 
-        if (playerNum < 4) {
-            //Assign player's color to ship material
-            //1. copy original material
-            Material newMaterial = new Material(shipColorMaterial);
-            //2. change the copy's colour to ship colour
-            newMaterial.color = shipColors[playerNum];
+    //    if (playerNum < 4) {
+    //        //Assign player's color to ship material
+    //        //1. copy original material
+    //        Material newMaterial = new Material(shipColorMaterial);
+    //        //2. change the copy's colour to ship colour
+    //        newMaterial.color = shipColors[playerNum];
 
-            //3. find and replace material in ships's renderer's materials
-            var shipmats = GetComponentInChildren<MeshRenderer>().materials;
-            for (int i = 0; i < shipmats.Length; i++) {
-                if (shipmats[i].name == "_Ship_Colour (Instance)") {
-                    shipmats[i] = newMaterial;
-                }
-            }
-            GetComponentInChildren<MeshRenderer>().materials = shipmats;
-        }
-    }
+    //        //3. find and replace material in ships's renderer's materials
+    //        var shipmats = GetComponentInChildren<MeshRenderer>().materials;
+    //        for (int i = 0; i < shipmats.Length; i++) {
+    //            if (shipmats[i].name == "_Ship_Colour (Instance)") {
+    //                shipmats[i] = newMaterial;
+    //            }
+    //        }
+    //        GetComponentInChildren<MeshRenderer>().materials = shipmats;
+    //    }
+    //}
 
-    [Command]
-    void CmdSpawnPlayer(NetworkInstanceId id) {
-        RpcSpawnPlayer(id);
-    }
-    [ClientRpc]
-    void RpcSpawnPlayer(NetworkInstanceId id) {
-        playerNum = GameManager.Instance.GetPlayerNum(id);
-    }
+    //[Command]
+    //void CmdSpawnPlayer(NetworkInstanceId id) {
+    //    RpcSpawnPlayer(id);
+    //}
+    //[ClientRpc]
+    //void RpcSpawnPlayer(NetworkInstanceId id) {
+    //    playerNum = GameManager.Instance.GetPlayerNum(id);
+    //}
 
 
-    public override void OnStartLocalPlayer() {
-
+    //public override void OnStartLocalPlayer() {
+        void Start() {
         music = AddAudio(musicArray[Random.Range(0, musicArray.Length)], true, false, 1f);
         music.Play();
 
@@ -91,13 +91,14 @@ public class Ship : NetworkBehaviour {
     }
 
 
-
+    //TODO: Refactor with !photonView.isMine
     void Update() {
-        if (!isLocalPlayer) {
-            tag = "Enemy";
-            gameObject.layer = 11; //enemy layer
-            return;
-        }
+        //if (!isLocalPlayer)
+        //{
+        //    tag = "Enemy";
+        //    gameObject.layer = 11; //enemy layer
+        //    return;
+        //}
 
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
@@ -108,14 +109,14 @@ public class Ship : NetworkBehaviour {
             //thrusteron
             if (ThrusterScript) {
                 ThrusterScript.ThrusterOn();
-                CmdThrusterOn();
+                //CmdThrusterOn();
             }
         } else {
             GetComponent<Rigidbody2D>().drag = FreeDrag;
             //thrusteroff
             if (ThrusterScript) {
                 ThrusterScript.ThrusterOff();
-                CmdThrusterOff();
+                //CmdThrusterOff();
             }
         }
 
@@ -142,10 +143,10 @@ public class Ship : NetworkBehaviour {
             timer = FireRate;
         }
         if (Input.GetKeyDown(KeyCode.Comma)) {
-            GetComponent<PowerUpHandler>().Use();
+            //GetComponent<PowerUpHandler>().Use();
         }
         if (Input.GetKeyUp(KeyCode.Comma)) {
-            GetComponent<PowerUpHandler>().Stop();
+            //GetComponent<PowerUpHandler>().Stop();
         }
 
         if (GameManager.Instance.healthbarImage) {
@@ -177,22 +178,22 @@ public class Ship : NetworkBehaviour {
 
     }
 
-    [Command]
-    void CmdThrusterOn() {
-        RpcThrusterOn();
-    }
-    [ClientRpc]
-    void RpcThrusterOn() {
-        ThrusterScript.ThrusterOn();
-    }
-    [Command]
-    void CmdThrusterOff() {
-        RpcThrusterOff();
-    }
-    [ClientRpc]
-    void RpcThrusterOff() {
-        ThrusterScript.ThrusterOff();
-    }
+    //[Command]
+    //void CmdThrusterOn() {
+    //    RpcThrusterOn();
+    //}
+    //[ClientRpc]
+    //void RpcThrusterOn() {
+    //    ThrusterScript.ThrusterOn();
+    //}
+    //[Command]
+    //void CmdThrusterOff() {
+    //    RpcThrusterOff();
+    //}
+    //[ClientRpc]
+    //void RpcThrusterOff() {
+    //    ThrusterScript.ThrusterOff();
+    //}
 
     /// <summary>
     /// Moves the ship.
@@ -216,7 +217,8 @@ public class Ship : NetworkBehaviour {
             laser.GetComponent<Collider2D>().enabled = false;
             Color color = shipColors[playerNum];
 
-            CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
+
+            //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             laserCounter++;
         }
     }
@@ -224,46 +226,49 @@ public class Ship : NetworkBehaviour {
     /// <summary>
     /// Fires a projectile.
     /// </summary>
-    [Command]
-    void CmdFire(NetworkInstanceId id, Vector3 pos, Quaternion rot, Vector2 velocity, int laserid, Color color) {
-        GameObject laser = Instantiate(LaserPrefab, pos, rot);
-        laser.GetComponent<Rigidbody2D>().velocity = velocity;
-        laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-        laser.GetComponent<Laser>().myColor = color;
-        NetworkServer.Spawn(laser);
-        RpcFire(id, laser, laserid);
+    //[Command]
+    //TODO: Refactor with [PunRPC]
+    //void CmdFire(NetworkInstanceId id, Vector3 pos, Quaternion rot, Vector2 velocity, int laserid, Color color) {
+    //    GameObject laser = Instantiate(LaserPrefab, pos, rot);
+    //    laser.GetComponent<Rigidbody2D>().velocity = velocity;
+    //    laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
+    //    laser.GetComponent<Laser>().myColor = color;
+    //    NetworkServer.Spawn(laser);
+    //    RpcFire(id, laser, laserid);
+    //}
 
-    }
 
-    [ClientRpc]
-    void RpcFire(NetworkInstanceId id, GameObject projectile, int laserid) {
-        projectile.name = "Serverlaser " + laserid;
-        GameObject player = ClientScene.FindLocalObject(id);
-        //TODO: gives null reference error
-        projectile.GetComponent<Laser>().Source = player;
-        if (player != GameManager.Instance.Player) {
-            projectile.layer = 12;
-        } else {
-            projectile.GetComponent<Renderer>().enabled = false;
-            projectile.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 0f);
 
-            //projectile.GetComponent<SpriteRenderer>().material.color = Color.red;
-            GameObject clientlaser = GameObject.Find("Clientlaser " + laserid);
+    //[ClientRpc]
+    //TODO: Refactor with this.photonView.RPC
+    //void RpcFire(NetworkInstanceId id, GameObject projectile, int laserid) {
+    //    projectile.name = "Serverlaser " + laserid;
+    //    GameObject player = ClientScene.FindLocalObject(id);
+    //    //TODO: gives null reference error
+    //    projectile.GetComponent<Laser>().Source = player;
+    //    if (player != GameManager.Instance.Player) {
+    //        projectile.layer = 12;
+    //    } else {
+    //        projectile.GetComponent<Renderer>().enabled = false;
+    //        projectile.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 0f);
 
-            if (clientlaser) {
-                clientlaser.GetComponent<Laser>().SetServerObj(projectile);
-            }
-        }
-    }
+    //        //projectile.GetComponent<SpriteRenderer>().material.color = Color.red;
+    //        GameObject clientlaser = GameObject.Find("Clientlaser " + laserid);
+
+    //        if (clientlaser) {
+    //            clientlaser.GetComponent<Laser>().SetServerObj(projectile);
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// Decreases the ship's health.
     /// </summary>
     /// <param name="damage">float damage amount</param>
     public void TakeDamage(float damage, GameObject source) {
-        if (!isServer) {
-            return;
-        }
+        //if (!isServer) {
+        //    return;
+        //}
         //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
         lastDamageSource = source;
         if (Shield > 0) {
@@ -278,8 +283,8 @@ public class Ship : NetworkBehaviour {
         Health -= damage;
         if (Health <= 0) {
             //Is Dead
-            GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
-            CmdInformServerPlayerIsDead(gameObject.name);
+            //GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
+            //CmdInformServerPlayerIsDead(gameObject.name);
 
             // Checks if damage was dealt by a ship.
             // If yes, follow the killer's camera.
@@ -288,9 +293,9 @@ public class Ship : NetworkBehaviour {
             }
             //Destroy(gameObject);
             GameObject explosion = (GameObject)Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, Random.Range(0, 360))));
-            NetworkServer.Spawn(explosion);
-            NetworkServer.Destroy(gameObject);
-            //Destroy(gameObject);
+            //NetworkServer.Spawn(explosion);
+            //NetworkServer.Destroy(gameObject);
+            Destroy(gameObject);
 
         }
     }
@@ -298,21 +303,30 @@ public class Ship : NetworkBehaviour {
     /// <summary>
     /// Saves player's name to server.
     /// </summary>
-    [Command]
-    public void CmdInformServerPlayerIsDead(string playerName) {
-        if (MyLobbyManager.Instance) {
-            MyLobbyManager.Instance.OnServerOnPlayerDeath(playerName);
-        }
-    }
+    //[Command]
+    //TODO: Refactor with [PunRPC]
+    //public void CmdInformServerPlayerIsDead(string playerName) {
+    //    if (MyLobbyManager.Instance) {
+    //        MyLobbyManager.Instance.OnServerOnPlayerDeath(playerName);
+    //    }
+    //}
 
     /// <summary>
     /// Increases ship's health when it lands on a base (or via powerup).
     /// </summary>
     /// <param name="amount">Amount of health</param>
-    [ClientRpc]
-    public void RpcIncreaseHealth(float amount) {
+    //[ClientRpc]
+    //public void RpcIncreaseHealth(float amount) {
+    //    Health += amount;
+    //    if (Health > MaxHealth) {
+    //        Health = MaxHealth;
+    //    }
+    //}
+
+    public void IncreaseHealth(float amount) {
         Health += amount;
-        if (Health > MaxHealth) {
+        if (Health > MaxHealth)
+        {
             Health = MaxHealth;
         }
     }

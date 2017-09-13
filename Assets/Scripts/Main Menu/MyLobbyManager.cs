@@ -230,7 +230,7 @@ public class MyLobbyManager : NetworkLobbyManager
                     _deadPlayers.Add(lobbyPlayer.PlayerName);
                 }
             }
-                GameManager.Instance.CallEndGame(_deadPlayers.ToArray());
+                //GameManager.Instance.CallEndGame(_deadPlayers.ToArray());
 		}
 	}
 

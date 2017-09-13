@@ -14,12 +14,12 @@ public class LaserPowerUp : PowerUp {
 		controllerReference = typeof(UseLaser);
         mode = PowerUpMode.Controller;
     }
-    [ClientRpc]
-    public override void RpcStop() {
-        if (_laser && _laser.GetComponent<UseLaser>()) {
-            _laser.GetComponent<UseLaser>().Stop();
-        }
-    }
+    //[ClientRpc]
+    //public override void RpcStop() {
+    //    if (_laser && _laser.GetComponent<UseLaser>()) {
+    //        _laser.GetComponent<UseLaser>().Stop();
+    //    }
+    //}
 
     //[Command]
     //public override void CmdSpawnPowerUp(NetworkInstanceId id) {
@@ -28,22 +28,22 @@ public class LaserPowerUp : PowerUp {
     //    NetworkServer.Spawn(_laser);
     //    RpcSpawnPowerUp(_laser, id);
     //}
-    [ClientRpc]
-    public override void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) {
-        player = ClientScene.FindLocalObject(id);
-        controller.GetComponent<UseLaser>().LaserPowerUp = this;
-        controller.GetComponent<UseLaser>().SetParent(player.GetComponent<Ship>().PowerUpPosition.transform);
-        controller.GetComponent<UseLaser>().Firepoint = player.GetComponent<Ship>().PowerUpPosition.transform;
-        controller.GetComponent<UseLaser>().Fire();
-        _laser = controller;
-        if (player != GameManager.Instance.Player) {
-            controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskEnemy;
-        } else {
-            controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskPlayer;
-        }
-    }
-    [ClientRpc]
-    public override void RpcUsePowerUp() {
-        _laser.GetComponent<UseLaser>().Fire();
-    }
+    //[ClientRpc]
+    //public override void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) {
+    //    player = ClientScene.FindLocalObject(id);
+    //    controller.GetComponent<UseLaser>().LaserPowerUp = this;
+    //    controller.GetComponent<UseLaser>().SetParent(player.GetComponent<Ship>().PowerUpPosition.transform);
+    //    controller.GetComponent<UseLaser>().Firepoint = player.GetComponent<Ship>().PowerUpPosition.transform;
+    //    controller.GetComponent<UseLaser>().Fire();
+    //    _laser = controller;
+    //    if (player != GameManager.Instance.Player) {
+    //        controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskEnemy;
+    //    } else {
+    //        controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskPlayer;
+    //    }
+    //}
+    //[ClientRpc]
+    //public override void RpcUsePowerUp() {
+    //    _laser.GetComponent<UseLaser>().Fire();
+    //}
 }

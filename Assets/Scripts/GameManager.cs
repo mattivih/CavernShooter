@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class GameManager : NetworkBehaviour {
+public class GameManager : MonoBehaviour {
 
     //Register an active player game object in the scene
     public GameObject Player;
@@ -16,7 +15,7 @@ public class GameManager : NetworkBehaviour {
     public Image shieldbarImage;
     public GameObject GameOverPrefab;
 
-    public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
+    //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
 
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;
@@ -33,26 +32,26 @@ public class GameManager : NetworkBehaviour {
         }
     }
 
-    public int GetPlayerNum(NetworkInstanceId playerid) {
-        if (!players.Contains(playerid)) {
-            players.Add(playerid);
-        }
-        List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
-        return sortedList.IndexOf(playerid);
-    }
+    //public int GetPlayerNum(NetworkInstanceId playerid) {
+    //    if (!players.Contains(playerid)) {
+    //        players.Add(playerid);
+    //    }
+    //    List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
+    //    return sortedList.IndexOf(playerid);
+    //}
 
-    public void CallEndGame(string[] deadPlayers) {
-        RpcShowMatchResult(deadPlayers);
-    }
+    //public void CallEndGame(string[] deadPlayers) {
+    //    RpcShowMatchResult(deadPlayers);
+    //}
 
-    [ClientRpc]
-    public void RpcShowMatchResult(string[] deadPlayers)
-    {
-        GameObject gameOverScreen = Instantiate(GameOverPrefab);
-        MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
-        for (int i = deadPlayers.Length - 1; i >= 0; i--)
-        {
-            result.FillPlayerInfo(deadPlayers[i]);
-        }
-    }
+    //[ClientRpc]
+    //public void RpcShowMatchResult(string[] deadPlayers)
+    //{
+    //    GameObject gameOverScreen = Instantiate(GameOverPrefab);
+    //    MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
+    //    for (int i = deadPlayers.Length - 1; i >= 0; i--)
+    //    {
+    //        result.FillPlayerInfo(deadPlayers[i]);
+    //    }
+    //}
 }

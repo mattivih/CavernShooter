@@ -20,14 +20,14 @@ public class ShipEnvironmentCollider : MonoBehaviour {
 	/// <param name="collision"></param>
 	void OnCollisionEnter2D(Collision2D collision) {
 		//Debug.Log("hit something");
-		if (GetComponentInParent<Ship>().isLocalPlayer && collision.relativeVelocity.sqrMagnitude > HitVelocityThreshold) {
-            audioCollide.pitch = 0.5f;
-			float damage = collision.relativeVelocity.sqrMagnitude * HitDamageScale;
-			//Debug.Log("hit wall! damage: " + damage);
-			GetComponentInParent<Ship>().TakeDamage(damage, null);
-		} else {
-            audioCollide.pitch = 1f;
-        }
+		//if (GetComponentInParent<Ship>().isLocalPlayer && collision.relativeVelocity.sqrMagnitude > HitVelocityThreshold) {
+  //          audioCollide.pitch = 0.5f;
+		//	float damage = collision.relativeVelocity.sqrMagnitude * HitDamageScale;
+		//	//Debug.Log("hit wall! damage: " + damage);
+		//	GetComponentInParent<Ship>().TakeDamage(damage, null);
+		//} else {
+  //          audioCollide.pitch = 1f;
+  //      }
         audioCollide.Play();
 
     }

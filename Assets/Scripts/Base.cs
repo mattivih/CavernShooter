@@ -1,16 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class Base : NetworkBehaviour {
+public class Base : MonoBehaviour {
 
     public float HealthRegen, MaxBaseHealth;
 
     Light[] lights;
 
-	[SyncVar]
-	public float BaseHealth;
+    //[SyncVar]
+    //TODO: Refactor with [Server]
+    public float BaseHealth;
 
     /// <summary>
 	/// Sets base health to max health.
@@ -37,9 +37,10 @@ public class Base : NetworkBehaviour {
             foreach(Light l in lights) {
                 l.color = Color.green;
             }
-            if (isServer) {
-                collision.gameObject.GetComponent<Ship>().RpcIncreaseHealth(HealthRegen * Time.deltaTime);
-            }
+            //if (isServer) {
+            //    collision.gameObject.GetComponent<Ship>().RpcIncreaseHealth(HealthRegen * Time.deltaTime);
+            //}
+            collision.gameObject.GetComponent<Ship>().IncreaseHealth(HealthRegen * Time.deltaTime);
 
             if (!Input.anyKey) {
                 collision.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;

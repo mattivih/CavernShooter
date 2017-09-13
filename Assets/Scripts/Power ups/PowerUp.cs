@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class PowerUp : NetworkBehaviour {
+public class PowerUp : MonoBehaviour {
 
     public float MaxUnits;
     public float Units;
@@ -14,7 +13,7 @@ public class PowerUp : NetworkBehaviour {
     protected PowerUpMode mode = PowerUpMode.Normal;
     public StackMode stacking = StackMode.Add;
     public SpawnLocation location;
-    public NetworkInstanceId ownerId;
+    //public NetworkInstanceId ownerId;
 
     public bool readyToDie = true;
     public bool dying = false;
@@ -51,10 +50,10 @@ public class PowerUp : NetworkBehaviour {
 
     void Update() {
         if (dying && readyToDie) {
-            Die();
+            //Die();
         }
         if (Units <= 0) {
-            Die();
+            //Die();
         }
     }
 
@@ -68,120 +67,129 @@ public class PowerUp : NetworkBehaviour {
     /// <summary>
     /// Uses one unit of powerup or starts continuous usage of the power up.
     /// </summary>
-    public void Use(NetworkInstanceId id) {
-        if (Units > 0) {
-            audioActivate = AddAudio(clipActivate, false, false, 1f);
-            audioActivate.Play();
-            UsePowerUp(id);
-            Units--;
-        } else {
-            Die();
-        }
-    }
+    //public void Use(NetworkInstanceId id) {
+    //    if (Units > 0) {
+    //        audioActivate = AddAudio(clipActivate, false, false, 1f);
+    //        audioActivate.Play();
+    //        UsePowerUp(id);
+    //        Units--;
+    //    } else {
+    //        Die();
+    //    }
+    //}
 
     /// <summary>
     /// Stops using the power up if it's a continuous power up
     /// </summary>
-    public virtual void Stop() {
-        if (ownerId.Value != 0) {
-            readyToDie = false;
-            CmdStop();
-        }
-    }
-    [Command]
-    public void CmdStop() {
-        RpcStop();
-    }
-    [ClientRpc]
-    public virtual void RpcStop() { }
+    //public virtual void Stop() {
+    //    if (ownerId.Value != 0) {
+    //        readyToDie = false;
+    //        //CmdStop();
+    //    }
+    //}
+
+
+    //[Command]
+    //public void CmdStop() {
+    //    RpcStop();
+    //}
+    //[ClientRpc]
+    //public virtual void RpcStop() { }
 
     /// <summary>
     /// called when powerup is used up (=units goes to 0)
     /// </summary>
-    public void Die() {
-        if (ownerId.Value != 0) {
-            ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
-        }
-        Debug.Log("Die");
-        dying = true;
-        CmdDie();
-    }
-    [Command]
-    public void CmdDie() {
-        RpcStop();
-        RpcDieAfterStop();
-    }
-    [Command]
-    void CmdDieAfterStop() {
-        if (ownerId.Value != 0) {
-            GameObject p = NetworkServer.FindLocalObject(ownerId);
-            if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {
-                NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
-            }
-        }
-        NetworkServer.Destroy(gameObject);
-    }
-    [ClientRpc]
-    void RpcDieAfterStop() {
-        CmdDieAfterStop();
-    }
+    //public void Die() {
+    //    if (ownerId.Value != 0) {
+    //        ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+    //    }
+    //    Debug.Log("Die");
+    //    dying = true;
+    //    //CmdDie();
+    //}
+
+    //[Command]
+    //public void CmdDie() {
+    //    RpcStop();
+    //    RpcDieAfterStop();
+    //}
+    //[Command]
+    //void CmdDieAfterStop() {
+    //    if (ownerId.Value != 0) {
+    //        GameObject p = NetworkServer.FindLocalObject(ownerId);
+    //        if (controllerReference != null && p.GetComponentInChildren(controllerReference)) {
+    //            NetworkServer.Destroy(p.GetComponentInChildren(controllerReference).gameObject);
+    //        }
+    //    }
+    //    NetworkServer.Destroy(gameObject);
+    //}
+    //[ClientRpc]
+    //TODO: Refactor with [PunRPC]
+    //void RpcDieAfterStop() {
+    //    CmdDieAfterStop();
+    //}
 
     /// <summary>
     /// Uses the power up that was previously picked up.
     /// </summary>
-    public virtual void UsePowerUp(NetworkInstanceId id) {
-        GameObject player = GameManager.Instance.Player;
-        Vector3 pos = player.transform.position;
-        Quaternion rot = player.transform.rotation;
-        //Debug.Log("player: " + player.name + ", id: " + id.Value);
-        CmdUseNormalPowerUp(id);
+    //public virtual void UsePowerUp(NetworkInstanceId id) {
+    //    GameObject player = GameManager.Instance.Player;
+    //    Vector3 pos = player.transform.position;
+    //    Quaternion rot = player.transform.rotation;
+    //    //Debug.Log("player: " + player.name + ", id: " + id.Value);
+    //    CmdUseNormalPowerUp(id);
 
-        switch (mode) {
-            case PowerUpMode.Normal:
-                UseNormalPowerUp();
-                break;
-            case PowerUpMode.Spawn:
-                CmdSpawnPowerUp(id, pos, rot);
-                break;
-            case PowerUpMode.Controller:
-                if (controllerReference != null) {
-                    if (!player.GetComponentInChildren(controllerReference)) {
-                        CmdSpawnPowerUp(id, pos, rot);
-                    } else {
-                        CmdUsePowerUp();
-                    }
-                } else {
-                    Debug.LogError("Controller power up without controller reference");
-                }
-                break;
-            default:
-                break;
-        }
-    }
+    //    switch (mode) {
+    //        case PowerUpMode.Normal:
+    //            UseNormalPowerUp();
+    //            break;
+    //        case PowerUpMode.Spawn:
+    //            CmdSpawnPowerUp(id, pos, rot);
+    //            break;
+    //        case PowerUpMode.Controller:
+    //            if (controllerReference != null) {
+    //                if (!player.GetComponentInChildren(controllerReference)) {
+    //                    CmdSpawnPowerUp(id, pos, rot);
+    //                } else {
+    //                    CmdUsePowerUp();
+    //                }
+    //            } else {
+    //                Debug.LogError("Controller power up without controller reference");
+    //            }
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
 
-    [Command]
-    public void CmdSpawnPowerUp(NetworkInstanceId id, Vector3 position, Quaternion rotation) {
-        GameObject p = NetworkServer.FindLocalObject(id);
-        GameObject controller = Instantiate(spawn, position, rotation);
-        NetworkServer.SpawnWithClientAuthority(controller, p);
-        RpcSpawnPowerUp(controller, id);
-    }
-    [ClientRpc]
-    public virtual void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) { }
+    //[Command]
+    //TODO: Refactor with [PunRPC]
+    //public void CmdSpawnPowerUp(NetworkInstanceId id, Vector3 position, Quaternion rotation) {
+    //    GameObject p = NetworkServer.FindLocalObject(id);
+    //    GameObject controller = Instantiate(spawn, position, rotation);
+    //    NetworkServer.SpawnWithClientAuthority(controller, p);
+    //    RpcSpawnPowerUp(controller, id);
+    //}
+    //[ClientRpc]
+    //public virtual void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) { }
 
-    [Command]
-    public virtual void CmdUsePowerUp() {
-        RpcUsePowerUp();
-    }
-    [ClientRpc]
-    public virtual void RpcUsePowerUp() { }
+    //[Command]
+    //TODO: Refactor with [PunRPC]
+    //public virtual void CmdUsePowerUp() {
+    //    RpcUsePowerUp();
+    //}
+    //[ClientRpc]
+    //public virtual void RpcUsePowerUp() { }
 
-    public virtual void UseNormalPowerUp() { }
-    [Command]
-    public virtual void CmdUseNormalPowerUp(NetworkInstanceId id) {
-        RpcUseNormalPowerUp(id);
-    }
-    [ClientRpc]
-    public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
+    //public virtual void UseNormalPowerUp() { }
+
+    //[Command]
+    //TODO: Refactor with [PunRPC]
+    //public virtual void CmdUseNormalPowerUp(NetworkInstanceId id) {
+    //    RpcUseNormalPowerUp(id);
+    //}
+
+    //[ClientRpc]
+    //public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
 
 }

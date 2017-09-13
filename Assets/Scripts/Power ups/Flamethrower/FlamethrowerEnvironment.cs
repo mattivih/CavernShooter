@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Environment : MonoBehaviour {
+public class FlamethrowerEnvironment : MonoBehaviour {
 
 	[Tooltip("How long the script takes to fully start. This is used to fade in animations and sounds, etc.")]
 	public float StartTime = 0.0f;
