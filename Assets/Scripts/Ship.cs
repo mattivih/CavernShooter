@@ -20,8 +20,7 @@ public class Ship : NetworkBehaviour {
     private float timer = 0.5f;
     private Thruster ThrusterScript;
     private GameObject lastDamageSource;
-
-
+    
     public AudioClip[] musicArray;
     private AudioSource music; 
 
