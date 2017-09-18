@@ -49,9 +49,10 @@ public class PowerUpHandler : NetworkBehaviour
                 if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    powerup.CmdDie();
+                    if(!powerup.dieDelay)
+                        powerup.CmdDie();
                     //powerup.customDestroy();
-                   
+
                     CurrentPowerUp = collider.gameObject;
                 }
                 audioPickUp.Play();
@@ -65,6 +66,7 @@ public class PowerUpHandler : NetworkBehaviour
             else if (CurrentPowerUp)
             {
                 PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+                CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
                 if (powerup.GetType() == collider.GetComponent<PowerUp>().GetType())
                 {
                     switch (powerup.stacking)
@@ -87,7 +89,7 @@ public class PowerUpHandler : NetworkBehaviour
                             break;
                         case PowerUp.StackMode.ZeroGravity:
                             CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
-                            CurrentPowerUp.GetComponent<PowerUp>().Units++;
+                            CurrentPowerUp.GetComponent<PowerUp>().Units++;                           
                             break;
                         
                         default:

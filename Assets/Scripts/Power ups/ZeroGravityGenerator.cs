@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 
 public class ZeroGravityGenerator : PowerUp {
 
-	public GameObject ZeroGravityEffect;
-    public float ZeroGravityTime = 15f;
+    public GameObject ZeroGravityEffect;
+    public float ZeroGravityTime = 14.95f;
     float originalGravity;
 
     void Awake() {
@@ -18,32 +18,33 @@ public class ZeroGravityGenerator : PowerUp {
     }
 
     public override void UseNormalPowerUp() {
+        goList.Add(new GameObject());
         isUsed = true;
         GameManager.Instance.powerupBarImage.fillAmount = 1;    
         if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
             originalGravity = GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale;   
         }
-
         GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = 0;
         zGravityOn = true;
-        if (zGravityOn)
-            zGravityOn = false;
         Invoke("NormalGravity", ZeroGravityTime);    
         readyToDie = false;
+        delayedDeath();
+ 
     }
+
 
     public void NormalGravity() {
-        if (zGravityOn)
+        if (goList.Count < 2)
         {
             GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
-            readyToDie = true;
-            Die();
             zGravityOn = false;
+            Destroy(gameObject);
         }
-    
+        goList.RemoveAt(0);
     }
 
-	public override void RpcUseNormalPowerUp(NetworkInstanceId id){
+
+    public override void RpcUseNormalPowerUp(NetworkInstanceId id){
         if (GameManager.Instance.powerupBarImage.fillAmount > 0.01f)
         {
                GameObject i = ClientScene.FindLocalObject (id);

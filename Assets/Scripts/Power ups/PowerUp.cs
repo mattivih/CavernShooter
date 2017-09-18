@@ -22,6 +22,7 @@ public class PowerUp : NetworkBehaviour
     public bool dying = false;
     public bool dieDelay = false;
     public bool isUsed = false;
+    public static List<GameObject> goList = new List<GameObject>();
 
     public AudioClip clipActivate;
     public AudioSource audioActivate;
@@ -120,11 +121,7 @@ public class PowerUp : NetworkBehaviour
     /// </summary>
     public void Die()
     {
-        if (dieDelay)
-        {
-            StartCoroutine (delayedDeath());
-        }
-        else
+        if(!dieDelay)
         {
             if (ownerId.Value != 0)
             {
@@ -246,7 +243,7 @@ public class PowerUp : NetworkBehaviour
     public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
 
    
-    IEnumerator delayedDeath()
+    public IEnumerator delayedDeath()
     {
         yield return new WaitForSeconds(15);
         if (ownerId.Value != 0)
@@ -256,7 +253,5 @@ public class PowerUp : NetworkBehaviour
                 GameManager.Instance.powerupBarLines4.enabled = false;
             }
         Debug.Log("Die");
-        dying = true;
-        CmdDie();
     }
 }

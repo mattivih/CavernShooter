@@ -21,7 +21,6 @@ public class Ship : NetworkBehaviour {
     private Thruster ThrusterScript;
     private GameObject lastDamageSource;
 
-
     public AudioClip[] musicArray;
     private AudioSource music; 
 

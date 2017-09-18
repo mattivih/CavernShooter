@@ -28,8 +28,10 @@ public class GameManager : NetworkBehaviour {
     public Image powerupBarLines;
     public Image powerupBarLines4;
     public Image shieldbarImage;
+    public Image powerupImage;
     public GameObject GameOverPrefab;
     public HUDManager hud;
+
 
     public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
 
