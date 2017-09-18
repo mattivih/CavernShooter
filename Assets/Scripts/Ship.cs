@@ -16,10 +16,16 @@ public class Ship : NetworkBehaviour {
     public Material shipColorMaterial;
     public Color[] shipColors;
 
+
     private Vector3 originalMeshRotation;
     private float timer = 0.5f;
     private Thruster ThrusterScript;
+    private Smoke40 Smoke40Script;
+    private Smoke20 Smoke20Script;
+    private Sparks40 Sparks40Script;
+    private Sparks20 Sparks20Script;
     private GameObject lastDamageSource;
+    
 
     public AudioClip[] musicArray;
     private AudioSource music; 
@@ -37,7 +43,10 @@ public class Ship : NetworkBehaviour {
 
     void Awake() {
         ThrusterScript = GetComponentInChildren<Thruster>();
-        GameManager.Instance.powerupBarImage.fillAmount = 0;
+        Smoke40Script = GetComponentInChildren<Smoke40>();
+        Smoke20Script = GetComponentInChildren<Smoke20>();
+        Sparks40Script = GetComponentInChildren<Sparks40>();
+        Sparks20Script = GetComponentInChildren<Sparks20>();   
     }
 
     public override void OnStartClient() {
@@ -117,6 +126,40 @@ public class Ship : NetworkBehaviour {
             if (ThrusterScript) {
                 ThrusterScript.ThrusterOff();
                 CmdThrusterOff();
+            }
+
+        if (Health <= (MaxHealth*0.4))
+            {
+                Smoke40Script.Smoke40On();
+                CmdSmoke40On();
+                Sparks40Script.Sparks40On();
+                CmdSparks40On();
+            }
+        else if (Health > (MaxHealth * 0.4))
+            {
+                Smoke40Script.Smoke40Off();
+                CmdSmoke40Off();
+                Sparks40Script.Sparks40Off();
+                CmdSparks40Off();
+            }
+
+        if (Health <= (MaxHealth*0.2))
+            {
+                Smoke40Script.Smoke40Off();
+                CmdSmoke40Off();
+                Sparks40Script.Sparks40Off();
+                CmdSparks40Off();
+                Smoke20Script.Smoke20On();
+                CmdSmoke20On();
+                Sparks20Script.Sparks20On();
+                CmdSparks20On();
+            }
+        else if (Health > (MaxHealth*0.2))
+            {
+                Smoke20Script.Smoke20Off();
+                CmdSmoke20Off();
+                Sparks20Script.Sparks20Off();
+                CmdSparks20Off();
             }
         }
 
@@ -209,6 +252,90 @@ public class Ship : NetworkBehaviour {
     [ClientRpc]
     void RpcThrusterOff() {
         ThrusterScript.ThrusterOff();
+    }
+
+    [Command]
+    void CmdSmoke40On()
+    {
+        RpcSmoke40On();
+    }
+    [ClientRpc]
+    void RpcSmoke40On()
+    {
+        Smoke40Script.Smoke40On();
+    }
+    [Command]
+    void CmdSmoke40Off()
+    {
+        RpcSmoke40Off();
+    }
+    [ClientRpc]
+    void RpcSmoke40Off()
+    {
+        Smoke40Script.Smoke40Off();
+    }
+
+    [Command]
+    void CmdSmoke20On()
+    {
+        RpcSmoke20On();
+    }
+    [ClientRpc]
+    void RpcSmoke20On()
+    {
+        Smoke20Script.Smoke20On();
+    }
+    [Command]
+    void CmdSmoke20Off()
+    {
+        RpcSmoke20Off();
+    }
+    [ClientRpc]
+    void RpcSmoke20Off()
+    {
+        Smoke20Script.Smoke20Off();
+    }
+
+    [Command]
+    void CmdSparks40On()
+    {
+        RpcSparks40On();
+    }
+    [ClientRpc]
+    void RpcSparks40On()
+    {
+        Sparks40Script.Sparks40On();
+    }
+    [Command]
+    void CmdSparks40Off()
+    {
+        RpcSparks40Off();
+    }
+    [ClientRpc]
+    void RpcSparks40Off()
+    {
+        Sparks40Script.Sparks40Off();
+    }
+
+    [Command]
+    void CmdSparks20On()
+    {
+        RpcSparks20On();
+    }
+    [ClientRpc]
+    void RpcSparks20On()
+    {
+        Sparks20Script.Sparks20On();
+    }
+    [Command]
+    void CmdSparks20Off()
+    {
+        RpcSparks20Off();
+    }
+    [ClientRpc]
+    void RpcSparks20Off()
+    {
+        Sparks20Script.Sparks20Off();
     }
 
     /// <summary>
