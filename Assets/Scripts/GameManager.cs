@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour {
 
 void Start()
     {
-        hud = FindObjectOfType<HUDManager> ();
+        hud = FindObjectOfType<HUDManager>();
     }
     public void UpdateHealthBar(float health, float maxHealth)
     {

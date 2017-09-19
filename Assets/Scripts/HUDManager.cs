@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class HUDManager : NetworkBehaviour {
+public class HUDManager : MonoBehaviour {
 
     // Use this for initialization
     void Start()

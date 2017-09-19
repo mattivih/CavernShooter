@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PhotonRoomManager : Photon.PunBehaviour {
+public class PhotonGameManager : Photon.PunBehaviour {
     
-    static public PhotonRoomManager Instance;
+    static public PhotonGameManager Instance;
 
-    #region Public Methods
+    public GameObject PlayerPrefab;
 
     public void Start() {
         if (Instance == null) {
             Instance = this;
+        }
+
+        //Instantiate player
+        if (Ship.LocalPlayerInstance == null)
+        {
+            //TODO: replace vector3 with one of the spawn points
+            Debug.LogError("Instantiating player.");
+            PhotonNetwork.Instantiate(PlayerPrefab.name, Vector3.zero, Quaternion.identity, 0);
         }
     }
 
@@ -21,8 +29,7 @@ public class PhotonRoomManager : Photon.PunBehaviour {
         {
             Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
         }
-        Debug.Log("PhotonNetwork : Loading Level : " + PhotonNetwork.room.PlayerCount);
-        PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.room.PlayerCount);
+        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void LeaveRoom()
@@ -31,7 +38,6 @@ public class PhotonRoomManager : Photon.PunBehaviour {
     }
 
 
-    #endregion
 
     #region Callbacks
 

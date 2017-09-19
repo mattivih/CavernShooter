@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-m_EditorVersion: 2017.1.0p4
-=======
-m_EditorVersion: 2017.1.0f3
->>>>>>> origin/Bugfixes
+m_EditorVersion: 2017.1.1f1
