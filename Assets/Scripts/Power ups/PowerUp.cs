@@ -126,15 +126,15 @@ public class PowerUp : NetworkBehaviour
             if (ownerId.Value != 0)
             {
                 ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
-                GameManager.Instance.powerupBarLines.enabled = false;
-                GameManager.Instance.powerupBarLines4.enabled = false;
             }
             Debug.Log("Die");
             dying = true;
             CmdDie();
 
         }
-    
+        GameManager.Instance.powerupBarLines.enabled = false;
+        GameManager.Instance.powerupBarLines4.enabled = false;
+
 
     }
     [Command]

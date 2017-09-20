@@ -222,16 +222,16 @@ public class Ship : NetworkBehaviour {
                     float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
                     GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
                 }
-   
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
-                    GameManager.Instance.powerupBarLines.enabled = true;
-                } else {
-                    GameManager.Instance.powerupBarLines.enabled = false;
-                }
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)               
-                    GameManager.Instance.powerupBarLines4.enabled = true;              
-                else
-                    GameManager.Instance.powerupBarLines4.enabled = false;
+
+                /*   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
+                       GameManager.Instance.powerupBarLines.enabled = true;
+                   } else {
+                       GameManager.Instance.powerupBarLines.enabled = false;
+                   }
+                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)               
+                       GameManager.Instance.powerupBarLines4.enabled = true;              
+                   else
+                       GameManager.Instance.powerupBarLines4.enabled = false;*/
             }
         }
 

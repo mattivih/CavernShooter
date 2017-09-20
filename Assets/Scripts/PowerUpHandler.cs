@@ -111,6 +111,7 @@ public class PowerUpHandler : NetworkBehaviour
                     _currentPowerUpIcon.GetComponent<Image>().sprite = GameManager.Instance.powerupImages[i];
             }
         }
+        GameManager.Instance.UpdatePowerUp();
     }
 
     public void PowerUpDepleted()

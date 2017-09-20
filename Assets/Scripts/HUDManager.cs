@@ -27,10 +27,14 @@ public class HUDManager : NetworkBehaviour {
                 {
                     GameManager.Instance.powerupBarLines.enabled = true;
                 }
+                else if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
+                    GameManager.Instance.powerupBarLines4.enabled = true;
                 else
                 {
                     GameManager.Instance.powerupBarLines.enabled = false;
+                    GameManager.Instance.powerupBarLines4.enabled = false;
                 }
+                 
             }
         }
     }
