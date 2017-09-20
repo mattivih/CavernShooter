@@ -80,11 +80,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     {
             base.OnConnectedToMaster();
             Debug.Log("@OnConnectedToMaster()");
-
-        // Try to join random room. If unsuccessfull, OnPhotonRandomJoinFailed() will be called.
-        if (isConnecting) {
-            PhotonNetwork.JoinRandomRoom();
-        }
     }
 
     public override void OnPhotonRandomJoinFailed(object[] codeAndMsg)
@@ -104,6 +99,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         if (PhotonNetwork.room.PlayerCount == 1) {
             PhotonNetwork.LoadLevel(1);
         }
+
     }
 
     public override void OnDisconnectedFromPhoton()

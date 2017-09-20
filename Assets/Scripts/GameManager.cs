@@ -30,7 +30,9 @@ public class GameManager : MonoBehaviour {
     public GameObject GameOverPrefab;
     public HUDManager hud;
 
+    //Refactored to use Photon Actor ID:s
     //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
+    public List<int> players = new List<int>();
 
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;

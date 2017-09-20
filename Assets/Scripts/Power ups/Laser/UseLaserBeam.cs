@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UseLaser : MonoBehaviour {
+public class UseLaserBeam : MonoBehaviour {
 
     public float Duration = 0.5f;
     [Tooltip("Max possible distance of the laser ray")]
@@ -10,7 +10,7 @@ public class UseLaser : MonoBehaviour {
     [Tooltip("How many seconds of firing the laser corresponds to one unit")]
     public float UnitDuration = 0.5f;
     [HideInInspector]
-    public LaserPowerUp LaserPowerUp;
+    public LaserBeamPowerUp LaserPowerUp;
     [HideInInspector]
     public Transform Firepoint;
 

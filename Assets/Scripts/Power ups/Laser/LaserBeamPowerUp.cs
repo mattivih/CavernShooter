@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class LaserPowerUp : PowerUp {
+public class LaserBeamPowerUp : PowerUp {
 
-    public GameObject LaserPrefab;
+    public GameObject LaserBeamPrefab;
 
     private GameObject _laser;
 
    void Awake() {
-        spawn = LaserPrefab;
-		controllerReference = typeof(UseLaser);
+        spawn = LaserBeamPrefab;
+		controllerReference = typeof(UseLaserBeam);
         mode = PowerUpMode.Controller;
     }
     //[ClientRpc]

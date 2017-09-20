@@ -8,13 +8,8 @@ public class Laser : ProjectilesBase {
     public CircleCollider2D DestructionCircle;
 
     public bool clientSide = false;
-    public GameObject serverObj = null;
-    public GameObject clientObj = null;
-    bool serverObjSet = false;
     float distanceThreshold = 0.01f;
     float toofarThreshold = 1f;
-    [SerializeField]
-    float syncTimer = 0;
 
     public GameObject Source;
 
@@ -23,6 +18,13 @@ public class Laser : ProjectilesBase {
     public AudioClip clipHitTerrain, clipHitShip;
     private AudioSource audioHitTerrain, audioHitShip;
 
+    #region To be deleted: Old Unet variables
+    //public GameObject serverObj = null;
+    //public GameObject clientObj = null;
+    //bool serverObjSet = false;
+    //[SerializeField]
+    //float syncTimer = 0;
+    #endregion
 
 
     void Awake() {
@@ -39,6 +41,7 @@ public class Laser : ProjectilesBase {
         s *= 0.9f;
         GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
     }
+
     /// <summary>
     /// 1. turns projectile in the direction of movement smoothly
     /// 2. destroyes object if it's below 1000 (no stray projectiles)
@@ -55,14 +58,11 @@ public class Laser : ProjectilesBase {
         if (transform.position.y < -1000) {
             Destroy(gameObject);
         }
-
-
-
     }
 
-    void FixedUpdate() {
-        GoTowardsServerObj();
-    }
+    //void FixedUpdate() {
+    //    GoTowardsServerObj();
+    //}
 
     /// <summary>
     /// Handles laser collisions.
@@ -78,13 +78,14 @@ public class Laser : ProjectilesBase {
             GetComponent<Rigidbody2D>().isKinematic = true;
             GetComponent<Renderer>().enabled = false;
             //GetComponent<SpriteRenderer>().enabled = false;
-            Debug.Log("hit terrain");
+            //Debug.Log("Laser hit terrain");
             audioHitTerrain.Play();
             Destroy(gameObject, audioHitTerrain.clip.length);
         } else if (collider.GetComponent<Ship>()) {
-            Debug.Log("hit ship");
+            //Debug.Log("Laser hit ship");
             audioHitShip.Play();
             //Debug.Log("Damage player");
+            Debug.LogError("Laser source: " + Source);
             float dmgMultiplier = Source.GetComponent<Ship>().DamageMultiplier;
             collider.GetComponent<Ship>().TakeDamage(Damage * dmgMultiplier, Source);
             GetComponent<Collider2D>().enabled = false;
@@ -92,49 +93,48 @@ public class Laser : ProjectilesBase {
             GetComponent<Renderer>().enabled = false;
             Destroy(gameObject, audioHitShip.clip.length);
         } else {
-            
             Destroy(gameObject);
         }
     }
 
-    void GoTowardsServerObj() {
-        if (clientSide && serverObj) {
-            syncTimer += Time.deltaTime / 4;
-            Vector3 clientpos = transform.position;
-            Vector3 serverpos = serverObj.transform.position;
-            transform.position = Vector3.Lerp(clientpos, serverpos, Mathf.Clamp01(syncTimer));
-            //GetComponent<Rigidbody2D>().velocity *= 1.1f;
-            GetComponent<Rigidbody2D>().isKinematic = true;
-            float dist = Vector3.Distance(transform.position, serverObj.transform.position);
-            if (dist < distanceThreshold || dist > toofarThreshold) {
-                Destroy(gameObject);
-            }
-        }
-        if (clientSide && serverObjSet && !serverObj) {
-            Destroy(gameObject);
-        }
-    }
+    //void GoTowardsServerObj() {
+    //    if (clientSide && serverObj) {
+    //        syncTimer += Time.deltaTime / 4;
+    //        Vector3 clientpos = transform.position;
+    //        Vector3 serverpos = serverObj.transform.position;
+    //        transform.position = Vector3.Lerp(clientpos, serverpos, Mathf.Clamp01(syncTimer));
+    //        //GetComponent<Rigidbody2D>().velocity *= 1.1f;
+    //        GetComponent<Rigidbody2D>().isKinematic = true;
+    //        float dist = Vector3.Distance(transform.position, serverObj.transform.position);
+    //        if (dist < distanceThreshold || dist > toofarThreshold) {
+    //            Destroy(gameObject);
+    //        }
+    //    }
+    //    if (clientSide && serverObjSet && !serverObj) {
+    //        Destroy(gameObject);
+    //    }
+    //}
 
-    void OnDestroy() {
-        if (clientSide && serverObj) {
-            //Debug.Log(gameObject.name + "client laser destroyed");
-            serverObj.GetComponent<Collider2D>().enabled = true;
-            serverObj.GetComponent<Renderer>().enabled = true;
-            serverObj.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 2.5f);
-        } else if (!clientSide && clientObj) {
-            Destroy(clientObj);
-        }
-    }
+    //void OnDestroy() {
+    //    if (clientSide && serverObj) {
+    //        //Debug.Log(gameObject.name + "client laser destroyed");
+    //        serverObj.GetComponent<Collider2D>().enabled = true;
+    //        serverObj.GetComponent<Renderer>().enabled = true;
+    //        serverObj.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 2.5f);
+    //    } else if (!clientSide && clientObj) {
+    //        Destroy(clientObj);
+    //    }
+    //}
 
-    public void SetServerObj(GameObject g) {
-        //Debug.Log(gameObject.name + " setserverobj");
-        if (!serverObjSet) {
-            serverObj = g;
-            serverObjSet = true;
-            g.GetComponent<Laser>().clientObj = gameObject;
-            //GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-        }
-    }
+    //public void SetServerObj(GameObject g) {
+    //    //Debug.Log(gameObject.name + " setserverobj");
+    //    if (!serverObjSet) {
+    //        serverObj = g;
+    //        serverObjSet = true;
+    //        g.GetComponent<Laser>().clientObj = gameObject;
+    //        //GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+    //    }
+    //}
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();

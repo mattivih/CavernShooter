@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class CameraController : MonoBehaviour {
 
+    public Transform Ship; //Ship that the camera follows
     public SpriteRenderer LevelSprite;
     public float Margin;
     public float YOffset {get;set;}
@@ -10,14 +11,12 @@ public class CameraController : MonoBehaviour {
     private float _xMax, _xMin, _yMax, _yMin;
     private float _xRange, _yRange;
     private string _levelName;
-    private GameObject _ship; //Ship that the camera follows
 
 
 
     /// <summary>
     /// Calculate map edges using level's outer edge and applies margin to those limits
     /// </summary>
-
     void Start() {
         //Calculate info needed to clamp the camera
         float _xExt = LevelSprite.bounds.extents.x;
@@ -36,23 +35,23 @@ public class CameraController : MonoBehaviour {
         _levelName = SceneManager.GetActiveScene().name;
     }
 
-    public void FollowShip(GameObject ship) {
-        _ship = ship;
-        Debug.LogError("Following ship " + ship.GetComponent<PhotonView>().viewID);
+    public void FollowShip(Transform ship) {
+        Ship = ship;
+        //Debug.LogError("Camera " + GetInstanceID() +" is following ship " + ship.GetComponent<PhotonView>().viewID);
     }
 
     /// <summary>
     /// Clamps camera movement between the level edges (xRange and yRange).
     /// </summary>
     void FixedUpdate() {
-        if (_ship != null) {
-            _xRange = Mathf.Clamp(_ship.transform.position.x, _xMin, _xMax);
+        if (Ship != null) {
+            _xRange = Mathf.Clamp(Ship.position.x, _xMin, _xMax);
             if (_levelName != "3_Limbo")
             {
-                _yRange = Mathf.Clamp(_ship.transform.position.y + YOffset, _yMin, _yMax);
+                _yRange = Mathf.Clamp(Ship.position.y + YOffset, _yMin, _yMax);
             }
             else {
-                _yRange = _ship.transform.position.y + YOffset;
+                _yRange = Ship.position.y + YOffset;
             }
             transform.position = new Vector3(_xRange, _yRange, transform.position.z);
         } else {
