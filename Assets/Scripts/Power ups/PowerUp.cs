@@ -22,7 +22,7 @@ public class PowerUp : NetworkBehaviour
     public bool dying = false;
     public bool dieDelay = false;
     public bool isUsed = false;
-    public static List<GameObject> goList = new List<GameObject>();
+    public static int ZeroGravityHelper = 0;
 
     public AudioClip clipActivate;
     public AudioSource audioActivate;

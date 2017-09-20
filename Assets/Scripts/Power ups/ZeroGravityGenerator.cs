@@ -18,7 +18,7 @@ public class ZeroGravityGenerator : PowerUp {
     }
 
     public override void UseNormalPowerUp() {
-        goList.Add(new GameObject());
+        ZeroGravityHelper++;
         isUsed = true;
         GameManager.Instance.powerupBarImage.fillAmount = 1;    
         if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0) {
@@ -34,13 +34,13 @@ public class ZeroGravityGenerator : PowerUp {
 
 
     public void NormalGravity() {
-        if (goList.Count < 2)
+        if (ZeroGravityHelper < 2)
         {
             GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
             zGravityOn = false;
             Destroy(gameObject);
         }
-        goList.RemoveAt(0);
+        ZeroGravityHelper--;
     }
 
 
