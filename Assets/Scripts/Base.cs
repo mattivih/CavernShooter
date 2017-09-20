@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class Base : NetworkBehaviour {
 
     public float HealthRegen, MaxBaseHealth;
-
+    public ParticleSystem BaseExplosion;
     Light[] lights;
 
 	[SyncVar]
@@ -24,8 +24,10 @@ public class Base : NetworkBehaviour {
     /// Check if base is to be destroyed.
     /// </summary>
     void Update() {
-		if (BaseHealth <= 0)
-			Destroy(gameObject);
+        if (BaseHealth <= 0)
+        {
+            DestroyBase();
+        }
     }
 
 	/// <summary>
@@ -84,4 +86,12 @@ public class Base : NetworkBehaviour {
 	public void TakeDamage(float damage) {
 		BaseHealth = BaseHealth - damage;
 	}
+
+    void DestroyBase()
+    {
+        Instantiate(BaseExplosion, gameObject.transform.position, gameObject.transform.rotation);
+        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation);
+        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation);
+        Destroy(gameObject);
+    }
 }
