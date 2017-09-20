@@ -71,6 +71,7 @@ public class PowerUpHandler : NetworkBehaviour
                 {
                     switch (powerup.stacking)
                     {
+                        
                         case PowerUp.StackMode.Add:
                             powerup.Units = powerup.MaxUnits;
                             CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
@@ -78,14 +79,9 @@ public class PowerUpHandler : NetworkBehaviour
                         case PowerUp.StackMode.None:
                             break;
                         case PowerUp.StackMode.Shield:
-                            if (powerup.GetType() == typeof(Shield))
-                            {
-                                powerup.Use(GetComponent<NetworkIdentity>().netId);
-                            }
-                            else
-                            {
-                                Debug.LogError("Stacking mode is shield without being shield prefab");
-                            }
+                            powerup.Units++;
+                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+                            powerup.Use(GetComponent<NetworkIdentity>().netId);
                             break;
                         case PowerUp.StackMode.ZeroGravity:
                             CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
