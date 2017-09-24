@@ -9,7 +9,7 @@ public class PhotonPlayerName : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        string defaultName = "Player " + PhotonNetwork.player.ID;
+        string defaultName = "Player";
         InputField inputField = GetComponentInChildren<InputField>();
         inputField.text = defaultName;
         PhotonNetwork.playerName = defaultName;

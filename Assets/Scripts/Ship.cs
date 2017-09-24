@@ -6,7 +6,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
-    public int PlayerNum = 0;
+    public int PlayerID;
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
@@ -104,12 +104,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
         //Local client initialization
-        Debug.LogError("Ship: "+ GetComponent<PhotonView>().viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
+        Debug.LogError("Player: "+ PhotonNetwork.player.ID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
         if (photonView.isMine)
         {
-            Debug.LogError("My ID is: " + PhotonNetwork.player.ID);
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
-            PlayerNum = PhotonNetwork.player.ID;
+            PlayerID = PhotonNetwork.player.ID;
         }
 
         //TODO: refactor to HUD Manager
@@ -120,14 +119,16 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _originalMeshRotation = MeshTransform.localEulerAngles;
 
         #region Assign color to the player
-        if (PlayerNum < 4)
+        if (PlayerID < 4)
         {
             //Assign player's color to ship material
             //1. copy original material
             Material newMaterial = new Material(ShipColorMaterial);
 
             //2. change the copy's colour to ship colour
-            newMaterial.color = ShipColors[PlayerNum];
+            if (PlayerID > 0) {
+                newMaterial.color = ShipColors[PlayerID - 1];
+            }
 
             //3. find and replace material in ships's renderer's materials
             var shipmats = GetComponentInChildren<MeshRenderer>().materials;
@@ -401,15 +402,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
             laser.name = "Clientlaser " + _laserCounter;
             laser.GetComponent<Laser>().clientSide = true;
-            laser.GetComponent<Laser>().myColor = ShipColors[PlayerNum];
+            laser.GetComponent<Laser>().myColor = ShipColors[PlayerID - 1];
             laser.GetComponent<Collider2D>().enabled = false;
-            Color color = ShipColors[PlayerNum - 1];
 
-            //Sends request to fire a laser to the server and fires it on all remote clients
-
-            //PhotonTargets AllViaServer is tricky because we need to send the info of who fired the laser
-            Debug.LogError(PlayerNum + " Sending RPC: fire laser");
-            photonView.RPC("CmdFire", PhotonTargets.Others, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerNum);
+            //Sends request to fire a laser to the server and fires it on all instances of this player
+            photonView.RPC("CmdFire", PhotonTargets.Others, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerID);
             //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             _laserCounter++;
         }
@@ -431,18 +428,19 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     //<summary>
-    // Photon: Fires a projectile on all player instances.
+    // Photon: Fires a projectile on remote clients.
     // </summary>
     [PunRPC]
-    void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int playerNum)
+    void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int playerID)
     {
+        //Debug.LogError("Player " + playerID + " on client " + PlayerID + " receiving RPC for firing laser");
         GameObject laser = Instantiate(LaserPrefab, pos, rot);
         laser.GetComponent<Rigidbody2D>().velocity = velocity;
         laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-        Debug.LogError("Player " + playerNum + " on client " + PlayerNum + " receiving RPC for firing laser");
+        
         //Color is not serialized, can't send it as RPC argument
         //laser.GetComponent<Laser>().myColor = color;
-        laser.GetComponent<Laser>().myColor = ShipColors[playerNum - 1];
+        laser.GetComponent<Laser>().myColor = ShipColors[playerID - 1];
 
         laser.GetComponent<Laser>().Source = gameObject;
     }
