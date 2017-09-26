@@ -15,7 +15,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public float AccelDrag = 1, FreeDrag = 0;
     public float PowerUpEffectYOffSet;
 
-    public bool IsFiring;
 
     public GameObject LaserPrefab;
     public GameObject[] Firepoints;
@@ -317,10 +316,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             {
                 Fire();
                 _timer = 0;
-
-                if (!IsFiring) {
-                    IsFiring = true;
-                }
             }
             _timer += Time.deltaTime;
         }
@@ -328,9 +323,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         if (Input.GetKeyUp(KeyCode.Period))
         {
             _timer = FireRate;
-            if (IsFiring) {
-                IsFiring = false;
-            }
         }
 
         //Use Power-Up
@@ -397,16 +389,16 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         foreach (GameObject t in Firepoints)
         {
             // Creates a dummy laser on local client without a collider.
-            GameObject laser = Instantiate(LaserPrefab, t.transform.position, t.transform.rotation);
-            laser.GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity;
-            laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-            laser.name = "Clientlaser " + _laserCounter;
-            laser.GetComponent<Laser>().clientSide = true;
-            laser.GetComponent<Laser>().myColor = ShipColors[PlayerID - 1];
-            laser.GetComponent<Collider2D>().enabled = false;
+            //GameObject laser = Instantiate(LaserPrefab, t.transform.position, t.transform.rotation);
+            //laser.GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity;
+            //laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
+            //laser.name = "Clientlaser " + _laserCounter;
+            //laser.GetComponent<Laser>().clientSide = true;
+            //laser.GetComponent<Laser>().myColor = ShipColors[PlayerID - 1];
+            //laser.GetComponent<Collider2D>().enabled = false;
 
             //Sends request to fire a laser to the server and fires it on all instances of this player
-            photonView.RPC("CmdFire", PhotonTargets.Others, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerID);
+            photonView.RPC("CmdFire", PhotonTargets.All, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerID);
             //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             _laserCounter++;
         }
@@ -580,13 +572,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             //This is local player: send other players our stats
             stream.SendNext(Health);
-            stream.SendNext(IsFiring);
         }
         else
         {
             //This is remote player: receive data
             Health = (float)stream.ReceiveNext();
-            IsFiring = (bool)stream.ReceiveNext();
         }
     }
 }

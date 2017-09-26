@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Laser : ProjectilesBase {
 
-    //public float Damage = 50f; Inherited from ProjectileBase
+    //public float Damage = 50f; Inherited from ProjectileBaseu
     public CircleCollider2D DestructionCircle;
 
     public bool clientSide = false;
@@ -82,7 +82,7 @@ public class Laser : ProjectilesBase {
             audioHitTerrain.Play();
             Destroy(gameObject, audioHitTerrain.clip.length);
         } else if (collider.GetComponent<Ship>()) {
-            Debug.Log("Laser hit player " + collider.GetComponent<Ship>().PlayerID);
+            //Debug.Log("Laser hit player " + collider.GetComponent<Ship>().PlayerID);
             audioHitShip.Play();
             //Debug.Log("Damage player");
             float dmgMultiplier = Source.GetComponent<Ship>().DamageMultiplier;
