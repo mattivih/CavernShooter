@@ -31,6 +31,7 @@ public class GameManager : NetworkBehaviour {
     public Image powerupImage;
     public GameObject GameOverPrefab;
     public HUDManager hud;
+    public destroyParticleSystem destroyParticleSystem;
 
 
     public List<NetworkInstanceId> players = new List<NetworkInstanceId>();

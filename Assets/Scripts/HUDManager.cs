@@ -25,10 +25,15 @@ public class HUDManager : NetworkBehaviour {
                 GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
                 {
-                    GameManager.Instance.powerupBarLines.enabled = true;
+                    GameManager.Instance.powerupBarLines4.enabled = false;
+                    GameManager.Instance.powerupBarLines.enabled = true;          
                 }
                 else if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
-                    GameManager.Instance.powerupBarLines4.enabled = true;
+                {
+                    GameManager.Instance.powerupBarLines.enabled = false;
+                    GameManager.Instance.powerupBarLines4.enabled = true;                 
+                }
+           
                 else
                 {
                     GameManager.Instance.powerupBarLines.enabled = false;
