@@ -164,7 +164,6 @@ public class Ship : NetworkBehaviour {
         }
 
         //TODO: Rotates ship too quickly in build
-        // Make not dependent on framerate 
         if (horizontal != 0) {
             transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
             //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
@@ -223,15 +222,6 @@ public class Ship : NetworkBehaviour {
                     GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
                 }
 
-                /*   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3) {
-                       GameManager.Instance.powerupBarLines.enabled = true;
-                   } else {
-                       GameManager.Instance.powerupBarLines.enabled = false;
-                   }
-                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)               
-                       GameManager.Instance.powerupBarLines4.enabled = true;              
-                   else
-                       GameManager.Instance.powerupBarLines4.enabled = false;*/
             }
         }
 
@@ -345,7 +335,7 @@ public class Ship : NetworkBehaviour {
         float vel = transform.InverseTransformDirection(GetComponent<Rigidbody2D>().velocity).sqrMagnitude;
         //Debug.Log(vel);
         if (vel < MaxSpeed) {
-            _rigid.AddForce(transform.up * Speed * mult, ForceMode2D.Force);
+            _rigid.AddForce(transform.up * Speed * mult * Time.deltaTime * 40, ForceMode2D.Force);
         }
     }
 
