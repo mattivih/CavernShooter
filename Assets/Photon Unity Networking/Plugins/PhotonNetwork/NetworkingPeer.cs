@@ -749,15 +749,6 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
         #pragma warning disable 0162    // the library variant defines if we should use PUN's SocketUdp variant (at all)
         if (PhotonPeer.NoSocket)
         {
-            if (this.AuthMode != AuthModeOption.AuthOnceWss || serverType != ServerConnection.NameServer)
-            {
-                if (this.TransportProtocol != ConnectionProtocol.Udp)
-                {
-                    Debug.Log("This Photon3Unity3d.dll only allows UDP. TransportProtocol was: " + this.TransportProtocol + ". SocketImplementation: " + this.SocketImplementation);
-                }
-                protocolOverride = ConnectionProtocol.Udp;
-            }
-
             #if !UNITY_EDITOR && (UNITY_PS3 || UNITY_ANDROID)
             this.SocketImplementationConfig[ConnectionProtocol.Udp] = typeof(SocketUdpNativeDynamic);
             PhotonHandler.PingImplementation = typeof(PingNativeDynamic);

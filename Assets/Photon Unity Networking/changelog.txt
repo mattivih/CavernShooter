@@ -1,3 +1,8 @@
+v1.86.1 (13. September 2017)
+Xbox One:
+	Fixed: PUN was reverting the Network Protocol to UDP on Xbox One when leaving the Name Server. While it properly logged this ("This Photon3Unity3d.dll only allows UDP. [...]"), it wasn't spotted. Now the protocol stays WSS.
+	Note: This is a mandatory update for XB1 submission.
+
 v1.86 (30. August 2017)
     Fixed: The fallback thread implementation to always call SendAcksOnly, as long as isMessageQueueRunning is false. This keeps connections from timing out by sending ACKs and Pings as needed.
     Fixed: Compatibility with Unity 2017.

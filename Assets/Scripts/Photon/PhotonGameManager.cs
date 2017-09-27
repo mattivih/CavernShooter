@@ -19,7 +19,7 @@ public class PhotonGameManager : Photon.PunBehaviour {
         if (Ship.LocalPlayerInstance == null)
         {
             //TODO: replace vector3 with one of the spawn points
-            Debug.LogError("Instantiating player.");
+            //Debug.LogError("Instantiating player.");
             GameObject player = PhotonNetwork.Instantiate(PlayerPrefab.name, Vector3.zero, Quaternion.identity, 0);
         }
     }
@@ -47,7 +47,7 @@ public class PhotonGameManager : Photon.PunBehaviour {
     public override void OnPhotonPlayerConnected(PhotonPlayer other)
     {
         base.OnPhotonPlayerConnected(other);
-        Debug.Log(other.NickName + " joined game.");
+        Debug.Log(other.NickName + " " + other.ID + " joined game.");
     }
 
     /// <summary>

@@ -101,13 +101,15 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     {
         base.OnPhotonInstantiate(info);
 
-
+        gameObject.name = "Player " + photonView.viewID;
         //Local client initialization
-        Debug.LogError("Player: "+ PhotonNetwork.player.ID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
+        Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
         if (photonView.isMine)
         {
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
-            PlayerID = PhotonNetwork.player.ID;
+
+            //TODO: fix later
+            PlayerID = 1;
         }
 
         //TODO: refactor to HUD Manager
@@ -174,7 +176,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         if (!photonView.isMine && PhotonNetwork.connected)
         {
             tag = "Enemy";
-            gameObject.layer = 11; //enemy layer
+            gameObject.layer = LayerMask.NameToLayer("Enemy"); //enemy layer = 11
             return;
         } else {
 
@@ -435,6 +437,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         laser.GetComponent<Laser>().myColor = ShipColors[playerID - 1];
 
         laser.GetComponent<Laser>().Source = gameObject;
+
+        if (LayerMask.LayerToName(gameObject.layer) == "Enemy") {
+            laser.layer = LayerMask.NameToLayer("EnemyProjectiles");
+        }
     }
 
     //[ClientRpc]
@@ -464,15 +470,12 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     /// <param name="damage">float damage amount</param>
     public void TakeDamage(float damage, GameObject source)
     {
-        //if (!isServer) {
-        //    return;
-        //}
-        Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
-
         if (!photonView.isMine)
         {
             return;
         }
+
+        Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
         if (Shield > 0)
         {
@@ -489,6 +492,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
+        Debug.LogError("Player " + PlayerID + " health: " + Health);
         GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
 
 

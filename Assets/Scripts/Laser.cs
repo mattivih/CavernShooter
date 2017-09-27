@@ -82,7 +82,7 @@ public class Laser : ProjectilesBase {
             audioHitTerrain.Play();
             Destroy(gameObject, audioHitTerrain.clip.length);
         } else if (collider.GetComponent<Ship>()) {
-            //Debug.Log("Laser hit player " + collider.GetComponent<Ship>().PlayerID);
+            Debug.Log("Laser of " + Source.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " hit player " + collider.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " Laser layer: " + LayerMask.LayerToName(gameObject.layer) + " Target layer: " + LayerMask.LayerToName(collider.gameObject.layer));
             audioHitShip.Play();
             //Debug.Log("Damage player");
             float dmgMultiplier = Source.GetComponent<Ship>().DamageMultiplier;
