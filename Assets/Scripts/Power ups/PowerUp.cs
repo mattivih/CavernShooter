@@ -91,8 +91,10 @@ public class PowerUp : NetworkBehaviour
             UsePowerUp(id);
             Units--;
         }
-        else
+        if(Units <= 0)
         {
+            GameManager.Instance.powerupBarLines.enabled = false;
+            GameManager.Instance.powerupBarLines4.enabled = false;
             Die();
         }
     }
@@ -132,8 +134,7 @@ public class PowerUp : NetworkBehaviour
             CmdDie();
 
         }
-        GameManager.Instance.powerupBarLines.enabled = false;
-        GameManager.Instance.powerupBarLines4.enabled = false;
+   
 
 
     }

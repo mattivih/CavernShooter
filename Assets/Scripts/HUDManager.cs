@@ -23,6 +23,7 @@ public class HUDManager : NetworkBehaviour {
             {
                 float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
                 GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+            
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
                 {
                     GameManager.Instance.powerupBarLines4.enabled = false;
@@ -34,7 +35,7 @@ public class HUDManager : NetworkBehaviour {
                     GameManager.Instance.powerupBarLines4.enabled = true;                 
                 }
            
-                else
+                else if(CurrentPowerUp.GetComponent<PowerUp>().MaxUnits != 4 && CurrentPowerUp.GetComponent<PowerUp>().MaxUnits != 3)
                 {
                     GameManager.Instance.powerupBarLines.enabled = false;
                     GameManager.Instance.powerupBarLines4.enabled = false;

@@ -47,11 +47,16 @@ public class ZeroGravityGenerator : PowerUp {
     public override void RpcUseNormalPowerUp(NetworkInstanceId id){
         if (GameManager.Instance.powerupBarImage.fillAmount > 0.01f)
         {
-               GameObject i = ClientScene.FindLocalObject (id);
-        AudioSource.PlayClipAtPoint(clipActivate, i.transform.position);
-		GameObject o = GameObject.Instantiate (ZeroGravityEffect, i.transform);
-		o.transform.localPosition = new Vector3 (0, i.GetComponent<Ship> ().PowerUpEffectYOffSet, -1);
-		Destroy (o, ZeroGravityTime);
+            GameObject i = ClientScene.FindLocalObject(id);
+            AudioSource.PlayClipAtPoint(clipActivate, i.transform.position);
+            for (int j = 0; j < i.transform.childCount; j++)
+            {
+                if (i.transform.GetChild(j).name == "ZeroGravityEffect(Clone)")
+                    return;
+            }
+            GameObject o = GameObject.Instantiate(ZeroGravityEffect, i.transform);
+            o.transform.localPosition = new Vector3(0, i.GetComponent<Ship>().PowerUpEffectYOffSet, -1);
+            Destroy(o, ZeroGravityTime);
         }
      
 	}

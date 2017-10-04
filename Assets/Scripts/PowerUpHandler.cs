@@ -40,6 +40,7 @@ public class PowerUpHandler : NetworkBehaviour
     /// <param name="collider">Collider.</param>
     void OnTriggerEnter2D(Collider2D collider)
     {
+        GameManager.Instance.powerupBarImage.enabled = true;
         if (collider.tag == "PowerUp" && GetComponent<Ship>().isLocalPlayer)
         {
             //if player has no power up curretly or powerup hit is differnet type
