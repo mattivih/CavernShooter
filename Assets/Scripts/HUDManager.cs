@@ -35,7 +35,7 @@ public class HUDManager : NetworkBehaviour {
                     GameManager.Instance.powerupBarLines4.enabled = true;                 
                 }
            
-                else if(CurrentPowerUp.GetComponent<PowerUp>().MaxUnits != 4 && CurrentPowerUp.GetComponent<PowerUp>().MaxUnits != 3)
+                else
                 {
                     GameManager.Instance.powerupBarLines.enabled = false;
                     GameManager.Instance.powerupBarLines4.enabled = false;
