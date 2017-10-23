@@ -50,7 +50,9 @@ public class PowerUpHandler : NetworkBehaviour
                 if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    if(!powerup.dieDelay)
+                    if (!powerup.dieDelay)
+                        powerup.CmdDie();
+                    else if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0)
                         powerup.CmdDie();
                     //powerup.customDestroy();
 
