@@ -27,8 +27,11 @@ public class GameManager : MonoBehaviour {
     public Image powerupBarLines;
     public Image powerupBarLines4;
     public Image shieldbarImage;
+    public Image powerupImage;
     public GameObject GameOverPrefab;
     public HUDManager hud;
+    public destroyParticleSystem destroyParticleSystem;
+
 
     //Refactored to use Photon Actor ID:s
     //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();

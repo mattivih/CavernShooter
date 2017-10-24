@@ -23,14 +23,24 @@ public class HUDManager : MonoBehaviour {
             {
                 float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
                 GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
+            
+                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3 && CurrentPowerUp.GetComponent<PowerUp>().Units != 0)
                 {
-                    GameManager.Instance.powerupBarLines.enabled = true;
+                    GameManager.Instance.powerupBarLines4.enabled = false;
+                    GameManager.Instance.powerupBarLines.enabled = true;          
                 }
+                else if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
+                {
+                    GameManager.Instance.powerupBarLines.enabled = false;
+                    GameManager.Instance.powerupBarLines4.enabled = true;                 
+                }
+           
                 else
                 {
                     GameManager.Instance.powerupBarLines.enabled = false;
+                    GameManager.Instance.powerupBarLines4.enabled = false;
                 }
+                 
             }
         }
     }

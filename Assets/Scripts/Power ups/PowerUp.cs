@@ -15,10 +15,12 @@ public class PowerUp : MonoBehaviour {
     public SpawnLocation location;
     //public NetworkInstanceId ownerId;
 
+    public static bool zGravityOn = false;
     public bool readyToDie = true;
     public bool dying = false;
     public bool dieDelay = false;
     public bool isUsed = false;
+    public static int ZeroGravityHelper = 0;
 
     public AudioClip clipActivate;
     public AudioSource audioActivate;
@@ -34,7 +36,8 @@ public class PowerUp : MonoBehaviour {
     {
         Add,
         None,
-        Shield
+        Shield,
+        ZeroGravity
     }
 
     public enum SpawnLocation
@@ -74,6 +77,7 @@ public class PowerUp : MonoBehaviour {
     /// <summary>
     /// Uses one unit of powerup or starts continuous usage of the power up.
     /// </summary>
+<<<<<<< HEAD
     //public void Use(NetworkInstanceId id) {
     //    if (Units > 0) {
     //        audioActivate = AddAudio(clipActivate, false, false, 1f);
@@ -99,6 +103,24 @@ public class PowerUp : MonoBehaviour {
     //        Die();
     //    }
     //}
+=======
+    public void Use(NetworkInstanceId id)
+    {
+        if (Units > 0)
+        {
+            audioActivate = AddAudio(clipActivate, false, false, 1f);
+            audioActivate.Play();
+            UsePowerUp(id);
+            Units--;
+        }
+        if(Units <= 0)
+        {
+            GameManager.Instance.powerupBarLines.enabled = false;
+            GameManager.Instance.powerupBarLines4.enabled = false;
+            Die();
+        }
+    }
+>>>>>>> BugfixesV2
 
     /// <summary>
     /// Stops using the power up if it's a continuous power up
@@ -137,6 +159,7 @@ public class PowerUp : MonoBehaviour {
     /// <summary>
     /// called when powerup is used up (=units goes to 0)
     /// </summary>
+<<<<<<< HEAD
     //public void Die() {
     //    if (ownerId.Value != 0) {
     //        ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
@@ -186,6 +209,23 @@ public class PowerUp : MonoBehaviour {
 
     //    }
     
+=======
+    public void Die()
+    {
+        if(!dieDelay)
+        {
+            if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+            }
+            Debug.Log("Die");
+            dying = true;
+            CmdDie();
+
+        }
+   
+
+>>>>>>> BugfixesV2
 
     //}
     //[Command]
@@ -354,6 +394,7 @@ public class PowerUp : MonoBehaviour {
     //public virtual void RpcUseNormalPowerUp(NetworkInstanceId id) { }
 
    
+<<<<<<< HEAD
     //IEnumerator delayedDeath()
     //{
     //    yield return new WaitForSeconds(15);
@@ -367,4 +408,17 @@ public class PowerUp : MonoBehaviour {
     //    dying = true;
     //    CmdDie();
     //}
+=======
+    public IEnumerator delayedDeath()
+    {
+        yield return new WaitForSeconds(15);
+        if (ownerId.Value != 0)
+            {
+                ClientScene.FindLocalObject(ownerId).GetComponent<PowerUpHandler>().PowerUpDepleted();
+                GameManager.Instance.powerupBarLines.enabled = false;
+                GameManager.Instance.powerupBarLines4.enabled = false;
+            }
+        Debug.Log("Die");
+    }
+>>>>>>> BugfixesV2
 }

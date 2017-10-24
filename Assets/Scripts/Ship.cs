@@ -20,10 +20,30 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public GameObject[] Firepoints;
     public GameObject PowerUpPosition;
     public GameObject ShipExplosionPrefab;
+<<<<<<< HEAD
     public AudioClip[] MusicArray;
     public Transform MeshTransform;
     public Material ShipColorMaterial;
     public Color[] ShipColors;
+=======
+    public int playerNum = 0;
+    public Material shipColorMaterial;
+    public Color[] shipColors;
+
+
+    private Vector3 originalMeshRotation;
+    private float timer = 0.5f;
+    private Thruster ThrusterScript;
+    private Smoke40 Smoke40Script;
+    private Smoke20 Smoke20Script;
+    private Sparks40 Sparks40Script;
+    private Sparks20 Sparks20Script;
+    private GameObject lastDamageSource;
+    
+
+    public AudioClip[] musicArray;
+    private AudioSource music; 
+>>>>>>> BugfixesV2
 
     #endregion
     #region SyncVars
@@ -112,8 +132,18 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             PlayerID = 1;
         }
 
+<<<<<<< HEAD
         //TODO: refactor to HUD Manager
         GameManager.Instance.powerupBarImage.fillAmount = 0;
+=======
+    void Awake() {
+        ThrusterScript = GetComponentInChildren<Thruster>();
+        Smoke40Script = GetComponentInChildren<Smoke40>();
+        Smoke20Script = GetComponentInChildren<Smoke20>();
+        Sparks40Script = GetComponentInChildren<Sparks40>();
+        Sparks20Script = GetComponentInChildren<Sparks20>();   
+    }
+>>>>>>> BugfixesV2
 
         _rigid = GetComponentInChildren<Rigidbody2D>();
         Health = MaxHealth;
@@ -207,6 +237,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                     //CmdThrusterOff();
                 }
             }
+<<<<<<< HEAD
 
             #region Bank the ship
             if (horizontal != 0)
@@ -216,6 +247,59 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Vector3 bank = _originalMeshRotation;
                 bank.y += Mathf.Sign(horizontal) * -MaxRotation;
                 MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
+=======
+
+        if (Health <= (MaxHealth*0.4))
+            {
+                Smoke40Script.Smoke40On();
+                CmdSmoke40On();
+                Sparks40Script.Sparks40On();
+                CmdSparks40On();
+            }
+        else if (Health > (MaxHealth * 0.4))
+            {
+                Smoke40Script.Smoke40Off();
+                CmdSmoke40Off();
+                Sparks40Script.Sparks40Off();
+                CmdSparks40Off();
+            }
+
+        if (Health <= (MaxHealth*0.2))
+            {
+                Smoke40Script.Smoke40Off();
+                CmdSmoke40Off();
+                Sparks40Script.Sparks40Off();
+                CmdSparks40Off();
+                Smoke20Script.Smoke20On();
+                CmdSmoke20On();
+                Sparks20Script.Sparks20On();
+                CmdSparks20On();
+            }
+        else if (Health > (MaxHealth*0.2))
+            {
+                Smoke20Script.Smoke20Off();
+                CmdSmoke20Off();
+                Sparks20Script.Sparks20Off();
+                CmdSparks20Off();
+            }
+        }
+
+        //TODO: Rotates ship too quickly in build
+        if (horizontal != 0) {
+            transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
+            //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
+            Vector3 bank = originalMeshRotation;
+            bank.y += Mathf.Sign(horizontal) * -MaxRotation;
+            mesh.localRotation = Quaternion.Lerp(mesh.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
+        } else {
+            Vector3 bankNone = originalMeshRotation;
+            mesh.localRotation = Quaternion.Lerp(mesh.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
+        }
+        if (Input.GetKey(KeyCode.Period)) {
+            if (timer > FireRate) {
+                Fire();
+                timer = 0;
+>>>>>>> BugfixesV2
             }
             else
             {
@@ -280,7 +364,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             if (CurrentPowerUp)
             {
                 if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
-                {
+                { 
+                   
                     float waitTime = 15f;
                     GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
 
@@ -292,6 +377,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                     GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
                 }
 
+<<<<<<< HEAD
                 if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
                 {
                     GameManager.Instance.powerupBarLines.enabled = true;
@@ -304,6 +390,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                     GameManager.Instance.powerupBarLines4.enabled = true;
                 else
                     GameManager.Instance.powerupBarLines4.enabled = false;
+=======
+>>>>>>> BugfixesV2
             }
         }
     #endregion
@@ -351,6 +439,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _thruster.ThrusterOff();
     }
 
+<<<<<<< HEAD
     #endregion
 
     #region To be deleted: Old Unet methods 
@@ -372,6 +461,91 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     //    ThrusterScript.ThrusterOff();
     //}
     #endregion
+=======
+    [Command]
+    void CmdSmoke40On()
+    {
+        RpcSmoke40On();
+    }
+    [ClientRpc]
+    void RpcSmoke40On()
+    {
+        Smoke40Script.Smoke40On();
+    }
+    [Command]
+    void CmdSmoke40Off()
+    {
+        RpcSmoke40Off();
+    }
+    [ClientRpc]
+    void RpcSmoke40Off()
+    {
+        Smoke40Script.Smoke40Off();
+    }
+
+    [Command]
+    void CmdSmoke20On()
+    {
+        RpcSmoke20On();
+    }
+    [ClientRpc]
+    void RpcSmoke20On()
+    {
+        Smoke20Script.Smoke20On();
+    }
+    [Command]
+    void CmdSmoke20Off()
+    {
+        RpcSmoke20Off();
+    }
+    [ClientRpc]
+    void RpcSmoke20Off()
+    {
+        Smoke20Script.Smoke20Off();
+    }
+
+    [Command]
+    void CmdSparks40On()
+    {
+        RpcSparks40On();
+    }
+    [ClientRpc]
+    void RpcSparks40On()
+    {
+        Sparks40Script.Sparks40On();
+    }
+    [Command]
+    void CmdSparks40Off()
+    {
+        RpcSparks40Off();
+    }
+    [ClientRpc]
+    void RpcSparks40Off()
+    {
+        Sparks40Script.Sparks40Off();
+    }
+
+    [Command]
+    void CmdSparks20On()
+    {
+        RpcSparks20On();
+    }
+    [ClientRpc]
+    void RpcSparks20On()
+    {
+        Sparks20Script.Sparks20On();
+    }
+    [Command]
+    void CmdSparks20Off()
+    {
+        RpcSparks20Off();
+    }
+    [ClientRpc]
+    void RpcSparks20Off()
+    {
+        Sparks20Script.Sparks20Off();
+    }
+>>>>>>> BugfixesV2
 
     /// <summary>
     /// Moves the ship.
@@ -380,9 +554,14 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     {
         float vel = transform.InverseTransformDirection(GetComponent<Rigidbody2D>().velocity).sqrMagnitude;
         //Debug.Log(vel);
+<<<<<<< HEAD
         if (vel < MaxSpeed)
         {
             _rigid.AddForce(transform.up * Speed * mult, ForceMode2D.Force);
+=======
+        if (vel < MaxSpeed) {
+            _rigid.AddForce(transform.up * Speed * mult * Time.deltaTime * 40, ForceMode2D.Force);
+>>>>>>> BugfixesV2
         }
     }
 

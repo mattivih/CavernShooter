@@ -5,7 +5,7 @@ using UnityEngine;
 public class Base : MonoBehaviour {
 
     public float HealthRegen, MaxBaseHealth;
-
+    public ParticleSystem BaseExplosion;
     Light[] lights;
 
     //[SyncVar]
@@ -24,8 +24,10 @@ public class Base : MonoBehaviour {
     /// Check if base is to be destroyed.
     /// </summary>
     void Update() {
-		if (BaseHealth <= 0)
-			Destroy(gameObject);
+        if (BaseHealth <= 0)
+        {
+            DestroyBase();
+        }
     }
 
 	/// <summary>
@@ -85,4 +87,12 @@ public class Base : MonoBehaviour {
 	public void TakeDamage(float damage) {
 		BaseHealth = BaseHealth - damage;
 	}
+
+    void DestroyBase()
+    {
+        Instantiate(BaseExplosion, gameObject.transform.position, gameObject.transform.rotation);
+        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation);
+        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation);
+        Destroy(gameObject);
+    }
 }

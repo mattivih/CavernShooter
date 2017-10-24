@@ -75,9 +75,10 @@ public class UseTorpedo : ProjectilesBase {
     void OnCollisionEnter2D(Collision2D collision) {
 		ParticleSystem t = Instantiate(TorpedoExplosionPrefab, collision.contacts[0].point, Quaternion.LookRotation(collision.contacts[0].normal));
 		t.transform.position += t.transform.up * 0.5f;
-		Destroy (t, TorpedoLifetime );
-		// This splits the particle off so it doesn't get deleted with the parent
-		EmitFire.transform.parent = null;
+		Destroy (t.gameObject, TorpedoLifetime );
+        Destroy(EmitFire.gameObject, TorpedoLifetime);
+        // This splits the particle off so it doesn't get deleted with the parent
+        EmitFire.transform.parent = null;
 		// this stops the particle from creating more bits
 		EmitFire.emissionRate = 0;
         Destroy(EmitFire, EmitFire.main.duration);

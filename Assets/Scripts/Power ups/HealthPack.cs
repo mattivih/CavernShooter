@@ -10,7 +10,7 @@ public class HealthPack : PowerUp {
 	public float effectDuration = 3f;
 
     void Awake() {
-        stacking = StackMode.None;
+        stacking = StackMode.Shield;
         audioActivate = AddAudio(clipActivate, false, false, 1f);
     }
 
