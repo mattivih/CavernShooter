@@ -164,7 +164,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     void Update()
-    {
+    { 
         //TODO : Delete, old Unet code
         //if (!isLocalPlayer)
         //{
@@ -382,7 +382,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //Debug.Log(vel);
         if (vel < MaxSpeed)
         {
-            _rigid.AddForce(transform.up * Speed * mult, ForceMode2D.Force);
+            _rigid.AddForce(transform.up * Speed * mult *Time.deltaTime * 20, ForceMode2D.Force);
         }
     }
 
