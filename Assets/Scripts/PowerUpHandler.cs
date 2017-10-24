@@ -41,7 +41,6 @@ public class PowerUpHandler : MonoBehaviour
     /// Sets CurrentPowerUp when ship picks up a powerup item.
     /// </summary>
     /// <param name="collider">Collider.</param>
-<<<<<<< HEAD
     //void OnTriggerEnter2D(Collider2D collider) {
     //    if (collider.tag == "PowerUp" && GetComponent<Ship>().isLocalPlayer) { //TODO: Refactor with photonView.isMine
     //        //if player has no power up curretly or powerup hit is differnet type
@@ -115,86 +114,84 @@ public class PowerUpHandler : MonoBehaviour
     //            CmdSetAuthority(collider.GetComponent<NetworkIdentity>());
     //            CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
     //            SetId(GetComponent<NetworkIdentity>().netId, collider.GetComponent<NetworkIdentity>().netId);
-=======
-    void OnTriggerEnter2D(Collider2D collider)
-    {
-        GameManager.Instance.powerupBarImage.enabled = true;
-        if (collider.tag == "PowerUp" && GetComponent<Ship>().isLocalPlayer)
-        {
-            //if player has no power up curretly or powerup hit is differnet type
+    //void OnTriggerEnter2D(Collider2D collider)
+    //{
+    //    GameManager.Instance.powerupBarImage.enabled = true;
+    //    if (collider.tag == "PowerUp" && GetComponent<Ship>().isLocalPlayer)
+    //    {
+    //        //if player has no power up curretly or powerup hit is differnet type
 
-            if (!CurrentPowerUp || (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType()))
-            {
-                if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
-                {
-                    PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                    if (!powerup.dieDelay)
-                        powerup.CmdDie();
-                    else if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0)
-                        powerup.CmdDie();
-                    //powerup.customDestroy();
+    //        if (!CurrentPowerUp || (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType()))
+    //        {
+    //            if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
+    //            {
+    //                PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+    //                if (!powerup.dieDelay)
+    //                    powerup.CmdDie();
+    //                else if (GameManager.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0)
+    //                    powerup.CmdDie();
+    //                //powerup.customDestroy();
 
-                    CurrentPowerUp = collider.gameObject;
-                }
-                audioPickUp.Play();
-                CmdHidePowerUp(collider.GetComponent<NetworkIdentity>().netId);
-                CurrentPowerUp = collider.gameObject;
-                CmdSetAuthority(collider.GetComponent<NetworkIdentity>());
-                CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
-                SetId(GetComponent<NetworkIdentity>().netId, collider.GetComponent<NetworkIdentity>().netId);
+    //                CurrentPowerUp = collider.gameObject;
+    //            }
+    //            audioPickUp.Play();
+    //            CmdHidePowerUp(collider.GetComponent<NetworkIdentity>().netId);
+    //            CurrentPowerUp = collider.gameObject;
+    //            CmdSetAuthority(collider.GetComponent<NetworkIdentity>());
+    //            CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
+    //            SetId(GetComponent<NetworkIdentity>().netId, collider.GetComponent<NetworkIdentity>().netId);
 
-            }
-            else if (CurrentPowerUp)
-            {
-                PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
-                if (powerup.GetType() == collider.GetComponent<PowerUp>().GetType())
-                {
-                    switch (powerup.stacking)
-                    {
+    //        }
+    //        else if (CurrentPowerUp)
+    //        {
+    //            PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+    //            CmdClaimPrefab(collider.gameObject.GetComponent<PowerUp>().location);
+    //            if (powerup.GetType() == collider.GetComponent<PowerUp>().GetType())
+    //            {
+    //                switch (powerup.stacking)
+    //                {
                         
-                        case PowerUp.StackMode.Add:
-                            powerup.Units = powerup.MaxUnits;
-                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
-                            break;
-                        case PowerUp.StackMode.None:
-                            break;
-                        case PowerUp.StackMode.Shield:
-                            powerup.Units++;
-                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
-                            powerup.Use(GetComponent<NetworkIdentity>().netId);
-                            break;
-                        case PowerUp.StackMode.ZeroGravity:
-                            CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
-                            CurrentPowerUp.GetComponent<PowerUp>().Units++;                           
-                            break;
+    //                    case PowerUp.StackMode.Add:
+    //                        powerup.Units = powerup.MaxUnits;
+    //                        CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+    //                        break;
+    //                    case PowerUp.StackMode.None:
+    //                        break;
+    //                    case PowerUp.StackMode.Shield:
+    //                        powerup.Units++;
+    //                        CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+    //                        powerup.Use(GetComponent<NetworkIdentity>().netId);
+    //                        break;
+    //                    case PowerUp.StackMode.ZeroGravity:
+    //                        CmdKillPowerUp(collider.GetComponent<NetworkIdentity>().netId);
+    //                        CurrentPowerUp.GetComponent<PowerUp>().Units++;                           
+    //                        break;
                         
-                        default:
-                            break;
-                    }
+    //                    default:
+    //                        break;
+    //                }
 
-                    return;
-                }
-                else
-                {
-                    powerup.Die();
-                }
-            }
-            //Change icon to HUD
-            if (!_currentPowerUpIcon)
-                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
+    //                return;
+    //            }
+    //            else
+    //            {
+    //                powerup.Die();
+    //            }
+    //        }
+    //        //Change icon to HUD
+    //        if (!_currentPowerUpIcon)
+    //            _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
 
-            _currentPowerUpIcon.GetComponent<Image>().enabled = true;
-            GameManager.powerupPickups[] values = (GameManager.powerupPickups[])GameManager.powerupPickups.GetValues(typeof(GameManager.powerupPickups));
-            for (int i = 0; i < values.Length; i++)
-            {
-                if (values[i].ToString() + "(Clone)" == CurrentPowerUp.name)
-                    _currentPowerUpIcon.GetComponent<Image>().sprite = GameManager.Instance.powerupImages[i];
-            }
-        }
-        GameManager.Instance.UpdatePowerUp();
-    }
->>>>>>> BugfixesV2
+    //        _currentPowerUpIcon.GetComponent<Image>().enabled = true;
+    //        GameManager.powerupPickups[] values = (GameManager.powerupPickups[])GameManager.powerupPickups.GetValues(typeof(GameManager.powerupPickups));
+    //        for (int i = 0; i < values.Length; i++)
+    //        {
+    //            if (values[i].ToString() + "(Clone)" == CurrentPowerUp.name)
+    //                _currentPowerUpIcon.GetComponent<Image>().sprite = GameManager.Instance.powerupImages[i];
+    //        }
+    //    }
+    //    GameManager.Instance.UpdatePowerUp();
+    //}
 
     //        }
     //        else if (CurrentPowerUp)

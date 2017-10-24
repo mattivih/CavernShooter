@@ -16,7 +16,6 @@ public class Shield : PowerUp
     //    GameManager.Instance.Player.GetComponent<Ship>().Shield = GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
     //}
 
-<<<<<<< HEAD
 	//public override void RpcUseNormalPowerUp(NetworkInstanceId id){
 	//	GameObject i = ClientScene.FindLocalObject (id);
 	//	GameObject o = GameObject.Instantiate (ShieldEffect, i.transform);
@@ -27,15 +26,13 @@ public class Shield : PowerUp
     //    if (GameManager.Instance.Player.GetComponent<Ship>().Shield < GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
     //        GameManager.Instance.Player.GetComponent<Ship>().Shield += GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
     //}
-=======
-    public override void UseNormalPowerUp()
-    {
-        if(GameManager.Instance.Player.GetComponent<Ship>().Shield + GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount > GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
-            GameManager.Instance.Player.GetComponent<Ship>().Shield = GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
-        else
-            GameManager.Instance.Player.GetComponent<Ship>().Shield += GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
-    }
->>>>>>> BugfixesV2
+    //public override void UseNormalPowerUp()
+    //{
+    //    if(GameManager.Instance.Player.GetComponent<Ship>().Shield + GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount > GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
+    //        GameManager.Instance.Player.GetComponent<Ship>().Shield = GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
+    //    else
+    //        GameManager.Instance.Player.GetComponent<Ship>().Shield += GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
+    //}
 
     //public override void RpcUseNormalPowerUp(NetworkInstanceId id)
     //{
