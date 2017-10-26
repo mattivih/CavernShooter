@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Base : MonoBehaviour {
+public class Base : Photon.PunBehaviour {
 
+    public SpriteRenderer spriteRenderer;
     public float HealthRegen, MaxBaseHealth;
     public ParticleSystem BaseExplosion;
     Light[] lights;
+    private Color _color;
 
     //[SyncVar]
     //TODO: Refactor with [Server]
@@ -30,15 +32,27 @@ public class Base : MonoBehaviour {
         }
     }
 
-	/// <summary>
-	/// Stops the player movement on the base, and regenerates health for the player.
-	/// </summary>
-	/// <param name="collision">Collision.</param>
+    [PunRPC]
+    public void LightsOn()
+    {
+        Color color = new Color(0, 255, 0);
+        var lights = GetComponentsInChildren<Light>();
+        foreach (var light in lights)
+        {
+            light.color = color;
+            light.intensity = 0.05f;
+        }
+          
+            
+    }
+
+    /// <summary>
+    /// Stops the player movement on the base, and regenerates health for the player.
+    /// </summary>
+    /// <param name="collision">Collision.</param>
     void OnCollisionStay2D(Collision2D collision) {
-        if (collision.gameObject.tag == "Player") {
-            foreach(Light l in lights) {
-                l.color = Color.green;
-            }
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy") {
+            photonView.RPC("LightsOn", PhotonTargets.AllBuffered, null);
             //if (isServer) {
             //    collision.gameObject.GetComponent<Ship>().RpcIncreaseHealth(HealthRegen * Time.deltaTime);
             //}
@@ -52,11 +66,12 @@ public class Base : MonoBehaviour {
         }
     }
 
-	/// <summary>
-	/// Call for Base to take damage if hit by a projectile.
-	/// </summary>
-	/// <param name="collision">Collision.</param>
-	void OnCollisionEnter2D(Collision2D collision) {
+
+    /// <summary>
+    /// Call for Base to take damage if hit by a projectile.
+    /// </summary>
+    /// <param name="collision">Collision.</param>
+    void OnCollisionEnter2D(Collision2D collision) {
 		if (collision.gameObject.GetComponent<ProjectilesBase> ()) {
 			TakeDamage (collision.gameObject.GetComponent<ProjectilesBase> ().Damage);
 		}
