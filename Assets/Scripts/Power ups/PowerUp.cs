@@ -77,16 +77,52 @@ public class PowerUp : MonoBehaviour {
     /// <summary>
     /// Uses one unit of powerup or starts continuous usage of the power up.
     /// </summary>
-    //public void Use(NetworkInstanceId id) {
-    //    if (Units > 0) {
-    //        audioActivate = AddAudio(clipActivate, false, false, 1f);
-    //        audioActivate.Play();
-    //        UsePowerUp(id);
-    //        Units--;
-    //    } else {
-    //        Die();
-    //    }
-    //}
+    public void Use()
+    {
+        if (Units > 0)
+        {
+            audioActivate = AddAudio(clipActivate, false, false, 1f);
+            audioActivate.Play();
+            //UsePowerUp();
+            Units--;
+        }
+    }
+    /*
+    public virtual void UsePowerUp()
+    {
+        GameObject player = GameManager.Instance.Player;
+        Vector3 pos = player.transform.position;
+        Quaternion rot = player.transform.rotation;
+        //Debug.Log("player: " + player.name + ", id: " + id.Value);
+        CmdUseNormalPowerUp(id);
+
+        switch (mode)
+        {
+            case PowerUpMode.Normal:
+                UseNormalPowerUp();
+                break;
+            case PowerUpMode.Spawn:
+                CmdSpawnPowerUp(id, pos, rot);
+                break;
+            case PowerUpMode.Controller:
+                if (controllerReference != null)
+                {
+                    if (!player.GetComponentInChildren(controllerReference))
+                    {
+                        //CmdSpawnPowerUp(id, pos, rot);
+                    }
+                    else {
+                        //CmdUsePowerUp();
+                    }
+                }
+                else {
+                    Debug.LogError("Controller power up without controller reference");
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     //public void Use(NetworkInstanceId id)
     //{
@@ -216,7 +252,7 @@ public class PowerUp : MonoBehaviour {
     //        dying = true;
     //        CmdDie();
     //    }
-   
+
 
     //}
     //[Command]
@@ -246,7 +282,7 @@ public class PowerUp : MonoBehaviour {
     //            NetworkServer.Destroy(NetworkServer.FindLocalObject(ownerId).GetComponentInChildren(controllerReference).gameObject);
     //        }
     //    NetworkServer.Destroy(gameObject);
-   
+
     //}
 
     //[ClientRpc]

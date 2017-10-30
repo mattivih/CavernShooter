@@ -11,6 +11,8 @@ public class PhotonGameManager : Photon.PunBehaviour {
     public GameObject CameraPrefab;
 
     public void Start() {
+		
+
         if (Instance == null) {
             Instance = this;
         }
