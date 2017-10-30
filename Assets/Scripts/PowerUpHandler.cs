@@ -54,16 +54,8 @@ public class PowerUpHandler : Photon.PunBehaviour
                 {
                     audioPickUp.Play();
                     CurrentPowerUp = powerup;
-                    if ((int)collider.gameObject.GetComponent<PowerUp>().location == 1)
-                    {
-                        photonView.RPC("RPCClaimPrefab", PhotonTargets.MasterClient, 1);
-                    }
-                    else if ((int)collider.gameObject.GetComponent<PowerUp>().location == 2)
-                    {
-                        photonView.RPC("RPCClaimPrefab", PhotonTargets.MasterClient, 2);
-                    }
-
-                    PhotonNetwork.Destroy(collider.gameObject);
+                    ClaimPrefab(collider.gameObject);
+                    photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                 }
             }
             if (_currentPowerUpIcon)
@@ -80,7 +72,8 @@ public class PowerUpHandler : Photon.PunBehaviour
             {
                 case PowerUp.StackMode.Add:
                     powerup.Units = powerup.MaxUnits;
-                    PhotonNetwork.Destroy(collider.gameObject);
+                    ClaimPrefab(collider.gameObject);
+                    photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                     break;
                 case PowerUp.StackMode.None:
                     break;
@@ -88,7 +81,8 @@ public class PowerUpHandler : Photon.PunBehaviour
                     if (powerup.GetType() == typeof(Shield))
                     {
                         //powerup.Use(GetComponent<NetworkIdentity>().netId);
-                        PhotonNetwork.Destroy(collider.gameObject);
+                        ClaimPrefab(collider.gameObject);
+                        photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                     }
                     else {
                         Debug.LogError("Stacking mode is shield without being shield prefab");
@@ -100,12 +94,17 @@ public class PowerUpHandler : Photon.PunBehaviour
         }
     }
 
-    [PunRPC]
-    public void RPCClaimPrefab(int location)
+    public void ClaimPrefab(GameObject prefab)
     {
-        _spawner.ClaimPowerUp(location);
+        if ((int)prefab.GetComponent<PowerUp>().location == 1)
+        {
+            photonView.RPC("RPCClaimPrefab", PhotonTargets.MasterClient, 1);
+        }
+        else if ((int)prefab.GetComponent<PowerUp>().location == 2)
+        {
+            photonView.RPC("RPCClaimPrefab", PhotonTargets.MasterClient, 2);
+        }
     }
-
     public void Use()
     {
         if (CurrentPowerUp)
@@ -125,131 +124,143 @@ public class PowerUpHandler : Photon.PunBehaviour
         }
     }
 
+    [PunRPC]
+    public void DestroyPickUp(int viewID)
+    {
+        PhotonNetwork.Destroy(PhotonView.Find(viewID));
+    }
+
+    [PunRPC]
+    public void RPCClaimPrefab(int location)
+    {
+        _spawner.ClaimPowerUp(location);
+    }
 
 
 
 
-            //public void PowerUpDepleted()
-            //{
-            //    _currentPowerUpIcon.GetComponent<Image>().enabled = false;
-            //    audioDepleted.Play();
-            //}
 
-            //[Command]
-            //public void CmdKillPowerUp(NetworkInstanceId powerUpId) {
-            //    NetworkServer.Destroy(NetworkServer.FindLocalObject(powerUpId));
-            //}
+    //public void PowerUpDepleted()
+    //{
+    //    _currentPowerUpIcon.GetComponent<Image>().enabled = false;
+    //    audioDepleted.Play();
+    //}
 
-            //public void SetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
-            //    GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
-            //    powerUp.GetComponent<PowerUp>().ownerId = id;
-            //    CmdSetId(id, powerUpId);
-            //}
+    //[Command]
+    //public void CmdKillPowerUp(NetworkInstanceId powerUpId) {
+    //    NetworkServer.Destroy(NetworkServer.FindLocalObject(powerUpId));
+    //}
 
-            //[Command]
-            //void CmdSetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
-            //    RpcSetId(id, powerUpId);
-            //}
-            //[ClientRpc]
-            //void RpcSetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
-            //    Debug.Log("Setting player id " + id);
-            //    GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
-            //    powerUp.GetComponent<PowerUp>().ownerId = id;
-            //    transform.SetParent(null);
-            //}
+    //public void SetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
+    //    GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
+    //    powerUp.GetComponent<PowerUp>().ownerId = id;
+    //    CmdSetId(id, powerUpId);
+    //}
 
-            //[Command]
-            //void CmdHidePowerUp(NetworkInstanceId id) {
-            //    RpcHidePowerUp(id);
-            //}
-            //[ClientRpc]
-            //void RpcHidePowerUp(NetworkInstanceId id) {
-            //    GameObject o = ClientScene.FindLocalObject(id);
-            //    o.GetComponentInChildren<Renderer>().enabled = false;
-            //    o.GetComponentInChildren<Collider2D>().enabled = false;
-            //    o.transform.parent = null;
-            //}
-            //[Command]
-            //void CmdSetAuthority(NetworkIdentity grabID) {
-            //    grabID.AssignClientAuthority(connectionToClient);
-            //}
+    //[Command]
+    //void CmdSetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
+    //    RpcSetId(id, powerUpId);
+    //}
+    //[ClientRpc]
+    //void RpcSetId(NetworkInstanceId id, NetworkInstanceId powerUpId) {
+    //    Debug.Log("Setting player id " + id);
+    //    GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
+    //    powerUp.GetComponent<PowerUp>().ownerId = id;
+    //    transform.SetParent(null);
+    //}
 
-            //[Command]
-            //void CmdClaimPrefab(PowerUp.SpawnLocation loc) {
-            //    GameObject.FindGameObjectWithTag("PowerUpSpawner").GetComponent<PowerUpSpawn>().ClaimPowerUp(loc);
-            //}
+    //[Command]
+    //void CmdHidePowerUp(NetworkInstanceId id) {
+    //    RpcHidePowerUp(id);
+    //}
+    //[ClientRpc]
+    //void RpcHidePowerUp(NetworkInstanceId id) {
+    //    GameObject o = ClientScene.FindLocalObject(id);
+    //    o.GetComponentInChildren<Renderer>().enabled = false;
+    //    o.GetComponentInChildren<Collider2D>().enabled = false;
+    //    o.transform.parent = null;
+    //}
+    //[Command]
+    //void CmdSetAuthority(NetworkIdentity grabID) {
+    //    grabID.AssignClientAuthority(connectionToClient);
+    //}
+
+    //[Command]
+    //void CmdClaimPrefab(PowerUp.SpawnLocation loc) {
+    //    GameObject.FindGameObjectWithTag("PowerUpSpawner").GetComponent<PowerUpSpawn>().ClaimPowerUp(loc);
+    //}
 
 
 
-            //    public void CmdKillPowerUp(NetworkInstanceId powerUpId)
-            //    {
-            //        NetworkServer.Destroy(NetworkServer.FindLocalObject(powerUpId));
-            //    }
+    //    public void CmdKillPowerUp(NetworkInstanceId powerUpId)
+    //    {
+    //        NetworkServer.Destroy(NetworkServer.FindLocalObject(powerUpId));
+    //    }
 
-            //    public void SetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
-            //    {
-            //        GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
-            //        powerUp.GetComponent<PowerUp>().ownerId = id;
-            //        CmdSetId(id, powerUpId);
-            //    }
+    //    public void SetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
+    //    {
+    //        GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
+    //        powerUp.GetComponent<PowerUp>().ownerId = id;
+    //        CmdSetId(id, powerUpId);
+    //    }
 
-            //    [Command]
-            //    void CmdSetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
-            //    {
-            //        RpcSetId(id, powerUpId);
-            //    }
-            //    [ClientRpc]
-            //    void RpcSetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
-            //    {
-            //        Debug.Log("Setting player id " + id);
-            //        GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
-            //        powerUp.GetComponent<PowerUp>().ownerId = id;
-            //        transform.SetParent(null);
-            //    }
+    //    [Command]
+    //    void CmdSetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
+    //    {
+    //        RpcSetId(id, powerUpId);
+    //    }
+    //    [ClientRpc]
+    //    void RpcSetId(NetworkInstanceId id, NetworkInstanceId powerUpId)
+    //    {
+    //        Debug.Log("Setting player id " + id);
+    //        GameObject powerUp = ClientScene.FindLocalObject(powerUpId);
+    //        powerUp.GetComponent<PowerUp>().ownerId = id;
+    //        transform.SetParent(null);
+    //    }
 
-            //    [Command]
-            //    void CmdHidePowerUp(NetworkInstanceId id)
-            //    {
-            //        RpcHidePowerUp(id);
-            //    }
-            //    [ClientRpc]
-            //    void RpcHidePowerUp(NetworkInstanceId id)
-            //    {
-            //        GameObject o = ClientScene.FindLocalObject(id);
-            //        o.GetComponentInChildren<Renderer>().enabled = false;
-            //        o.GetComponentInChildren<Collider2D>().enabled = false;
-            //        o.transform.parent = null;
-            //    }
-            //    [Command]
-            //    void CmdSetAuthority(NetworkIdentity grabID)
-            //    {
-            //        grabID.AssignClientAuthority(connectionToClient);
-            //    }
+    //    [Command]
+    //    void CmdHidePowerUp(NetworkInstanceId id)
+    //    {
+    //        RpcHidePowerUp(id);
+    //    }
+    //    [ClientRpc]
+    //    void RpcHidePowerUp(NetworkInstanceId id)
+    //    {
+    //        GameObject o = ClientScene.FindLocalObject(id);
+    //        o.GetComponentInChildren<Renderer>().enabled = false;
+    //        o.GetComponentInChildren<Collider2D>().enabled = false;
+    //        o.transform.parent = null;
+    //    }
+    //    [Command]
+    //    void CmdSetAuthority(NetworkIdentity grabID)
+    //    {
+    //        grabID.AssignClientAuthority(connectionToClient);
+    //    }
 
-            //    [Command]
-            //    void CmdClaimPrefab(PowerUp.SpawnLocation loc)
-            //    {
-            //        GameObject.FindGameObjectWithTag("PowerUpSpawner").GetComponent<PowerUpSpawn>().ClaimPowerUp(loc);
-            //    }
+    //    [Command]
+    //    void CmdClaimPrefab(PowerUp.SpawnLocation loc)
+    //    {
+    //        GameObject.FindGameObjectWithTag("PowerUpSpawner").GetComponent<PowerUpSpawn>().ClaimPowerUp(loc);
+    //    }
 
-            //    public void Use()
-            //    {
-            //        if (CurrentPowerUp)
-            //        {
-            //            CurrentPowerUp.GetComponent<PowerUp>().Use(GetComponent<NetworkIdentity>().netId);
-            //        }
-            //        else
-            //        {
-            //            audioDepleted.Play();
-            //        }
-            //    }
+    //    public void Use()
+    //    {
+    //        if (CurrentPowerUp)
+    //        {
+    //            CurrentPowerUp.GetComponent<PowerUp>().Use(GetComponent<NetworkIdentity>().netId);
+    //        }
+    //        else
+    //        {
+    //            audioDepleted.Play();
+    //        }
+    //    }
 
-            //    public void Stop()
-            //    {
-            //        if (CurrentPowerUp)
-            //        {
-            //            CurrentPowerUp.GetComponent<PowerUp>().Stop();
-            //        }
-            //    }
-            //
+    //    public void Stop()
+    //    {
+    //        if (CurrentPowerUp)
+    //        {
+    //            CurrentPowerUp.GetComponent<PowerUp>().Stop();
+    //        }
+    //    }
+    //
 }
