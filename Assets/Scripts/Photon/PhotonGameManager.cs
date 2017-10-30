@@ -18,7 +18,7 @@ public class PhotonGameManager : Photon.PunBehaviour {
         }
 
         //Instantiate player
-        if (Ship.LocalPlayerInstance == null)
+        if (GameManager.Instance.Player == null) //was Ship.LocalPlayerInstance == null
         {
             //TODO: replace vector3 with one of the spawn points
             //Debug.LogError("Instantiating player.");

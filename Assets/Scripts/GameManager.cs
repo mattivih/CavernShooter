@@ -32,11 +32,6 @@ public class GameManager : MonoBehaviour {
     public HUDManager hud;
     public destroyParticleSystem destroyParticleSystem;
 
-
-    //Refactored to use Photon Actor ID:s
-    //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
-    public List<int> players = new List<int>();
-
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;
     
@@ -51,14 +46,6 @@ public class GameManager : MonoBehaviour {
             DestroyImmediate(gameObject);
         }
     }
-
-    //public int GetPlayerNum(NetworkInstanceId playerid) {
-    //    if (!players.Contains(playerid)) {
-    //        players.Add(playerid);
-    //    }
-    //    List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
-    //    return sortedList.IndexOf(playerid);
-    //}
 
     //public void CallEndGame(string[] deadPlayers) {
     //    RpcShowMatchResult(deadPlayers);
@@ -76,7 +63,7 @@ public class GameManager : MonoBehaviour {
     //}
 
 
-void Start()
+    void Start()
     {
         hud = FindObjectOfType<HUDManager>();
     }
@@ -90,32 +77,8 @@ void Start()
         hud.UpdateShieldBar(shield, maxHealth);
     }
 
-    public void UpdatePowerUp() {
+    public void UpdatePowerUp()
+    {
         hud.UpdatePowerUp(Player.GetComponent<PowerUpHandler>().CurrentPowerUp);
     }
-
-    //    public int GetPlayerNum(NetworkInstanceId playerid) {
-    //        if (!players.Contains(playerid)) {
-    //            players.Add(playerid);
-    //        }
-    //        List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
-    //        return sortedList.IndexOf(playerid);
-    //    }
-
-    //    public void CallEndGame(string[] deadPlayers) {
-    //        RpcShowMatchResult(deadPlayers);
-    //    }
-
-
-    //    [ClientRpc]
-    //    public void RpcShowMatchResult(string[] deadPlayers)
-    //    {
-    //        GameObject gameOverScreen = Instantiate(GameOverPrefab);
-    //        MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
-    //        for (int i = deadPlayers.Length - 1; i >= 0; i--)
-    //        {
-    //            result.FillPlayerInfo(deadPlayers[i]);
-    //        }
-    //    }
-    //
 }

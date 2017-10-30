@@ -6,7 +6,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
-    public int PlayerID;
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
@@ -25,12 +24,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public Material ShipColorMaterial;
     public Color[] ShipColors;
 
-    #endregion
-    #region SyncVars
-
-    //[SyncVar]
     public float Health;
-    //[SyncVar(hook = "OnChangeShield")]
     public float Shield;
     #endregion
 
@@ -44,6 +38,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     private GameObject _lastDamageSource;
     private AudioSource _music;
     private Rigidbody2D _rigid;
+    private int _playerNum;
     #endregion
 
     void Awake()
@@ -52,9 +47,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         //Register this player as a local player to this script
         //If we try to register it to the Game Manager here it's too soon and causes errors
-        if (photonView.isMine) {
-            LocalPlayerInstance = gameObject;
-        }
+        //if (photonView.isMine)
+        //{
+        //    LocalPlayerInstance = gameObject;
+        //}
         //Don't destroy on load so the instance survives level loading and the loading between scenes is seamless.
         DontDestroyOnLoad(gameObject);
     }
@@ -106,10 +102,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
         if (photonView.isMine)
         {
+            GameManager.Instance.Player = gameObject;
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
-
-            //TODO: fix later
-            PlayerID = 1;
         }
 
         //TODO: refactor to HUD Manager
@@ -120,28 +114,28 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _originalMeshRotation = MeshTransform.localEulerAngles;
 
         #region Assign color to the player
-        if (PlayerID < 4)
-        {
-            //Assign player's color to ship material
-            //1. copy original material
-            Material newMaterial = new Material(ShipColorMaterial);
+        //if ()
+        //{
+        //    //Assign player's color to ship material
+        //    //1. copy original material
+        //    Material newMaterial = new Material(ShipColorMaterial);
 
-            //2. change the copy's colour to ship colour
-            if (PlayerID > 0) {
-                newMaterial.color = ShipColors[PlayerID - 1];
-            }
+        //    //2. change the copy's colour to ship colour
+        //    if (PlayerID > 0) {
+        //        newMaterial.color = ShipColors[PlayerID - 1];
+        //    }
 
-            //3. find and replace material in ships's renderer's materials
-            var shipmats = GetComponentInChildren<MeshRenderer>().materials;
-            for (int i = 0; i < shipmats.Length; i++)
-            {
-                if (shipmats[i].name == "_Ship_Colour (Instance)")
-                {
-                    shipmats[i] = newMaterial;
-                }
-            }
-            GetComponentInChildren<MeshRenderer>().materials = shipmats;
-        }
+        //    //3. find and replace material in ships's renderer's materials
+        //    var shipmats = GetComponentInChildren<MeshRenderer>().materials;
+        //    for (int i = 0; i < shipmats.Length; i++)
+        //    {
+        //        if (shipmats[i].name == "_Ship_Colour (Instance)")
+        //        {
+        //            shipmats[i] = newMaterial;
+        //        }
+        //    }
+        //    GetComponentInChildren<MeshRenderer>().materials = shipmats;
+        //}
         #endregion
     }
 
@@ -165,14 +159,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     void Update()
     { 
-        //TODO : Delete, old Unet code
-        //if (!isLocalPlayer)
-        //{
-        //    tag = "Enemy";
-        //    gameObject.layer = 11; //enemy layer
-        //    return;
-        //}
-
         if (!photonView.isMine && PhotonNetwork.connected)
         {
             tag = "Enemy";
@@ -190,10 +176,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 if (_thruster)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOn();
                     photonView.RPC("CmdThrusterOn", PhotonTargets.All);
-
-                    //CmdThrusterOn();
                 }
             }
             else
@@ -202,9 +185,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 if (_thruster)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOff();
                     photonView.RPC("CmdThrusterOff", PhotonTargets.All);
-                    //CmdThrusterOff();
                 }
             }
 
@@ -223,38 +204,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
             }
             #endregion
-            #region To be deleted: Code moved to function ProcessInputs()
-            ////Fire normal weapon
-            //if (Input.GetKey(KeyCode.Period))
-            //{
-            //    if (_timer > FireRate)
-            //    {
-            //        Fire();
-            //        _timer = 0;
-            //    }
-            //    _timer += Time.deltaTime;
-            //}
-            //if (Input.GetKeyUp(KeyCode.Period))
-            //{
-            //    _timer = FireRate;
-            //}
-
-            ////Use Power-Up
-            //if (Input.GetKeyDown(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Use();
-            //}
-            //if (Input.GetKeyUp(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Stop();
-            //}
-            #endregion
 
             ProcessInputs();
         }
-
-        //TODO: refactor to HUDManager
-        #region Refactor to HUDManager
+        #region Update HUD
         if (GameManager.Instance.healthbarImage)
         {
             float healthFraction = (Health / MaxHealth);
@@ -306,7 +259,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                     GameManager.Instance.powerupBarLines4.enabled = false;
             }
         }
-    #endregion
+#endregion
     }
 
     //Handles user input
@@ -330,11 +283,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //Use Power-Up
         if (Input.GetKeyDown(KeyCode.Comma))
         {
-            //GetComponent<PowerUpHandler>().Use();
+            GetComponent<PowerUpHandler>().Use();
         }
         if (Input.GetKeyUp(KeyCode.Comma))
         {
-            //GetComponent<PowerUpHandler>().Stop();
+            GetComponent<PowerUpHandler>().Stop();
         }
     }
 
@@ -351,26 +304,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _thruster.ThrusterOff();
     }
 
-    #endregion
-
-    #region To be deleted: Old Unet methods 
-
-    //[Command]
-    //void CmdThrusterOn() {
-    //    RpcThrusterOn();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOn() {
-    //    ThrusterScript.ThrusterOn();
-    //}
-    //[Command]
-    //void CmdThrusterOff() {
-    //    RpcThrusterOff();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOff() {
-    //    ThrusterScript.ThrusterOff();
-    //}
     #endregion
 
     /// <summary>
@@ -401,28 +334,12 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
             //Sends request to fire a laser to the server and fires it on all instances of this player
             photonView.RPC("CmdFire", PhotonTargets.All, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerID);
-            //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             _laserCounter++;
         }
     }
 
-    /// <summary>
-    /// Unet: Fires a projectile.
-    /// </summary>
-    //[Command]
-    //TODO: Refactor with [PunRPC]
-    //void CmdFire(NetworkInstanceId id, Vector3 pos, Quaternion rot, Vector2 velocity, int laserid, Color color) {
-    //    GameObject laser = Instantiate(LaserPrefab, pos, rot);
-    //    laser.GetComponent<Rigidbody2D>().velocity = velocity;
-    //    laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-    //    laser.GetComponent<Laser>().myColor = color;
-    //    NetworkServer.Spawn(laser);
-    //    RpcFire(id, laser, laserid);
-    //}
-
-
     //<summary>
-    // Photon: Fires a projectile on remote clients.
+    // Photon: Fires a projectile.
     // </summary>
     [PunRPC]
     void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int playerID)
@@ -448,28 +365,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 	{
 		GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
 	}
-
-    //[ClientRpc]
-    //void RpcFire(NetworkInstanceId id, GameObject projectile, int laserid) {
-    //    projectile.name = "Serverlaser " + laserid;
-    //    GameObject player = ClientScene.FindLocalObject(id);
-    //    //TODO: gives null reference error
-    //    projectile.GetComponent<Laser>().Source = player;
-    //    if (player != GameManager.Instance.Player) {
-    //        projectile.layer = 12;
-    //    } else {
-    //        projectile.GetComponent<Renderer>().enabled = false;
-    //        projectile.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 0f);
-
-    //        //projectile.GetComponent<SpriteRenderer>().material.color = Color.red;
-    //        GameObject clientlaser = GameObject.Find("Clientlaser " + laserid);
-
-    //        if (clientlaser) {
-    //            clientlaser.GetComponent<Laser>().SetServerObj(projectile);
-    //        }
-    //    }
-    //}
-
+    
     /// <summary>
     /// Decreases the ship's health.
     /// </summary>
@@ -481,7 +377,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             return;
         }
 
-        Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
+        //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
         if (Shield > 0)
         {
@@ -498,7 +394,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
-        Debug.LogError("Player " + PlayerID + " health: " + Health);
+        //Debug.LogError("Player " + PlayerID + " health: " + Health);
         GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
 
 
