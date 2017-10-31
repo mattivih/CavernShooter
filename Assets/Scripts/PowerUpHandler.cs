@@ -9,7 +9,7 @@ public class PowerUpHandler : Photon.PunBehaviour
     private GameObject _powerUpIconHUDPos;
     private GameObject _currentPowerUpIcon;
     private PowerUpSpawn _spawner;
-    private List<GameObject> _powerUpList;
+    public List<GameObject> _powerUpList;
     public AudioClip clipDepleted, clipPickUp;
     private AudioSource audioDepleted, audioPickUp;
     //public override void OnStartClient() {
@@ -19,9 +19,26 @@ public class PowerUpHandler : Photon.PunBehaviour
     void Start()
     //public override void OnStartClient()
     {
+
         _powerUpIconHUDPos = GameObject.Find("PowerUpIcon");
         _spawner = FindObjectOfType<PowerUpSpawn>();
-        _powerUpList = _spawner.PowerUpPrefabs;
+
+        GameObject laser = GameObject.Find("LaserPowerUp");
+        _powerUpList.Add(laser);
+        GameObject distortionRay = GameObject.Find("DistortionRayPowerUp");
+        _powerUpList.Add(distortionRay);
+        GameObject health = GameObject.Find("HealthPowerUp");
+        _powerUpList.Add(health);
+        GameObject mine = GameObject.Find("MinePowerUp");
+        _powerUpList.Add(mine);
+        GameObject shield = GameObject.Find("ShieldPowerUp");
+        _powerUpList.Add(laser);
+        GameObject torpedo = GameObject.Find("TorpedoPowerUp");
+        _powerUpList.Add(torpedo);
+        GameObject flamethrower = GameObject.Find("FlamethrowerPowerUp");
+        _powerUpList.Add(torpedo);
+        GameObject zeroGravity = GameObject.Find("ZeroGravityPowerUp");
+        _powerUpList.Add(zeroGravity);
     }
 
     void Awake()
@@ -54,6 +71,7 @@ public class PowerUpHandler : Photon.PunBehaviour
                 {
                     audioPickUp.Play();
                     CurrentPowerUp = powerup;
+                    powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
                     ClaimPrefab(collider.gameObject);
                     photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                 }
@@ -71,7 +89,6 @@ public class PowerUpHandler : Photon.PunBehaviour
             switch (powerup.stacking)
             {
                 case PowerUp.StackMode.Add:
-                    powerup.Units = powerup.MaxUnits;
                     ClaimPrefab(collider.gameObject);
                     photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                     break;
@@ -109,10 +126,10 @@ public class PowerUpHandler : Photon.PunBehaviour
     {
         if (CurrentPowerUp)
         {
-            //CurrentPowerUp.GetComponent<PowerUp>().Use();
+            CurrentPowerUp.GetComponent<PowerUp>().Use();
         }
         else {
-            //audioDepleted.Play();
+            audioDepleted.Play();
         }
     }
 
@@ -120,7 +137,7 @@ public class PowerUpHandler : Photon.PunBehaviour
     {
         if (CurrentPowerUp)
         {
-            //CurrentPowerUp.GetComponent<PowerUp>().Stop();
+            CurrentPowerUp.GetComponent<PowerUp>().Stop();
         }
     }
 
