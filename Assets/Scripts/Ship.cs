@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using ExitGames.Client.Photon;
 
 public class Ship : Photon.PunBehaviour, IPunObservable
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
-    public int PlayerID;
+    public static int PlayerID;
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
@@ -96,11 +97,70 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     //public override void OnStartLocalPlayer() {
+    public void set()
+    {
+   
+       
+       // var shipmats = GetComponentInChildren<MeshRenderer>().materials;
+
+        foreach (var player in PhotonNetwork.playerList)
+        {
+            Debug.Log(player.ID);
+            Material newMaterial = new Material(ShipColorMaterial);
+            var shipmats = PhotonView.Find(player.ID).gameObject.GetComponent<Ship>().GetComponentInChildren<MeshRenderer>().materials;
+            if(player.ID == 1)
+                newMaterial.color = new Color(255, 0, 0);
+            else if (player.ID == 2)
+                newMaterial.color = new Color(0, 0, 255);
+
+            for (int i = 0; i < shipmats.Length; i++)
+            {
+                if (shipmats[i].name == "_Ship_Colour (Instance)")
+                {
+                    shipmats[i] = newMaterial;
+                }
+            }
+
+            GetComponentInChildren<MeshRenderer>().materials = shipmats;
+            }
+        }
+                
+
+
+    [PunRPC]
+    public void setColor(int id)
+    {
+        Material newMaterial = new Material(ShipColorMaterial);
+
+        foreach (var player in PhotonNetwork.playerList)
+        {
+            if(player.ID == 1)
+                newMaterial.color = new Color(255, 0, 0);
+            else if (player.ID == 2)
+                newMaterial.color = new Color(0, 0, 255);
+        }
+
+        // newMaterial.color = new Color(ShipColors[id - 1].r * 255, ShipColors[id - 1].g * 255, ShipColors[id - 1].b * 255);
+        var shipmats = GetComponentInChildren<MeshRenderer>().materials;
+
+        for (int i = 0; i < shipmats.Length; i++)
+        {
+            if (shipmats[i].name == "_Ship_Colour (Instance)")
+            {
+                shipmats[i] = newMaterial;
+            }
+        }
+
+        GetComponentInChildren<MeshRenderer>().materials = shipmats;
+    }
+
+
+
+
 
     public override void OnPhotonInstantiate(PhotonMessageInfo info)
     {
         base.OnPhotonInstantiate(info);
-
         gameObject.name = "Player " + photonView.viewID;
         //Local client initialization
         Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
@@ -109,7 +169,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
 
             //TODO: fix later
-            PlayerID = 1;
+            //PlayerID = PhotonNetwork.countOfPlayers;
         }
 
         //TODO: refactor to HUD Manager
@@ -124,24 +184,21 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             //Assign player's color to ship material
             //1. copy original material
-            Material newMaterial = new Material(ShipColorMaterial);
 
             //2. change the copy's colour to ship colour
-            if (PlayerID > 0) {
-                newMaterial.color = ShipColors[PlayerID - 1];
+            if (PlayerID > 0)
+            {
+                //  newMaterial.color = new Color(ShipColors[PlayerID - 1].r * 255, ShipColors[PlayerID - 1].g * 255, ShipColors[PlayerID - 1].b * 255);
+               // photonView.RPC("setColor", PhotonTargets.AllBuffered, PlayerID);
+                set();
+
             }
 
             //3. find and replace material in ships's renderer's materials
-            var shipmats = GetComponentInChildren<MeshRenderer>().materials;
-            for (int i = 0; i < shipmats.Length; i++)
-            {
-                if (shipmats[i].name == "_Ship_Colour (Instance)")
-                {
-                    shipmats[i] = newMaterial;
-                }
-            }
-            GetComponentInChildren<MeshRenderer>().materials = shipmats;
+
         }
+
+
         #endregion
     }
 

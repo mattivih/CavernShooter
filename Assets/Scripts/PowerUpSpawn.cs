@@ -34,9 +34,6 @@ public class PowerUpSpawn : Photon.PunBehaviour
     void Update()
     {
 
-        Debug.Log("inner count:" + InnerCount);
-        Debug.Log("outer count:" + OuterCount);
-
         if (PhotonNetwork.isMasterClient && PhotonNetwork.playerList.Length > 0)
         {
             if (!active)

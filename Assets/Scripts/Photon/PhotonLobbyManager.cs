@@ -92,7 +92,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
+
         base.OnJoinedRoom();
+        Ship.PlayerID = PhotonNetwork.countOfPlayers;
         Debug.Log("@OnJoinedRoom(). This client is in a room now.");
 
         //Load room only if we are the first player joining.

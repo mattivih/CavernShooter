@@ -74,9 +74,6 @@ public class Base : Photon.PunBehaviour {
             if(collision.gameObject.tag == "Enemy")
                 _isCollidingEnemy = true;
 
-            //if (isServer) {
-            //    collision.gameObject.GetComponent<Ship>().RpcIncreaseHealth(HealthRegen * Time.deltaTime);
-            //}
             collision.gameObject.GetComponent<Ship>().IncreaseHealth(HealthRegen * Time.deltaTime);
           
             if (!Input.anyKey) {
