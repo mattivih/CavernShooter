@@ -105,7 +105,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         foreach (var player in PhotonNetwork.playerList)
         {
-            Debug.Log(player.ID);
             Material newMaterial = new Material(ShipColorMaterial);
             var shipmats = PhotonView.Find(player.ID).gameObject.GetComponent<Ship>().GetComponentInChildren<MeshRenderer>().materials;
             if(player.ID == 1)
@@ -208,7 +207,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //music.Play();
 
         //Registers the ship to the Game Manager
-        //GameManager.Instance.Player = gameObject;
+        GameManager.Instance.Player = gameObject;
 
         foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background"))
         {
@@ -387,11 +386,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //Use Power-Up
         if (Input.GetKeyDown(KeyCode.Comma))
         {
-            //GetComponent<PowerUpHandler>().Use();
+            GetComponent<PowerUpHandler>().Use();
         }
         if (Input.GetKeyUp(KeyCode.Comma))
         {
-            //GetComponent<PowerUpHandler>().Stop();
+            GetComponent<PowerUpHandler>().Stop();
         }
     }
 
@@ -538,7 +537,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             return;
         }
 
-        Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
+        //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
         if (Shield > 0)
         {

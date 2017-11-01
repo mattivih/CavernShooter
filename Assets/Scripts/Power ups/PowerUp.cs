@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUp : MonoBehaviour {
+public class PowerUp : Photon.PunBehaviour {
 
     public float MaxUnits;
     public float Units;
@@ -25,6 +25,12 @@ public class PowerUp : MonoBehaviour {
     public AudioClip clipActivate;
     public AudioSource audioActivate;
 
+
+    /// <summary>
+    /// What kind of powerup (normal use, spawn at player location, hold to use)
+    /// Spawn = Mine
+    /// Controller = Flamethrower/Laser
+    /// </summary>
     public enum PowerUpMode
     {
         Normal,
@@ -77,52 +83,48 @@ public class PowerUp : MonoBehaviour {
     /// <summary>
     /// Uses one unit of powerup or starts continuous usage of the power up.
     /// </summary>
+    
     public void Use()
     {
         if (Units > 0)
         {
-            audioActivate = AddAudio(clipActivate, false, false, 1f);
-            audioActivate.Play();
-            //UsePowerUp();
-            Units--;
-        }
-    }
-    /*
-    public virtual void UsePowerUp()
-    {
-        GameObject player = GameManager.Instance.Player;
-        Vector3 pos = player.transform.position;
-        Quaternion rot = player.transform.rotation;
-        //Debug.Log("player: " + player.name + ", id: " + id.Value);
-        CmdUseNormalPowerUp(id);
+            //audioActivate = AddAudio(clipActivate, false, false, 1f);
+            //audioActivate.Play();
 
-        switch (mode)
-        {
-            case PowerUpMode.Normal:
-                UseNormalPowerUp();
-                break;
-            case PowerUpMode.Spawn:
-                CmdSpawnPowerUp(id, pos, rot);
-                break;
-            case PowerUpMode.Controller:
-                if (controllerReference != null)
-                {
-                    if (!player.GetComponentInChildren(controllerReference))
-                    {
-                        //CmdSpawnPowerUp(id, pos, rot);
-                    }
-                    else {
-                        //CmdUsePowerUp();
-                    }
-                }
-                else {
-                    Debug.LogError("Controller power up without controller reference");
-                }
-                break;
-            default:
-                break;
+            GameObject player = GameManager.Instance.Player;
+            Vector3 pos = player.transform.position;
+            Quaternion rot = player.transform.rotation;
+            //Debug.Log("player: " + player.name + ", id: " + id.Value);
+            //CmdUseNormalPowerUp(id);
+
+            
+            switch (mode)
+            {
+                case PowerUpMode.Normal:
+                    UseNormalPowerUp();
+                    break;
+                case PowerUpMode.Spawn:
+                    UseNormalPowerUp();
+                    break;
+                case PowerUpMode.Controller:
+                    UseContinuousPowerUp();
+                    break;
+                default:
+                    break;
+            }
         }
     }
+
+    public virtual void UseNormalPowerUp()
+    { }
+
+    public virtual void UseContinuousPowerUp()
+    { }
+
+    public virtual void Stop()
+    { }
+
+
 
     //public void Use(NetworkInstanceId id)
     //{

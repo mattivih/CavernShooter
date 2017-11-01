@@ -34,6 +34,9 @@ public class PowerUpSpawn : Photon.PunBehaviour
     void Update()
     {
 
+        //Debug.Log("inner count:" + InnerCount);
+        //Debug.Log("outer count:" + OuterCount);
+
         if (PhotonNetwork.isMasterClient && PhotonNetwork.playerList.Length > 0)
         {
             if (!active)
@@ -88,7 +91,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn(int powerup)
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[powerup].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[5].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }

@@ -22,11 +22,18 @@ public class ShieldEffect : MonoBehaviour {
     void Start() {
         audioActivateShield.Play();
     }
+
+    void Update()
+    {
+        if (GameManager.Instance.Player.GetComponent<Ship>().Shield <= 0)
+            Die();
+    }
+
     public void Die() {
         emission.rateOverTime = noEmission;
         audioShieldEnd.Play();
         float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
-        Destroy(gameObject, time);
+        Destroy(gameObject);
     }
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
