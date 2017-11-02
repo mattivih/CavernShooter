@@ -97,50 +97,25 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     //public override void OnStartLocalPlayer() {
-    public void set()
-    {
-   
-       
-       // var shipmats = GetComponentInChildren<MeshRenderer>().materials;
-
-        foreach (var player in PhotonNetwork.playerList)
-        {
-            Material newMaterial = new Material(ShipColorMaterial);
-            var shipmats = PhotonView.Find(player.ID).gameObject.GetComponent<Ship>().GetComponentInChildren<MeshRenderer>().materials;
-            if(player.ID == 1)
-                newMaterial.color = new Color(255, 0, 0);
-            else if (player.ID == 2)
-                newMaterial.color = new Color(0, 0, 255);
-
-            for (int i = 0; i < shipmats.Length; i++)
-            {
-                if (shipmats[i].name == "_Ship_Colour (Instance)")
-                {
-                    shipmats[i] = newMaterial;
-                }
-            }
-
-            GetComponentInChildren<MeshRenderer>().materials = shipmats;
-            }
-        }
-                
-
-
+  
     [PunRPC]
-    public void setColor(int id)
+    public void setColors(int viewId)
     {
-        Material newMaterial = new Material(ShipColorMaterial);
+        Debug.Log(viewId);
+        GameObject go = PhotonView.Find(viewId).gameObject;            
+        Material newMaterial = new Material(go.GetComponent<Ship>().ShipColorMaterial);
 
-        foreach (var player in PhotonNetwork.playerList)
-        {
-            if(player.ID == 1)
-                newMaterial.color = new Color(255, 0, 0);
-            else if (player.ID == 2)
-                newMaterial.color = new Color(0, 0, 255);
-        }
+        if (viewId == 1001)
+            newMaterial.color = new Color(ShipColors[0].r * 255, ShipColors[0].g * 255, ShipColors[0].b * 255);
+        else if (viewId == 2001)
+            newMaterial.color = new Color(ShipColors[1].r * 255, ShipColors[1].g * 255, ShipColors[1].b * 255);
+        else if (viewId == 3001)
+            newMaterial.color = new Color(ShipColors[2].r * 255, ShipColors[2].g * 255, ShipColors[2].b * 255);
+        else if (viewId == 4001)
+            newMaterial.color = new Color(ShipColors[3].r * 255, ShipColors[3].g * 255, ShipColors[3].b * 255);
 
         // newMaterial.color = new Color(ShipColors[id - 1].r * 255, ShipColors[id - 1].g * 255, ShipColors[id - 1].b * 255);
-        var shipmats = GetComponentInChildren<MeshRenderer>().materials;
+        var shipmats = go.GetComponentInChildren<MeshRenderer>().materials;
 
         for (int i = 0; i < shipmats.Length; i++)
         {
@@ -150,12 +125,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             }
         }
 
-        GetComponentInChildren<MeshRenderer>().materials = shipmats;
+        go.GetComponentInChildren<MeshRenderer>().materials = shipmats;
     }
-
-
-
-
 
     public override void OnPhotonInstantiate(PhotonMessageInfo info)
     {
@@ -188,8 +159,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             if (PlayerID > 0)
             {
                 //  newMaterial.color = new Color(ShipColors[PlayerID - 1].r * 255, ShipColors[PlayerID - 1].g * 255, ShipColors[PlayerID - 1].b * 255);
-               // photonView.RPC("setColor", PhotonTargets.AllBuffered, PlayerID);
-                set();
+                // photonView.RPC("setColor", PhotonTargets.AllBuffered, PlayerID);
+                photonView.RPC("setColors", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID);
 
             }
 

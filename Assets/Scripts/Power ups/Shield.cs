@@ -25,35 +25,28 @@ public class Shield : PowerUp
 
    public override void UseNormalPowerUp()
     {
-        if(GameManager.Instance.Player.GetComponent<Ship>().Shield + GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount > GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
+
+        if (GameManager.Instance.Player.GetComponent<Ship>().Shield + GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount > GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
             GameManager.Instance.Player.GetComponent<Ship>().Shield = GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
         else
             GameManager.Instance.Player.GetComponent<Ship>().Shield += GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
+        Units--;
 
-        //  photonView.RPC("spawnShield", PhotonTargets.All);
         for (int j = 0; j < Ship.LocalPlayerInstance.transform.childCount; j++)
         {
             if (Ship.LocalPlayerInstance.transform.GetChild(j).name == "ShieldEffect(Clone)")
+            {
+                Debug.Log("asd");
                 return;
+            }
+               
         }
+     
         var go = PhotonNetwork.Instantiate("ShieldEffect", Vector3.zero, Quaternion.identity, 0);
         photonView.RPC("spawnShield", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
-        Units--;
-       
+
     }
 
-  /*  public override void RpcUseNormalPowerUp(NetworkInstanceId id)
-    {
-        GameObject i = Ship.LocalPlayerInstance;
-        for(int j = 0; j < i.transform.childCount; j++)
-        {
-            if (i.transform.GetChild(j).name == "ShieldEffect(Clone)")
-                return;
-        }
-
-        GameObject o = PhotonNetwork.Instantiate("ShieldEffect", i.transform.position, Quaternion.identity, 0);
-        o.transform.localPosition = new Vector3(0, i.GetComponent<Ship>().PowerUpEffectYOffSet, -1);
-        */
     }
 
 
