@@ -301,38 +301,38 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             GameManager.Instance.shieldbarImage.fillAmount = Shield / MaxHealth;
         }
-        if (GameManager.Instance.powerupBarImage)
+        /*if (GameManager.Instance.powerupBarImage)
         {
             GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
             if (CurrentPowerUp)
             {
                 if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
-                {
-                    float waitTime = 15f;
-                    GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+                      {
+                          float waitTime = 15f;
+                          GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
 
-                }
+                      }
 
-                else
-                {
-                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
-                }
+                      else
+                      {
+                          float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
+                          GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                      }
 
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
-                {
-                    GameManager.Instance.powerupBarLines.enabled = true;
-                }
-                else
-                {
-                    GameManager.Instance.powerupBarLines.enabled = false;
-                }
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
+                      if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
+                      {
+                          GameManager.Instance.powerupBarLines.enabled = true;
+                      }
+                      else
+                      {
+                          GameManager.Instance.powerupBarLines.enabled = false;
+                      }
+                    if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
                     GameManager.Instance.powerupBarLines4.enabled = true;
                 else
                     GameManager.Instance.powerupBarLines4.enabled = false;
             }
-        }
+        }*/
     #endregion
     }
 
@@ -525,7 +525,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
-        Debug.LogError("Player " + PlayerID + " health: " + Health);
+     //   Debug.LogError("Player " + PlayerID + " health: " + Health);
         GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
 
 

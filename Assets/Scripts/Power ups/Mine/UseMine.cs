@@ -15,14 +15,14 @@ public class UseMine : ProjectilesBase {
 	/// </summary>
 	/// <param name="collider">Collider.</param>
 	void OnTriggerEnter2D(Collider2D collider) {
-		if (collider.tag == "Enemy") {
-			ParticleSystem m = Instantiate (MineExplosionPrefab, transform.position, transform.rotation);
+        if (collider.gameObject.GetComponent<Ship>() && collider.gameObject != source) {         
+            ParticleSystem m = Instantiate(MineExplosionPrefab, transform.position, transform.rotation);
 			m.transform.position += m.transform.forward * -4f;
 			Destroy (m, MineLifetime);
-			collider.GetComponent<Ship> ().TakeDamage (Damage, source);
+			collider.GetComponent<Ship>().TakeDamage(Damage, source);
 			Destroy (gameObject);
 			if (_base)
-				_base.GetComponent<Base> ().TakeDamage (Damage);
+				_base.GetComponent<Base>().TakeDamage(Damage);
 		} else if (collider.tag == "Base") {
 			_base = collider.gameObject;
 		}

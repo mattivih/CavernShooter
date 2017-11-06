@@ -109,6 +109,7 @@ public class PowerUpHandler : Photon.PunBehaviour
                     break;
             }
         }
+        GameManager.Instance.UpdatePowerUp();
     }
 
     public void ClaimPrefab(GameObject prefab)

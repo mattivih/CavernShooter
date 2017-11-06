@@ -34,12 +34,8 @@ public class Shield : PowerUp
 
         for (int j = 0; j < Ship.LocalPlayerInstance.transform.childCount; j++)
         {
-            if (Ship.LocalPlayerInstance.transform.GetChild(j).name == "ShieldEffect(Clone)")
-            {
-                Debug.Log("asd");
-                return;
-            }
-               
+            if (Ship.LocalPlayerInstance.transform.GetChild(j).name == "ShieldEffect(Clone)")            
+                return;                          
         }
      
         var go = PhotonNetwork.Instantiate("ShieldEffect", Vector3.zero, Quaternion.identity, 0);
