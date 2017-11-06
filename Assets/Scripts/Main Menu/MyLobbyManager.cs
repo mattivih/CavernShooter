@@ -19,7 +19,7 @@ public class MyLobbyManager : NetworkLobbyManager
 	[Header("UI")]
 	public GameObject GameOverPrefab;
 
-	private MyMatchList _matchList;
+	private PhotonMatchList _matchList;
 	private int _currentMatchMaxSize;
 	private ulong _currentMatchId;
 
@@ -45,20 +45,20 @@ public class MyLobbyManager : NetworkLobbyManager
 	/// <summary>
 	/// Starts the Unity Multiplayer service (called Matchmaker)
 	/// </summary>
-	void StartMatchmaker()
-	{
-		Instance.StartMatchMaker();
-	}
+	//void StartMatchmaker()
+	//{
+	//	Instance.StartMatchMaker();
+	//}
 
 	/// <summary>
 	/// Sends request to the server to list matches.
 	/// Server's answer is handled by OnMatchList().
 	/// </summary>
-	public void ListMatches()
-	{
-		StartMatchmaker();
-		Instance.matchMaker.ListMatches(0, 5, "", true, 0, 0, OnMatchList);
-	}
+	//public void ListMatches()
+	//{
+	//	StartMatchmaker();
+	//	Instance.matchMaker.ListMatches(0, 5, "", true, 0, 0, OnMatchList);
+	//}
 
 	/// <summary>
 	/// Scans again for matches in case no matches were found.
@@ -73,104 +73,104 @@ public class MyLobbyManager : NetworkLobbyManager
 	/// <summary>
 	/// Callback function for ListMatches(). If match listing was successfull update UI's match list.
 	/// </summary>
-	public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
-	{
+	//public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
+	//{
 
-		base.OnMatchList(success, extendedInfo, matches);
+	//	base.OnMatchList(success, extendedInfo, matches);
 
-		if (!success)
-		{
-			Debug.LogError("Match listing failed: " + extendedInfo);
-		}
-		else
-		{
-			if (!_matchList)
-			{
-				_matchList = FindObjectOfType<MyMatchList>();
-			}
-			_matchList.HideLoadingIcon();
-			if (matches.Count > 0)
-			{
-				for (int i = 0; i < matches.Count && i < MaxMatchesToList; i++)
-				{
-					_matchList.AddMatchToList(matches[i]);
-				}
+	//	if (!success)
+	//	{
+	//		Debug.LogError("Match listing failed: " + extendedInfo);
+	//	}
+	//	else
+	//	{
+	//		if (!_matchList)
+	//		{
+	//			_matchList = FindObjectOfType<PhotonMatchList>();
+	//		}
+	//		_matchList.HideLoadingIcon();
+	//		if (matches.Count > 0)
+	//		{
+	//			for (int i = 0; i < matches.Count && i < MaxMatchesToList; i++)
+	//			{
+	//				_matchList.AddMatchToList(matches[i]);
+	//			}
 
-			}
-			else
-			{
-				//No matches found. Show error and scan again.
-				if (_matchList)
-				{
-					_matchList.ShowNoMatchesFound();
-					Invoke("ScanAgainForMatches", 1.5f);
-				}
-			}
-		}
-	}
+	//		}
+	//		else
+	//		{
+	//			//No matches found. Show error and scan again.
+	//			if (_matchList)
+	//			{
+	//				_matchList.ShowNoMatchesFound();
+	//				Invoke("ScanAgainForMatches", 1.5f);
+	//			}
+	//		}
+	//	}
+	//}
 
 
 	/// <summary>
 	/// Sends request to the server to create a match.
 	/// Server's answer is handled by OnMatchCreate().
 	/// </summary>
-	public void CreateMatch(string matchName, uint matchSize)
-	{
-		StartMatchmaker();
-		minPlayers = (int)matchSize; //Requires the same amount of players to be ready in order to start the game as matchSize
-		Instance.matchMaker.CreateMatch(matchName, matchSize, true, "", "", "", 0, 0, OnMatchCreate);
-	}
+	//public void CreateMatch(string matchName, uint matchSize)
+	//{
+	//	StartMatchmaker();
+	//	minPlayers = (int)matchSize; //Requires the same amount of players to be ready in order to start the game as matchSize
+	//	Instance.matchMaker.CreateMatch(matchName, matchSize, true, "", "", "", 0, 0, OnMatchCreate);
+	//}
 
 	/// <summary>
 	/// Callback function for CreateMatch.
 	/// </summary>
-	public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
-	{
-		base.OnMatchCreate(success, extendedInfo, matchInfo);
+	//public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
+	//{
+	//	base.OnMatchCreate(success, extendedInfo, matchInfo);
 
-		if (!success)
-		{
-			Debug.LogError("Creating match failed: " + extendedInfo);
+	//	if (!success)
+	//	{
+	//		Debug.LogError("Creating match failed: " + extendedInfo);
 
-		}
-		else
-		{
-			_currentMatchId = (System.UInt64)matchInfo.networkId;
-			Debug.Log("Creating match " + _currentMatchId);
-		}
-	}
+	//	}
+	//	else
+	//	{
+	//		_currentMatchId = (System.UInt64)matchInfo.networkId;
+	//		Debug.Log("Creating match " + _currentMatchId);
+	//	}
+	//}
 
-	/// <summary>
-	/// Changes the Play Scene to selected map.
-	/// </summary>
-	/// <param name="name">Scene name</param>
-	public void SelectMap(string name)
-	{
-		playScene = name;
-	}
+	///// <summary>
+	///// Changes the Play Scene to selected map.
+	///// </summary>
+	///// <param name="name">Scene name</param>
+	//public void SelectMap(string name)
+	//{
+	//	playScene = name;
+	//}
 
 	/// <summary>
 	/// Sends request to the server to join a match.
 	/// Server's answer is handled by OnMatchJoined().
 	/// </summary>
-	public void JoinMatch(MatchInfoSnapshot match)
-	{
-		//Debug.Log("@ JoinMatch");
-		Instance.matchMaker.JoinMatch(match.networkId, "", "", "", 0, 0, OnMatchJoined);
-	}
+	//public void JoinMatch(MatchInfoSnapshot match)
+	//{
+	//	//Debug.Log("@ JoinMatch");
+	//	Instance.matchMaker.JoinMatch(match.networkId, "", "", "", 0, 0, OnMatchJoined);
+	//}
 
-	/// <summary>
-	/// Callback function for JoinMatch.
-	/// </summary>
-	public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
-	{
-		base.OnMatchJoined(success, extendedInfo, matchInfo);
+	///// <summary>
+	///// Callback function for JoinMatch.
+	///// </summary>
+	//public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
+	//{
+	//	base.OnMatchJoined(success, extendedInfo, matchInfo);
 
-		if (!success)
-		{
-			Debug.LogError("Joining match failed: " + extendedInfo);
-		}
-	}
+	//	if (!success)
+	//	{
+	//		Debug.LogError("Joining match failed: " + extendedInfo);
+	//	}
+	//}
 
 	// ------------------ Server callbacks ------------------
 

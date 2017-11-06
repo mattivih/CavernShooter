@@ -49,7 +49,8 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-		MyLobbyManager.Instance.CreateMatch(MatchName.text, (uint)PlayerCountSelector.PlayersSelected);
+	    Debug.Log("@OnClickCreateMatchButton");
+		PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
 		matchInProgress = true;
 		MatchName.interactable = false;
 		ToggleCreateMatchButton();

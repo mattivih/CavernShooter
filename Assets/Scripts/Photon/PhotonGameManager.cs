@@ -26,16 +26,16 @@ public class PhotonGameManager : Photon.PunBehaviour {
         }
     }
 
-    public void LoadGameLevel()
-    {
-        if (!PhotonNetwork.isMasterClient)
-        {
-            Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
-        }
-        else {
-            PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().buildIndex);
-        }
-    }
+    //public void LoadGameLevel()
+    //{
+    //    if (!PhotonNetwork.isMasterClient)
+    //    {
+    //        Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
+    //    }
+    //    else {
+    //        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().buildIndex);
+    //    }
+    //}
 
     public void LeaveRoom()
     {
@@ -68,7 +68,7 @@ public class PhotonGameManager : Photon.PunBehaviour {
         if (PhotonNetwork.isMasterClient)
         {
             Debug.Log("OnPhotonPlayerDisonnected isMasterClient " + PhotonNetwork.isMasterClient);
-            SceneManager.LoadScene(0); //Lobby
+            SceneManager.LoadScene(SceneManager.GetSceneByName("1_MainMenu").buildIndex); //Lobby
         }
     }
 

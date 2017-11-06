@@ -1,10 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PhotonLobbyManager : Photon.PunBehaviour
 {
     #region Public Variables
+
+    public static PhotonLobbyManager Instance;
+
+    [Header("Match Settings")]
+    public int MaxMatchesToList = 4;
+
     [Tooltip("The maximum number of players per room.")]
     public byte MaxPlayersPerRoom = 4;
     public PhotonLogLevel Loglevel = PhotonLogLevel.ErrorsOnly;
@@ -12,7 +19,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
 
     #region Private Variables
-    bool isConnecting = false;
+    private PhotonMatchList _matchList;
+    private int _selectedMap = 2;
 
     /// <summary>
     /// This client's game version number. Users are separated from each other by game version (which allows you to make breaking changes).
@@ -44,50 +52,66 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         /// </summary>
         void Start()
         {
-            Connect();
+        //Connect();
+        if (!Instance)
+        {
+            Instance = this;
         }
+        PhotonNetwork.ConnectUsingSettings(_gameVersion);
+    }
 
 
         #endregion
 
-
-        #region Public Methods
-
-
-        /// <summary>
-        /// Start the connection process. 
-        /// - If already connected, we attempt joining a random room
-        /// - if not yet connected, Connect this application instance to Photon Cloud Network
-        /// </summary>
-        public void Connect()
+    public void CreateMatch(string name, int playerCount)
+    {
+        Debug.Log("@CreateMatch Name: " + name + ", " +  playerCount + " players");
+        if (PhotonNetwork.connected)
         {
-            // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
-            if (PhotonNetwork.connected)
-            {
-                // #Critical we need at this point to attempt joining a Random Room. If it fails, we'll get notified in OnPhotonRandomJoinFailed() and we'll create one.
-                PhotonNetwork.JoinRandomRoom();
-            }
-            else
-            {
-                // #Critical, we must first and foremost connect to Photon Online Server.
-                PhotonNetwork.ConnectUsingSettings(_gameVersion);
-            }
+            PhotonNetwork.CreateRoom(name, new RoomOptions() {MaxPlayers = (byte) playerCount}, null);
+
         }
-    #endregion
+    }
+
+    public void ListMatches()
+    {
+        RoomInfo[] matches = PhotonNetwork.GetRoomList();
+
+        if (!_matchList)
+        {
+            _matchList = FindObjectOfType<PhotonMatchList>();
+        }
+        _matchList.HideLoadingIcon();
+
+        if (matches.Length > 0)
+        {
+            for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
+            {
+                _matchList.AddMatchToList(matches[i]);
+            }
+
+        }
+    }
+
+    public void JoinMatch(string matchName)
+    {
+        PhotonNetwork.JoinRoom(matchName);
+    }
+
+    /// <summary>
+    /// Changes the selected map.
+    /// </summary>
+    /// <param name="name">Scene name</param>
+    public void SelectMap(string name)
+    {
+         _selectedMap = SceneManager.GetSceneByName(name).buildIndex;
+    }
 
     #region Callbacks
     public override void OnConnectedToMaster()
     {
             base.OnConnectedToMaster();
             Debug.Log("@OnConnectedToMaster()");
-    }
-
-    public override void OnPhotonRandomJoinFailed(object[] codeAndMsg)
-    {
-        base.OnPhotonRandomJoinFailed(codeAndMsg);
-        Debug.Log("@OnPhotonRandomJoinFailed(). No random room available, creating one.");
-        PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = (byte)MaxPlayersPerRoom }, null);
-
     }
 
     public override void OnJoinedRoom()
@@ -97,7 +121,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
         //Load room only if we are the first player joining.
         if (PhotonNetwork.room.PlayerCount == 1) {
-            PhotonNetwork.LoadLevel(1);
+            PhotonNetwork.LoadLevel(_selectedMap);
         }
 
     }
