@@ -15,14 +15,17 @@ public class MinePowerUp : PowerUp {
     }
 
 
-
+    [PunRPC]
+    public void assignSource(int viewId, int objectId)
+    {
+        PhotonView.Find(objectId).gameObject.GetComponent<UseMine>().source = PhotonView.Find(viewId).gameObject;
+    }
 
     public override void UseNormalPowerUp()
     {
-        var go = PhotonNetwork.Instantiate("Mine", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0).GetComponent<UseMine>().source = Ship.LocalPlayerInstance;
-       // go.GetComponent<UseMine>().source = Ship.LocalPlayerInstance;
-       // photonView.RPC("spawnMine", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
-
+        GameObject go = PhotonNetwork.Instantiate("Mine", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
+        photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
+        Units--;
     }
 
 

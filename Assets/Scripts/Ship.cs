@@ -101,7 +101,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     [PunRPC]
     public void setColors(int viewId)
     {
-        Debug.Log(viewId);
         GameObject go = PhotonView.Find(viewId).gameObject;            
         Material newMaterial = new Material(go.GetComponent<Ship>().ShipColorMaterial);
 
@@ -507,13 +506,13 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             return;
         }
+       // Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
-        //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
         if (Shield > 0)
         {
             if (damage < Shield)
-            {
+            {   
                 Shield -= damage;
                 damage = 0;
             }
@@ -525,7 +524,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
         Health -= damage;
-     //   Debug.LogError("Player " + PlayerID + " health: " + Health);
         GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
 
 

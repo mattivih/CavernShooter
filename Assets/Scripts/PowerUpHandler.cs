@@ -81,37 +81,38 @@ public class PowerUpHandler : Photon.PunBehaviour
                 Destroy(_currentPowerUpIcon);
             }
             _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
-        }
 
-        if (CurrentPowerUp && CurrentPowerUp.GetType() == collider.GetComponent<PowerUp>().GetType())
-        {
-            PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-            switch (powerup.stacking)
+
+            if (CurrentPowerUp && CurrentPowerUp.GetType() == collider.GetComponent<PowerUp>().GetType())
             {
-                case PowerUp.StackMode.Add:
-                    ClaimPrefab(collider.gameObject);
-                    photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                    break;
-                case PowerUp.StackMode.None:
-                    break;
-                case PowerUp.StackMode.Shield:
-                    if (powerup.GetType() == typeof(Shield))
-                    {
-                        //powerup.Use(GetComponent<NetworkIdentity>().netId);
+                PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+                switch (powerup.stacking)
+                {
+                    case PowerUp.StackMode.Add:
                         ClaimPrefab(collider.gameObject);
                         photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                    }
-                    else {
-                        Debug.LogError("Stacking mode is shield without being shield prefab");
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case PowerUp.StackMode.None:
+                        break;
+                    case PowerUp.StackMode.Shield:
+                        if (powerup.GetType() == typeof(Shield))
+                        {
+                            //powerup.Use(GetComponent<NetworkIdentity>().netId);
+                            ClaimPrefab(collider.gameObject);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                        }
+                        else
+                        {
+                            Debug.LogError("Stacking mode is shield without being shield prefab");
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
+            GameManager.Instance.UpdatePowerUp();
         }
-        GameManager.Instance.UpdatePowerUp();
     }
-
     public void ClaimPrefab(GameObject prefab)
     {
         if ((int)prefab.GetComponent<PowerUp>().location == 1)
