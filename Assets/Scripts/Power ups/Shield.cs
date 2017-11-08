@@ -22,14 +22,19 @@ public class Shield : PowerUp
         o.transform.SetParent(i.transform);
         o.transform.localPosition = new Vector3(0, i.GetComponent<Ship>().PowerUpEffectYOffSet, -1);
     }
-
-   public override void UseNormalPowerUp()
+    [PunRPC]
+    public void IncreaseShield(int viewID)
     {
 
-        if (GameManager.Instance.Player.GetComponent<Ship>().Shield + GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount > GameManager.Instance.Player.GetComponent<Ship>().MaxHealth)
-            GameManager.Instance.Player.GetComponent<Ship>().Shield = GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
+        if (PhotonView.Find(viewID).gameObject.GetComponent<Ship>().Shield + PhotonView.Find(viewID).gameObject.GetComponent<Ship>().MaxHealth * ShieldAmount > PhotonView.Find(viewID).gameObject.GetComponent<Ship>().MaxHealth)
+            PhotonView.Find(viewID).gameObject.GetComponent<Ship>().Shield = PhotonView.Find(viewID).gameObject.GetComponent<Ship>().MaxHealth;
         else
-            GameManager.Instance.Player.GetComponent<Ship>().Shield += GameManager.Instance.Player.GetComponent<Ship>().MaxHealth * ShieldAmount;
+            PhotonView.Find(viewID).gameObject.GetComponent<Ship>().Shield += PhotonView.Find(viewID).gameObject.GetComponent<Ship>().MaxHealth * ShieldAmount;
+    }
+
+   public override void UseNormalPowerUp()
+    {      
+        photonView.RPC("IncreaseShield", PhotonTargets.All, Ship.LocalPlayerInstance.GetComponent<PhotonView>().viewID);
         Units--;
 
         for (int j = 0; j < Ship.LocalPlayerInstance.transform.childCount; j++)

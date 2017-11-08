@@ -91,7 +91,7 @@ void Start()
     }
 
     public void UpdatePowerUp() {
-        hud.UpdatePowerUp(Player.GetComponent<PowerUpHandler>().CurrentPowerUp);
+        hud.UpdatePowerUp(Ship.LocalPlayerInstance.GetComponent<PowerUpHandler>().CurrentPowerUp);
     }
 
     //    public int GetPlayerNum(NetworkInstanceId playerid) {

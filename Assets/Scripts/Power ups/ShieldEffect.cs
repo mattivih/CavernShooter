@@ -25,7 +25,7 @@ public class ShieldEffect : MonoBehaviour {
 
     void Update()
     {
-        if (GameManager.Instance.Player.GetComponent<Ship>().Shield <= 0)
+        if (Ship.LocalPlayerInstance.GetComponent<Ship>().Shield <= 0 && GetComponent<PhotonView>().isMine)
             Die();
     }
 
@@ -33,7 +33,7 @@ public class ShieldEffect : MonoBehaviour {
         emission.rateOverTime = noEmission;
         audioShieldEnd.Play();
         float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
-        Destroy(gameObject);
+        PhotonNetwork.Destroy(gameObject);
     }
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {

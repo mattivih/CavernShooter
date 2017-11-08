@@ -112,6 +112,7 @@ public class PowerUp : Photon.PunBehaviour {
                 default:
                     break;
             }
+            GameManager.Instance.UpdatePowerUp();
         }
     }
 

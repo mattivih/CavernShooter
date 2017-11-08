@@ -61,57 +61,64 @@ public class PowerUpHandler : Photon.PunBehaviour
     /// Sets CurrentPowerUp when ship picks up a powerup item.
     /// </summary>
     /// <param name="collider">Collider.</param>
+   
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.tag == "PowerUp" && photonView.isMine)
+        if (photonView.isMine)
         {
-            foreach (GameObject powerup in _powerUpList)
+            if (collider.tag == "PowerUp")
             {
-                if (collider.name == powerup.name + "(Clone)")
+               
+                foreach (GameObject powerup in _powerUpList)
                 {
-                    audioPickUp.Play();
-                    CurrentPowerUp = powerup;
-                    powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
-                    ClaimPrefab(collider.gameObject);
-                    photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                }
-            }
-            if (_currentPowerUpIcon)
-            {
-                Destroy(_currentPowerUpIcon);
-            }
-            _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
-
-
-            if (CurrentPowerUp && CurrentPowerUp.GetType() == collider.GetComponent<PowerUp>().GetType())
-            {
-                PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
-                switch (powerup.stacking)
-                {
-                    case PowerUp.StackMode.Add:
+                    if (collider.name == powerup.name + "(Clone)")
+                    {
+                        audioPickUp.Play();
+                        CurrentPowerUp = powerup;
+                        powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
                         ClaimPrefab(collider.gameObject);
                         photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                        break;
-                    case PowerUp.StackMode.None:
-                        break;
-                    case PowerUp.StackMode.Shield:
-                        if (powerup.GetType() == typeof(Shield))
-                        {
-                            //powerup.Use(GetComponent<NetworkIdentity>().netId);
+                    }
+                }
+                if (_currentPowerUpIcon)
+                {
+                    Destroy(_currentPowerUpIcon);
+                }
+                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
+
+
+                if (CurrentPowerUp && CurrentPowerUp.GetType() == collider.GetComponent<PowerUp>().GetType())
+                {
+                    PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
+                    switch (powerup.stacking)
+                    {
+                        case PowerUp.StackMode.Add:
                             ClaimPrefab(collider.gameObject);
                             photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                        }
-                        else
-                        {
-                            Debug.LogError("Stacking mode is shield without being shield prefab");
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        case PowerUp.StackMode.None:
+                            break;
+                        case PowerUp.StackMode.Shield:
+                            if (powerup.GetType() == typeof(Shield))
+                            {
+                                //powerup.Use(GetComponent<NetworkIdentity>().netId);
+                                ClaimPrefab(collider.gameObject);
+                                photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            }
+                            else
+                            {
+                                Debug.LogError("Stacking mode is shield without being shield prefab");
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
+                GameManager.Instance.UpdatePowerUp();
             }
-            GameManager.Instance.UpdatePowerUp();
+
         }
+         
     }
     public void ClaimPrefab(GameObject prefab)
     {
