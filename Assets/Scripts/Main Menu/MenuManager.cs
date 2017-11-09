@@ -6,7 +6,7 @@ public class MenuManager : MonoBehaviour
 	public GameObject MainMenu, Controls, Credits, HostGame, JoinGame, MatchInProgressError, CreditsBackground;
 	public Button CreateMatch;
 	public InputField MatchName;
-	public bool matchInProgress { private get; set; }
+	public bool MatchInProgress { private get; set; }
 	private float _ortoSize;
 
 	//------------------ Main Menu Buttons ------------------
@@ -49,9 +49,8 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-	    Debug.Log("@OnClickCreateMatchButton");
 		PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
-		matchInProgress = true;
+		MatchInProgress = true;
 		MatchName.interactable = false;
 		ToggleCreateMatchButton();
 	}
@@ -83,14 +82,14 @@ public class MenuManager : MonoBehaviour
 			}
 			else if (name == "HostGame" || name == "JoinGame")
 			{
-				if (matchInProgress)
+				if (MatchInProgress)
 				{
 					//Can't exit, show error
 					MatchInProgressError.SetActive(true);
 					Invoke("HideError", 1f);
 				}
 			}
-			if (!matchInProgress && name != "Background")
+			if (!MatchInProgress && name != "Background")
 			{
 				canvas.gameObject.SetActive(false);
 				MainMenu.SetActive(true);

@@ -9,9 +9,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public static PhotonLobbyManager Instance;
 
-    [Header("Match Settings")]
-    public int MaxMatchesToList = 4;
-
     [Tooltip("The maximum number of players per room.")]
     public byte MaxPlayersPerRoom = 4;
     public PhotonLogLevel Loglevel = PhotonLogLevel.ErrorsOnly;
@@ -19,7 +16,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
 
     #region Private Variables
-    private PhotonMatchList _matchList;
     private int _selectedMap = 2;
 
     /// <summary>
@@ -65,7 +61,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public void CreateMatch(string name, int playerCount)
     {
-        Debug.Log("@CreateMatch Name: " + name + ", " +  playerCount + " players");
+        JoinLobby();
+        Debug.Log("@CreateMatch Name: \"" + name + "\" Players: " +  playerCount);
         if (PhotonNetwork.connected)
         {
             PhotonNetwork.CreateRoom(name, new RoomOptions() {MaxPlayers = (byte) playerCount}, null);
@@ -73,25 +70,44 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         }
     }
 
-    public void ListMatches()
-    {
-        RoomInfo[] matches = PhotonNetwork.GetRoomList();
-
-        if (!_matchList)
-        {
-            _matchList = FindObjectOfType<PhotonMatchList>();
-        }
-        _matchList.HideLoadingIcon();
-
-        if (matches.Length > 0)
-        {
-            for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
-            {
-                _matchList.AddMatchToList(matches[i]);
-            }
-
-        }
+    /// <summary>
+    /// Joins the lobby - start receiving matchlist updates.
+    /// </summary>
+    public void JoinLobby() {
+        PhotonNetwork.JoinLobby();
     }
+
+    /// <summary>
+    /// Leaves the lobby - stop receiving matchlist updates.
+    /// </summary>
+    public void ExitLobby() {
+        PhotonNetwork.LeaveLobby();
+    }
+
+    ////Updates the match list.
+    //public override void OnReceivedRoomListUpdate()
+    //{
+    //    RoomInfo[] matches = PhotonNetwork.GetRoomList();
+    //    Debug.Log("Matches found: ");
+    //    foreach (RoomInfo match in matches)
+    //    {
+    //        Debug.Log(match.Name);
+    //    }
+    //    if (!_matchList)
+    //    {
+    //        _matchList = FindObjectOfType<PhotonMatchList>();
+    //        Debug.Log("Matchlist object found: " + (bool)_matchList);
+    //    }
+
+    //    if (matches.Length > 0)
+    //    {
+    //                _matchList.HideLoadingIcon();
+    //        for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
+    //        {
+    //            _matchList.AddMatchToList(matches[i]);
+    //        }
+    //    }
+    //}
 
     public void JoinMatch(string matchName)
     {
@@ -119,8 +135,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         base.OnJoinedRoom();
         Debug.Log("@OnJoinedRoom(). This client is in a room now.");
 
-        //Load room only if we are the first player joining.
-        if (PhotonNetwork.room.PlayerCount == 1) {
+        //TODO: For testing. Refactor to load the level after all the players are marked ready
+        if (PhotonNetwork.room.PlayerCount == PhotonNetwork.room.MaxPlayers) {
             PhotonNetwork.LoadLevel(_selectedMap);
         }
 
