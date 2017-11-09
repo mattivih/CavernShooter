@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PhotonListMatches : Photon.PunBehaviour
+public class PhotonJoinMatch : Photon.PunBehaviour
 {
     public int MaxMatchesToList = 4;
 
@@ -30,7 +30,6 @@ public class PhotonListMatches : Photon.PunBehaviour
         if (!_matchList)
         {
             _matchList = FindObjectOfType<PhotonMatchList>();
-            Debug.Log("Matchlist object found: " + (bool)_matchList);
         }
 
         if (matches.Length > 0)

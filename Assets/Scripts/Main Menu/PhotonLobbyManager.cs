@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -66,7 +65,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         if (PhotonNetwork.connected)
         {
             PhotonNetwork.CreateRoom(name, new RoomOptions() {MaxPlayers = (byte) playerCount}, null);
-
         }
     }
 
@@ -74,6 +72,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// Joins the lobby - start receiving matchlist updates.
     /// </summary>
     public void JoinLobby() {
+        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "ReadyToBegin", "false" } };
+        PhotonNetwork.player.SetCustomProperties(playerProperties);
+        Debug.Log("Ready To Begin: " + PhotonNetwork.player.CustomProperties["ReadyToBegin"]);
         PhotonNetwork.JoinLobby();
     }
 
@@ -83,31 +84,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     public void ExitLobby() {
         PhotonNetwork.LeaveLobby();
     }
-
-    ////Updates the match list.
-    //public override void OnReceivedRoomListUpdate()
-    //{
-    //    RoomInfo[] matches = PhotonNetwork.GetRoomList();
-    //    Debug.Log("Matches found: ");
-    //    foreach (RoomInfo match in matches)
-    //    {
-    //        Debug.Log(match.Name);
-    //    }
-    //    if (!_matchList)
-    //    {
-    //        _matchList = FindObjectOfType<PhotonMatchList>();
-    //        Debug.Log("Matchlist object found: " + (bool)_matchList);
-    //    }
-
-    //    if (matches.Length > 0)
-    //    {
-    //                _matchList.HideLoadingIcon();
-    //        for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
-    //        {
-    //            _matchList.AddMatchToList(matches[i]);
-    //        }
-    //    }
-    //}
 
     public void JoinMatch(string matchName)
     {
@@ -136,10 +112,14 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         Debug.Log("@OnJoinedRoom(). This client is in a room now.");
 
         //TODO: For testing. Refactor to load the level after all the players are marked ready
-        if (PhotonNetwork.room.PlayerCount == PhotonNetwork.room.MaxPlayers) {
+        if (PhotonNetwork.room.PlayerCount == PhotonNetwork.room.MaxPlayers)
+        {
             PhotonNetwork.LoadLevel(_selectedMap);
         }
-
+        else
+        {
+            //Update matchlist player count
+        }
     }
 
     public override void OnDisconnectedFromPhoton()

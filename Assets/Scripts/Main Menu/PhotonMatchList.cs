@@ -49,7 +49,7 @@ public class PhotonMatchList : MonoBehaviour
 		_matchCount++;
 	}
 
-	/// <summary>
+    /// <summary>
 	/// Show message "No matches found" if no matches are found.
 	/// </summary>
 	public void ShowNoMatchesFound()
