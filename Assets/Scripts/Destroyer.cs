@@ -5,6 +5,12 @@ using UnityEngine;
 public class Destroyer : MonoBehaviour {
 
 	public void DestroyDelayed(float time) {
-        Destroy(gameObject, time);
+        Invoke("PunDestroyDelayed", time);
     }
+    [PunRPC]
+    public void PunDestroyDelayed()
+    {
+        PhotonNetwork.Destroy(gameObject);
+    }
+
 }

@@ -7,8 +7,8 @@ public class LaserBeamPowerUp : PowerUp
 {
 
     public GameObject LaserBeamPrefab;
-
-    private GameObject _laser;
+    private bool firing = false;
+    private GameObject go;
 
     void Awake()
     {
@@ -17,56 +17,54 @@ public class LaserBeamPowerUp : PowerUp
         mode = PowerUpMode.Controller;
     }
 
-    /*[PunRPC]
-    public void RpcStop() {
-        if (_laser && _laser.GetComponent<UseLaserBeam>()) {
-            _laser.GetComponent<UseLaserBeam>().Stop();
+    void FixedUpdate()
+    {
+        if (firing)
+        {
+            photonView.RPC("PunDoLaser", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
+            Units -= Time.deltaTime / 0.5f;
+        }          
+    }
+
+    [PunRPC]
+    public void PunDoLaser(int parentId, int childId)
+    {
+        GameObject i = PhotonView.Find(parentId).gameObject;
+        GameObject o = PhotonView.Find(childId).gameObject;
+
+        Vector3 endPoint = Vector3.zero;
+        RaycastHit2D hit;
+        if (hit = Physics2D.Raycast(i.GetComponent<Ship>().PowerUpPosition.transform.position, i.transform.up, 1000f))
+        {
+            endPoint = hit.point;
+            if (hit.collider.GetComponent<Ship>() || hit.collider.transform.root.gameObject.GetComponent<Ship>())           
+                PhotonView.Find(hit.collider.transform.root.gameObject.GetComponent<PhotonView>().viewID).gameObject.GetComponent<Ship>().TakeDamage(10.0f, i);
+            
+            else if (hit.collider.GetComponent<Base>())
+                hit.collider.GetComponent<Base>().TakeDamage(10.0f);
+
+            o.GetComponent<UseLaserBeam>()._endPoint = endPoint;
         }
-    }*/
+
+        o.transform.parent = i.transform;
+        o.GetComponent<UseLaserBeam>().Firepoint = i.transform;
+        o.GetComponent<UseLaserBeam>().LaserPowerUp = this;
+        o.GetComponent<UseLaserBeam>().Fire();
+    }
+
 
     public override void UseContinuousPowerUp()
     {
-        
-        player = GameManager.Instance.Player;
-        _laser = Instantiate(LaserBeamPrefab, player.transform.position, player.transform.rotation);
-        UseLaserBeam laser = _laser.GetComponent<UseLaserBeam>();
-        laser.LaserPowerUp = this;
-        laser.SetParent(player.GetComponent<Ship>().PowerUpPosition.transform);
-        laser.Firepoint = player.GetComponent<Ship>().PowerUpPosition.transform;
-        laser.Fire();
-        if (player != GameManager.Instance.Player)
-        {
-            laser.LayerMask = laser.LayerMaskEnemy;
-        }
-        else
-        {
-            laser.LayerMask = laser.LayerMaskPlayer;
-        }
+        go = PhotonNetwork.Instantiate("LaserBeam", Vector3.zero, Quaternion.identity, 0);
+        firing = true;
     }
 
     public override void Stop()
     {
-        if (_laser && _laser.GetComponent<UseLaserBeam>())
+        if (go && go.GetComponent<UseLaserBeam>())
         {
-            _laser.GetComponent<UseLaserBeam>().Stop();
+            firing = false;
+            go.GetComponent<UseLaserBeam>().Stop();
         }
     }
 }
-//[PUNRPC]
-//public override void RpcSpawnPowerUp(GameObject controller) {
-//    player = ClientScene.FindLocalObject(id);
-//    controller.GetComponent<UseLaser>().LaserPowerUp = this;
-//    controller.GetComponent<UseLaser>().SetParent(player.GetComponent<Ship>().PowerUpPosition.transform);
-//    controller.GetComponent<UseLaser>().Firepoint = player.GetComponent<Ship>().PowerUpPosition.transform;
-//    controller.GetComponent<UseLaser>().Fire();
-//    _laser = controller;
-//    if (player != GameManager.Instance.Player) {
-//        controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskEnemy;
-//    } else {
-//        controller.GetComponent<UseLaser>().LayerMask = controller.GetComponent<UseLaser>().LayerMaskPlayer;
-//    }
-//}
-//[ClientRpc]
-//public override void RpcUsePowerUp() {
-//    _laser.GetComponent<UseLaser>().Fire();
-//}

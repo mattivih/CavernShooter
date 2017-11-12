@@ -91,9 +91,9 @@ public class PowerUp : Photon.PunBehaviour {
             //audioActivate = AddAudio(clipActivate, false, false, 1f);
             //audioActivate.Play();
 
-            GameObject player = GameManager.Instance.Player;
-            Vector3 pos = player.transform.position;
-            Quaternion rot = player.transform.rotation;
+            GameObject player = Ship.LocalPlayerInstance;
+            Vector3 pos = Ship.LocalPlayerInstance.transform.position;
+            Quaternion rot = Ship.LocalPlayerInstance.transform.rotation;
             //Debug.Log("player: " + player.name + ", id: " + id.Value);
             //CmdUseNormalPowerUp(id);
 

@@ -18,6 +18,7 @@ public class UseLaserBeam : MonoBehaviour {
 	public LayerMask LayerMaskEnemy;
 	public LayerMask LayerMask;
 
+ 
     public GameObject SparksPrefab;
     GameObject sparksObject;
     ParticleSystem sparkParticleSystem;
@@ -26,8 +27,10 @@ public class UseLaserBeam : MonoBehaviour {
 
     public float DPS;
 
+    private bool _haveSparks = false;
     private bool _isFiring;
     private LineRenderer _lineRenderer;
+    public Vector3 _endPoint;
 
     public AudioClip clipFire, clipHitPlayer;
     private AudioSource audioFire, audioHitPlayer;
@@ -46,18 +49,42 @@ public class UseLaserBeam : MonoBehaviour {
         return newAudio;
     }
 
+    [PunRPC]
+    public void FireLaser(Vector3 endpoint)
+    {
+        _lineRenderer = GetComponent<LineRenderer>();
+        _lineRenderer.enabled = true;
+        _lineRenderer.SetPosition(0, Firepoint.position);
+        _lineRenderer.SetPosition(1, endpoint);
+
+    }
+    public void CreateSparks()
+    {
+        sparksObject = PhotonNetwork.Instantiate("Sparks", _endPoint, Quaternion.identity, 0);
+        sparkParticleSystem = sparksObject.GetComponent<ParticleSystem>();
+        sparkParticleEmission = sparkParticleSystem.emission;
+        sparkEmissionNone.constantMax = 0;
+        _haveSparks = true;
+    }
+
+    [PunRPC]
+    public void MoveSparks(int viewId, Vector3 endpoint)
+    {
+        GameObject s = PhotonView.Find(viewId).gameObject;
+        s.transform.position = endpoint;
+        s.transform.rotation = Quaternion.identity;
+    }
 
     void Update() {
-        if (_isFiring) {
-            //Find endpoint for the laser ray
-            _lineRenderer = GetComponent<LineRenderer>();
-            _lineRenderer.enabled = true;
-            _lineRenderer.SetPosition(0, Firepoint.position);
-            _lineRenderer.SetPosition(1, FindEndpoint());
-
-            //Decrease units if the laser is fired continuously
-            LaserPowerUp.Units -= Time.deltaTime / UnitDuration;
-        }
+        if (_isFiring && LaserPowerUp.Units > 0 && GetComponent<PhotonView>().photonView.isMine)
+        {
+            if (!_haveSparks)            
+                CreateSparks();                         
+            else           
+                GetComponent<PhotonView>().RPC("MoveSparks", PhotonTargets.All, sparksObject.GetComponent<PhotonView>().viewID, _endPoint); 
+                          
+            gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint);
+        }           
     }
 
     /// <summary>
@@ -67,51 +94,20 @@ public class UseLaserBeam : MonoBehaviour {
         _isFiring = true;
         audioFire.Play();
     }
-
     /// <summary>
     /// Disables the laser
     /// </summary>
     public void Stop() {
-        if (sparksObject) {
-            sparksObject.GetComponent<Destroyer>().DestroyDelayed(sparkParticleSystem.main.startLifetime.constantMax);
-            sparkParticleEmission.rateOverTime = sparkEmissionNone;
+        if (sparksObject)
+        {
+            _isFiring = false;
+            PhotonNetwork.Destroy(sparksObject);
+            _haveSparks = false;
             sparksObject = null;
         }
         GetComponent<Renderer>().enabled = false;
-        _isFiring = false;
         audioFire.Stop();
+        PhotonNetwork.Destroy(gameObject);
     }
 
-    /// <summary>
-    /// Finds the end point for the laser ray
-    /// </summary>
-    Vector3 FindEndpoint() {
-        Vector3 endPoint = Vector3.zero;
-		RaycastHit2D hit;
-		if (hit = Physics2D.Raycast(Firepoint.position, Firepoint.up, MaxDistance, LayerMask)) {
-            endPoint = hit.point;
-            if (hit.collider.GetComponent<Ship>()) {
-                hit.collider.GetComponent<Ship>().TakeDamage(DPS * Time.deltaTime, transform.root.gameObject);
-                AudioSource.PlayClipAtPoint(clipHitPlayer, hit.point);
-            } else if (hit.collider.GetComponent<Base>()) {
-                hit.collider.GetComponent<Base>().TakeDamage(DPS * Time.deltaTime);
-            }
-        }
-
-        if (!sparksObject) {
-            sparksObject = Instantiate(SparksPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-            sparkParticleSystem = sparksObject.GetComponent<ParticleSystem>();
-            sparkParticleEmission = sparkParticleSystem.emission;
-            sparkEmissionNone.constantMax = 0;
-        } else {
-            sparksObject.transform.position = hit.point;
-            sparksObject.transform.rotation = Quaternion.LookRotation(hit.normal);
-        }
-
-        return endPoint;
-    }
-
-    public void SetParent(Transform parent) {
-        transform.parent = parent;
-    }
 }

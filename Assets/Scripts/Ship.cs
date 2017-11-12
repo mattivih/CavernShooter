@@ -132,7 +132,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         base.OnPhotonInstantiate(info);
         gameObject.name = "Player " + photonView.viewID;
         //Local client initialization
-        Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
+        //Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
         if (photonView.isMine)
         {
             Camera.main.GetComponent<CameraController>().FollowShip(transform);

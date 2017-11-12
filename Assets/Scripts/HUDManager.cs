@@ -28,7 +28,6 @@ public class HUDManager : MonoBehaviour {
     public void UpdatePowerUp(GameObject CurrentPowerUp) {
             if (GameManager.Instance.powerupBarImage)
             {
-            Debug.Log("asd");
                 if (CurrentPowerUp)
                 {
                     if (CurrentPowerUp.GetComponent<PowerUp>().name != "ZeroGravityPowerUp")
