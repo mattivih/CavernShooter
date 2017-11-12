@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// UI script: handles viewing the information of one match in the match list.
 /// </summary>
-public class PhotonMatchListEntry : MonoBehaviour
+public class PhotonMatchlistEntry : MonoBehaviour
 {
 
 	public Text MatchName, Players;
@@ -20,7 +20,7 @@ public class PhotonMatchListEntry : MonoBehaviour
 	{
 		_match = match;
 		MatchName.text = match.Name;
-		Players.text = _match.PlayerCount + "/" + _match.MaxPlayers;
+        UpdatePlayerCount(match.PlayerCount);
 		JoinButton.onClick.RemoveAllListeners();
 		JoinButton.onClick.AddListener(JoinButtonListener);
 	}
@@ -36,4 +36,8 @@ public class PhotonMatchListEntry : MonoBehaviour
 		GameObject.Find("Select Match").SetActive(false);
 		PhotonLobbyManager.Instance.JoinMatch(_match.Name);
 	}
+
+    public void UpdatePlayerCount(int playerCount) {
+        Players.text = playerCount + "/" + _match.MaxPlayers;
+    }
 }

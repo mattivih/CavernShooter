@@ -6,7 +6,7 @@ using UnityEngine.Networking.Match;
 /// <summary>
 /// UI script: Matchlist that shows available matches, max players and currently joined players per match.
 /// </summary>
-public class PhotonMatchList : MonoBehaviour
+public class PhotonMatchlist : MonoBehaviour
 {
 
 	public GameObject MatchListEntryPrefab, NoMatchesFoundPrefab, LoadingPrefab;
@@ -34,7 +34,7 @@ public class PhotonMatchList : MonoBehaviour
 		Transform parent = null;
 		foreach (var pos in _positions)
 		{
-			if (pos.gameObject.GetComponent<PhotonMatchList>())
+			if (pos.gameObject.GetComponent<PhotonMatchlist>())
 			{
 				parent = pos;
 			}
@@ -45,9 +45,18 @@ public class PhotonMatchList : MonoBehaviour
 	public void AddMatchToList(RoomInfo match)
 	{
 		GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
-		matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(match);
+		matchListEntry.GetComponent<PhotonMatchlistEntry>().FillMatchListEntry(match);
 		_matchCount++;
 	}
+
+    public void UpdatePlayerCount(RoomInfo match) {
+        PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+        foreach (var entry in matchlist) {
+            if (entry.MatchName.text == match.Name) {
+                entry.UpdatePlayerCount(PhotonNetwork.room.PlayerCount);
+            }
+        }
+    }
 
     /// <summary>
 	/// Show message "No matches found" if no matches are found.

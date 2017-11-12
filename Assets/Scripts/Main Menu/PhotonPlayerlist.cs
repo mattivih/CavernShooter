@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -48,23 +49,16 @@ public class PhotonPlayerlist : MonoBehaviour
         _positions.Remove(parent);
     }
 
-    void Update()
+    public void Update()
     {
-        if (_playerCount != PhotonNetwork.playerList.Length)
-        {
-            UpdatePlayerlist();
+        if (PhotonNetwork.playerList.Length != _playerCount && PhotonNetwork.inRoom) {
+            ClearList();
+            foreach (var player in PhotonNetwork.playerList) {
+                AddPlayer(player);
+            }
         }
     }
 
-
-    public void UpdatePlayerlist()
-    {
-        ClearList();
-        foreach (var player in PhotonNetwork.playerList)
-        {
-            AddPlayer(player);
-        }
-    }
 
     /// <summary>
     ///Adds player to the Players Joined & Connection status-list
@@ -124,26 +118,27 @@ public class PhotonPlayerlist : MonoBehaviour
     /// <summary>
     /// Updates player's status in Players Joined & Connection status-list
     /// </summary>
-    public void UpdatePlayerStatus(PhotonPlayer player)
+    public void UpdatePlayerStatus(PhotonPlayer player, bool isReady)
     {
         PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
-        foreach (var entry in playerlist)
-        {
-            if (entry.Player.ID == player.ID)
+            foreach (var entry in playerlist)
             {
-                //if (player.readyToBegin)
-                //{
-                //    entry.PlayerReady();
+                if (entry.Player.ID == player.ID)
+                {
+                    if (isReady)
+                    {
+                        entry.PlayerReady();
 
-                //}
-                //else
-                //{
-                //    entry.PlayerNotReady();
-                //}
+                    }
+                    else
+                    {
+                        entry.PlayerNotReady();
+                    }
+                }
             }
         }
     }
-}
+
 
 /// <summary>
 /// Updates player's name in Players Joined & Connection status-list

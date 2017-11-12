@@ -46,32 +46,32 @@ public class PhotonGameManager : Photon.PunBehaviour {
 
     #region Callbacks
 
-    public override void OnPhotonPlayerConnected(PhotonPlayer other)
-    {
-        base.OnPhotonPlayerConnected(other);
-        Debug.Log(other.NickName + " " + other.ID + " joined game.");
-    }
+    //public override void OnPhotonPlayerConnected(PhotonPlayer other)
+    //{
+    //    base.OnPhotonPlayerConnected(other);
+    //    Debug.Log(other.NickName + " " + other.ID + " joined game.");
+    //}
 
     /// <summary>
     /// Called when the local player left the room. We need to load the lobby scene.
     /// </summary>
-    public override void OnLeftRoom()
-        {
-            SceneManager.LoadScene(0); //Lobby
-        }
+    //public override void OnLeftRoom()
+    //    {
+    //        SceneManager.LoadScene(0); //Lobby
+    //    }
 
-    public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
-    {
-        Debug.Log(other.NickName + " disconnected.");
+    //public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
+    //{
+    //    Debug.Log(other.NickName + " disconnected.");
 
 
-        if (PhotonNetwork.isMasterClient)
-        {
-            Debug.Log("OnPhotonPlayerDisonnected isMasterClient " + PhotonNetwork.isMasterClient);
-            SceneManager.LoadScene(SceneManager.GetSceneByName("1_MainMenu").buildIndex); //Lobby
-        }
-    }
+    //    if (PhotonNetwork.isMasterClient)
+    //    {
+    //        Debug.LogError("Master Client disconnected.");
+    //        SceneManager.LoadScene(SceneManager.GetSceneByName("1_MainMenu").buildIndex); //Lobby
+    //    }
+    //}
 
 
     #endregion
-    }
+}

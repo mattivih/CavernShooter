@@ -8,7 +8,7 @@ public class PhotonPlayerlistEntry : MonoBehaviour
 {
 
 	public Text PlayerName, PlayerStatus;
-	//public Image ReadyIcon;
+	public Image ReadyIcon;
 
 	[HideInInspector]
 	public PhotonPlayer Player { get; set; }
@@ -20,17 +20,17 @@ public class PhotonPlayerlistEntry : MonoBehaviour
 	{
 		Player = player;
 		SetName(player.NickName);
+        bool isReady = System.Convert.ToBoolean(player.CustomProperties["Ready"]);
 
-        //TODO: make player ready
-		//if (player.readyToBegin)
-		//{
-		//	PlayerReady();
-		//}
-		//else
-		//{
-		//	PlayerNotReady();
-		//}
-	}
+        if (isReady)
+        {
+            PlayerReady();
+        }
+        else
+        {
+            PlayerNotReady();
+        }
+    }
 
 	/// <summary>
 	/// Updates the player's name
@@ -45,7 +45,7 @@ public class PhotonPlayerlistEntry : MonoBehaviour
 	/// </summary>
 	public void PlayerReady()
 	{
-		//ReadyIcon.enabled = true;
+		ReadyIcon.enabled = true;
 		PlayerStatus.text = "";
 	}
 
@@ -54,7 +54,7 @@ public class PhotonPlayerlistEntry : MonoBehaviour
 	/// </summary>
 	public void PlayerNotReady()
 	{
-		//ReadyIcon.enabled = false;
+		ReadyIcon.enabled = false;
 		PlayerStatus.text = "Waiting...";
 	}
 }

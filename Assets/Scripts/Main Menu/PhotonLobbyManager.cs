@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -56,11 +57,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     }
 
 
-        #endregion
+    #endregion
+
+        #region Match & Lobby methods
 
     public void CreateMatch(string name, int playerCount)
     {
-        JoinLobby();
         Debug.Log("@CreateMatch Name: \"" + name + "\" Players: " +  playerCount);
         if (PhotonNetwork.connected)
         {
@@ -72,9 +74,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// Joins the lobby - start receiving matchlist updates.
     /// </summary>
     public void JoinLobby() {
-        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "ReadyToBegin", "false" } };
-        PhotonNetwork.player.SetCustomProperties(playerProperties);
-        Debug.Log("Ready To Begin: " + PhotonNetwork.player.CustomProperties["ReadyToBegin"]);
         PhotonNetwork.JoinLobby();
     }
 
@@ -99,6 +98,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
          _selectedMap = SceneManager.GetSceneByName(name).buildIndex;
     }
 
+#endregion
+
     #region Callbacks
     public override void OnConnectedToMaster()
     {
@@ -106,20 +107,70 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             Debug.Log("@OnConnectedToMaster()");
     }
 
+    public override void OnCreatedRoom()
+    {
+        base.OnCreatedRoom();
+        Debug.Log("@OnCreatedRoom");
+    }
+
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
-        Debug.Log("@OnJoinedRoom(). This client is in a room now.");
 
-        //TODO: For testing. Refactor to load the level after all the players are marked ready
-        if (PhotonNetwork.room.PlayerCount == PhotonNetwork.room.MaxPlayers)
-        {
-            PhotonNetwork.LoadLevel(_selectedMap);
-        }
-        else
+        // Set Player ready status
+        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
+        PhotonNetwork.player.SetCustomProperties(playerProperties);
+
+        if (PhotonNetwork.player.IsLocal && !PhotonNetwork.isMasterClient) // = Player is in the Join Game menu
         {
             //Update matchlist player count
+            FindObjectOfType<PhotonMatchlist>().UpdatePlayerCount(PhotonNetwork.room);
         }
+    }
+
+    public override void OnLeftRoom()
+    {
+        LoadLevel(0); //Lobby
+    }
+
+    ///<summary>
+    /// Used for handling player transitions between states Ready/Not ready
+    /// </summary>
+    public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
+    {
+        PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
+        Hashtable props = playerAndUpdatedProps[1] as Hashtable;
+
+        if (props != null && props["Ready"] != null) {
+            PhotonPlayerlist.Instance.UpdatePlayerStatus(player, Convert.ToBoolean(props["Ready"]));
+
+            //Check if all the players are now ready
+            bool allReady = true;
+            foreach (var matchPlayer in PhotonNetwork.playerList) {
+                if (!Convert.ToBoolean(matchPlayer.CustomProperties["Ready"])) {
+                    allReady = false;
+                }
+            }
+
+            //If all the players are ready, load the game level.
+            if (allReady && PhotonNetwork.isMasterClient) {
+                LoadLevel(_selectedMap);
+            }
+        }
+    }
+
+    public void LoadLevel(int buildIndex) {
+        if (PhotonNetwork.isMasterClient)
+        {
+            PhotonNetwork.LoadLevel(buildIndex);
+        }
+    }
+
+
+    public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
+    {
+        Debug.Log(other.NickName + " disconnected.");
+        LoadLevel(SceneManager.GetSceneByName("1_MainMenu").buildIndex);
     }
 
     public override void OnDisconnectedFromPhoton()
