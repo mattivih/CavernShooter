@@ -8,12 +8,12 @@ public class ZeroGravityGenerator : PowerUp {
 
 	public GameObject ZeroGravityEffect;
     public float ZeroGravityTime = 15f;
+
     private float _originalGravity;
     float originalGravity;
 
     void Awake()
     {
-        stacking = StackMode.ZeroGravity;
         audioActivate = AddAudio(clipActivate, false, false, 1f);
     }
 
@@ -35,7 +35,7 @@ public class ZeroGravityGenerator : PowerUp {
         ZeroGravityHelper++;
         GameManager.Instance.hud.ResetZeroGravity();
 
-        if (Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale != 0)
+        if (Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale != 0)       
             originalGravity = Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale;
 
         Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale = 0;

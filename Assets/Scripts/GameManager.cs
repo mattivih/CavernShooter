@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     //Register an active player game object in the scene
     public GameObject Player;
     public GameObject Background;
+    public Sprite[] powerupImages;
     public enum powerupPickups
     {
         DistortionRayPowerUp = 0,
@@ -51,12 +52,34 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //public int GetPlayerNum(NetworkInstanceId playerid) {
+    //    if (!players.Contains(playerid)) {
+    //        players.Add(playerid);
+    //    }
+    //    List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
+    //    return sortedList.IndexOf(playerid);
+    //}
 
-    void Start()
+    //public void CallEndGame(string[] deadPlayers) {
+    //    RpcShowMatchResult(deadPlayers);
+    //}
+
+    //[ClientRpc]
+    //public void RpcShowMatchResult(string[] deadPlayers)
+    //{
+    //    GameObject gameOverScreen = Instantiate(GameOverPrefab);
+    //    MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
+    //    for (int i = deadPlayers.Length - 1; i >= 0; i--)
+    //    {
+    //        result.FillPlayerInfo(deadPlayers[i]);
+    //    }
+    //}
+
+
+void Start()
     {
         hud = FindObjectOfType<HUDManager>();
     }
-
     public void UpdateHealthBar(float health, float maxHealth)
     {
         hud.UpdateHealthBar(health, maxHealth);
@@ -67,8 +90,8 @@ public class GameManager : MonoBehaviour {
         hud.UpdateShieldBar(shield, maxHealth);
     }
 
-    public void UpdatePowerUp(PowerUp CurrentPowerUp) {
-        hud.UpdatePowerUp(CurrentPowerUp);
+    public void UpdatePowerUp() {
+        hud.UpdatePowerUp(Ship.LocalPlayerInstance.GetComponent<PowerUpHandler>().CurrentPowerUp);
     }
 
     //    public int GetPlayerNum(NetworkInstanceId playerid) {
