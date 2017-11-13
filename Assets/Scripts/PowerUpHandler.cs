@@ -71,7 +71,8 @@ public class PowerUpHandler : Photon.PunBehaviour
                
                 foreach (GameObject powerup in _powerUpList)
                 {
-                    if (collider.name == powerup.name + "(Clone)")
+                    if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
+                  //  if (collider.name == powerup.name + "(Clone)")
                     {
                         audioPickUp.Play();
                         CurrentPowerUp = powerup;
