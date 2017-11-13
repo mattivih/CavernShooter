@@ -63,10 +63,27 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public void CreateMatch(string name, int playerCount)
     {
-        Debug.Log("@CreateMatch Name: \"" + name + "\" Players: " +  playerCount);
+        //Debug.Log("@CreateMatch Name: \"" + name + "\" Players: " +  playerCount);
+
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = (byte) playerCount;
+
+        if (string.IsNullOrEmpty(PhotonNetwork.playerName))
+        {
+            PhotonNetwork.playerName = "Player 1";
+            OnPlayerNameChanged();
+        }
+        if (name == "")
+        {
+            name = "Match";
+        }
+
+        ExitGames.Client.Photon.Hashtable matchProperties = new ExitGames.Client.Photon.Hashtable() { { "MatchName", name } };
+        roomOptions.CustomRoomPropertiesForLobby = new[] {"MatchName"};
+        roomOptions.CustomRoomProperties = matchProperties;
         if (PhotonNetwork.connected)
         {
-            PhotonNetwork.CreateRoom(name, new RoomOptions() {MaxPlayers = (byte) playerCount}, null);
+            PhotonNetwork.CreateRoom(null, roomOptions , null);
         }
     }
 
@@ -109,14 +126,11 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnCreatedRoom()
     {
-        base.OnCreatedRoom();
-        Debug.Log("@OnCreatedRoom");
+        Debug.Log("@OnCreatedRoom Room name: " + PhotonNetwork.room.Name + " Room view name: " +  PhotonNetwork.room.CustomProperties["MatchName"]);
     }
 
     public override void OnJoinedRoom()
     {
-        base.OnJoinedRoom();
-
         // Set Player ready status
         ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties);
@@ -125,6 +139,27 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             //Update matchlist player count
             FindObjectOfType<PhotonMatchlist>().UpdatePlayerCount(PhotonNetwork.room);
+        }
+        GeneratePlayerNameIfEmpty();
+    }
+
+    public void GeneratePlayerNameIfEmpty()
+    {
+        if (PhotonNetwork.playerName == "")
+        {
+            PhotonNetwork.playerName = "Player " + PhotonNetwork.room.PlayerCount + 1;
+            OnPlayerNameChanged();
+        }
+    }
+
+    public void OnPlayerNameChanged()
+    {
+        //Update UI
+        PhotonPlayerName nameField = FindObjectOfType<PhotonPlayerName>();
+        Debug.Log("Name field: " + nameField);
+        if (nameField)
+        {
+            nameField.UpdatePlayerName(PhotonNetwork.playerName);
         }
     }
 

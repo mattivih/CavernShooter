@@ -6,16 +6,6 @@ public class PhotonJoinMatch : Photon.PunBehaviour
 
     private PhotonMatchlist _matchList;
 
-    public void OnEnable()
-	{
-		PhotonLobbyManager.Instance.JoinLobby();
-	}
-
-    public void OnDisable()
-    {
-        PhotonLobbyManager.Instance.ExitLobby();
-    }
-
     /// <summary>
     /// Updates the matchlist (on Join Game Menu)
     /// </summary>
@@ -24,7 +14,7 @@ public class PhotonJoinMatch : Photon.PunBehaviour
         RoomInfo[] matches = PhotonNetwork.GetRoomList();
         foreach (RoomInfo match in matches)
         {
-            Debug.Log(match.Name);
+            Debug.Log("@OnReceivedRoomListUpdate Matchname: " + match.CustomProperties["MatchName"]);
         }
         if (!_matchList)
         {

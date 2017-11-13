@@ -52,7 +52,7 @@ public class PhotonMatchlist : MonoBehaviour
     public void UpdatePlayerCount(RoomInfo match) {
         PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
         foreach (var entry in matchlist) {
-            if (entry.MatchName.text == match.Name) {
+            if (entry.MatchName.text == match.CustomProperties["MatchName"].ToString()) {
                 entry.UpdatePlayerCount(PhotonNetwork.room.PlayerCount);
             }
         }

@@ -5,7 +5,7 @@ public class MenuManager : MonoBehaviour
 {
 	public GameObject MainMenu, Controls, Credits, HostGame, JoinGame, MatchInProgressError, CreditsBackground;
 	public Button CreateMatch;
-	public InputField MatchName;
+	public InputField MatchName, HostGamePlayerName;
 	public bool MatchInProgress { private get; set; }
 	private float _ortoSize;
 
@@ -49,7 +49,7 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-		PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
+        PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
 		MatchInProgress = true;
 		MatchName.interactable = false;
 		ToggleCreateMatchButton();
