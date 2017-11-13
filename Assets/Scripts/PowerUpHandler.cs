@@ -57,70 +57,75 @@ public class PowerUpHandler : Photon.PunBehaviour
         return newAudio;
     }
 
-    
+    void Update()
+    {
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0)
+        {
+            CurrentPowerUp = null;
+            Destroy(_currentPowerUpIcon);
+        }
+    }
 
     /// <summary>
     /// Sets CurrentPowerUp when ship picks up a powerup item.
     /// </summary>
     /// <param name="collider">Collider.</param>
-   
+
     void OnTriggerEnter2D(Collider2D collider)
     {
         if (photonView.isMine)
         {
             if (collider.tag == "PowerUp")
             {
-               
-                foreach (GameObject powerup in _powerUpList)
+                if (!CurrentPowerUp|| CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
-                    if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
-<<<<<<< HEAD
-=======
-                  //  if (collider.name == powerup.name + "(Clone)")
->>>>>>> Photon_Powerups
+                    Debug.Log("Zerooo");
+                    foreach (GameObject powerup in _powerUpList)
                     {
-                        audioPickUp.Play();
-                        CurrentPowerUp = powerup;
-                        powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
-                        ClaimPrefab(collider.gameObject);
-                        photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                        if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
+                        {
+                            audioPickUp.Play();
+                            CurrentPowerUp = powerup;
+                            powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
+                            ClaimPrefab(collider.gameObject);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                        }
                     }
                 }
-                if (_currentPowerUpIcon)
-                {
-                    Destroy(_currentPowerUpIcon);
-                }
-                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
 
-
-                if (CurrentPowerUp && CurrentPowerUp.GetType() == collider.GetComponent<PowerUp>().GetType())
+                else if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().GetType() == collider.GetComponent<PowerUp>().GetType())
                 {
                     PowerUp powerup = CurrentPowerUp.GetComponent<PowerUp>();
                     switch (powerup.stacking)
                     {
                         case PowerUp.StackMode.Add:
+                            powerup.Units = collider.GetComponent<PowerUp>().MaxUnits;
                             ClaimPrefab(collider.gameObject);
                             photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                             break;
                         case PowerUp.StackMode.None:
                             break;
                         case PowerUp.StackMode.Shield:
-                            if (powerup.GetType() == typeof(Shield))
-                            {
-                                //powerup.Use(GetComponent<NetworkIdentity>().netId);
-                                ClaimPrefab(collider.gameObject);
-                                photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
-                            }
-                            else
-                            {
-                                Debug.LogError("Stacking mode is shield without being shield prefab");
-                            }
+                            ClaimPrefab(collider.gameObject);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            break;
+                        case PowerUp.StackMode.ZeroGravity:
+                            powerup.Units += collider.GetComponent<PowerUp>().MaxUnits;
+                            ClaimPrefab(collider.gameObject);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                             break;
                         default:
                             break;
                     }
                 }
-                GameManager.Instance.UpdatePowerUp();
+
+                if (_currentPowerUpIcon)
+                {
+                    Destroy(_currentPowerUpIcon);
+                }
+                _currentPowerUpIcon = Instantiate(CurrentPowerUp.GetComponent<PowerUp>().Icon, _powerUpIconHUDPos.transform, false);
+
+                GameManager.Instance.UpdatePowerUp(CurrentPowerUp.GetComponent<PowerUp>());
             }
 
         }
@@ -166,15 +171,6 @@ public class PowerUpHandler : Photon.PunBehaviour
     public void RPCClaimPrefab(int location)
     {
         _spawner.ClaimPowerUp(location);
-    }
-
-    void Update()
-    {
-        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0)
-        {
-            CurrentPowerUp = null;
-            _currentPowerUpIcon.GetComponent<Image>().enabled = false;
-        }
     }
 
 
