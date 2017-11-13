@@ -7,6 +7,7 @@ public class HUDManager : MonoBehaviour {
 
     private bool _zGravityOn = false;
     private float _zGravityTimer = 15f;
+
     // Use this for initialization
     void Start()
     {
@@ -16,50 +17,47 @@ public class HUDManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+
         if (_zGravityOn)
-        {           
+        {
             _zGravityTimer -= Time.deltaTime;
             GameManager.Instance.powerupBarImage.fillAmount = (_zGravityTimer / 15f);
+            GameManager.Instance.Player.GetComponent<PowerUpHandler>().CurrentPowerUp.GetComponent<PowerUp>().Units = (_zGravityTimer / 15f);
         }
         if (_zGravityTimer <= 0f)
             _zGravityOn = false;
     }
 
-    public void UpdatePowerUp(GameObject CurrentPowerUp) {
-            if (GameManager.Instance.powerupBarImage)
-            {
-                if (CurrentPowerUp)
-                {
-                    if (CurrentPowerUp.GetComponent<PowerUp>().name != "ZeroGravityPowerUp")
-                        _zGravityOn = false;
-                    else
-                    {
-                        GameManager.Instance.powerupBarImage.fillAmount = 1f;
-                        return;
-                    }
+    public void UpdatePowerUp(PowerUp CurrentPowerUp) {
+        if (CurrentPowerUp.name != "ZeroGravityPowerUp")
+            _zGravityOn = false;
+        else
+        {
+            GameManager.Instance.powerupBarImage.fillAmount = 1f;
+            return;
+        }
 
-                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
 
-                    if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3 && CurrentPowerUp.GetComponent<PowerUp>().Units != 0)
-                    {
-                        GameManager.Instance.powerupBarLines4.enabled = false;
-                        GameManager.Instance.powerupBarLines.enabled = true;
-                    }
-                    else if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
-                    {
-                        GameManager.Instance.powerupBarLines.enabled = false;
-                        GameManager.Instance.powerupBarLines4.enabled = true;
-                    }
+        float powerUpFraction = CurrentPowerUp.Units / CurrentPowerUp.MaxUnits;
+        GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
 
-                    else
-                    {
-                        GameManager.Instance.powerupBarLines.enabled = false;
-                        GameManager.Instance.powerupBarLines4.enabled = false;
-                    }
+        if (CurrentPowerUp.MaxUnits == 3 && CurrentPowerUp.Units != 0)
+        {
+            GameManager.Instance.powerupBarLines4.enabled = false;
+            GameManager.Instance.powerupBarLines.enabled = true;
+        }
+        else if (CurrentPowerUp.MaxUnits == 4)
+        {
+            GameManager.Instance.powerupBarLines.enabled = false;
+            GameManager.Instance.powerupBarLines4.enabled = true;
+        }
 
-                }
-            }
+        else
+        {
+            GameManager.Instance.powerupBarLines.enabled = false;
+            GameManager.Instance.powerupBarLines4.enabled = false;
+        }
+
     }
 
     public void ResetZeroGravity()
