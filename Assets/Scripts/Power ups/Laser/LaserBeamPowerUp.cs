@@ -5,15 +5,11 @@ using UnityEngine.Networking;
 
 public class LaserBeamPowerUp : PowerUp
 {
-
-    public GameObject LaserBeamPrefab;
     private bool firing = false;
     private GameObject go;
-    private Vector3 _endPoint;
 
     void Awake()
-    {
-        spawn = LaserBeamPrefab;
+    {   
         controllerReference = typeof(UseLaserBeam);
         mode = PowerUpMode.Controller;
     }
@@ -24,7 +20,9 @@ public class LaserBeamPowerUp : PowerUp
         {
             photonView.RPC("PunDoLaser", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
             Units -= Time.deltaTime / 0.5f;
-        }          
+        }
+        if (Units <= 0)
+            Stop();
     }
 
     [PunRPC]
@@ -32,27 +30,26 @@ public class LaserBeamPowerUp : PowerUp
     {
         GameObject i = PhotonView.Find(parentId).gameObject;
         GameObject o = PhotonView.Find(childId).gameObject;
+      
+        Vector3 _endPoint = Vector3.zero;
+        RaycastHit2D hit;
 
-        
-        while(_endPoint == Vector3.zero)
+        if (hit = Physics2D.Raycast(i.GetComponent<Ship>().PowerUpPosition.transform.position, i.transform.up, 1000f))
         {
-            RaycastHit2D hit;
-            if (hit = Physics2D.Raycast(i.GetComponent<Ship>().PowerUpPosition.transform.position, i.transform.up, 1000f))
-            {
-                _endPoint = hit.point;
-                if (hit.collider.GetComponent<Ship>() || hit.collider.transform.root.gameObject.GetComponent<Ship>())
-                    PhotonView.Find(hit.collider.transform.root.gameObject.GetComponent<PhotonView>().viewID).gameObject.GetComponent<Ship>().TakeDamage(10.0f, i);
+            _endPoint = hit.point;
+            if (hit.collider.GetComponent<Ship>() || hit.collider.transform.root.gameObject.GetComponent<Ship>())
+                PhotonView.Find(hit.collider.transform.root.gameObject.GetComponent<PhotonView>().viewID).gameObject.GetComponent<Ship>().TakeDamage(10.0f, i);
 
-                else if (hit.collider.GetComponent<Base>())
-                    hit.collider.GetComponent<Base>().TakeDamage(10.0f);
+            else if (hit.collider.GetComponent<Base>())
+                hit.collider.GetComponent<Base>().TakeDamage(10.0f);
 
-                o.GetComponent<UseLaserBeam>()._endPoint = _endPoint;
-            }
+            o.GetComponent<UseLaserBeam>()._endPoint = _endPoint;
         }
-    
+
 
         o.transform.parent = i.transform;
         o.GetComponent<UseLaserBeam>().Firepoint = i.transform;
+        
         o.GetComponent<UseLaserBeam>().LaserPowerUp = this;
         o.GetComponent<UseLaserBeam>().Fire();
     }
@@ -60,12 +57,8 @@ public class LaserBeamPowerUp : PowerUp
 
     public override void UseContinuousPowerUp()
     {
-        if(_endPoint != Vector3.zero)
-        {
-            go = PhotonNetwork.Instantiate("LaserBeam", Vector3.zero, Quaternion.identity, 0);
-            firing = true;
-        }
-       
+        go = PhotonNetwork.Instantiate("LaserBeam", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
+        firing = true;
     }
 
     public override void Stop()

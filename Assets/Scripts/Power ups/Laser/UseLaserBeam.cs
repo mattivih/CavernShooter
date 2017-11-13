@@ -52,11 +52,13 @@ public class UseLaserBeam : MonoBehaviour {
     [PunRPC]
     public void FireLaser(Vector3 endpoint)
     {
-        _lineRenderer = GetComponent<LineRenderer>();
-        _lineRenderer.enabled = true;
-        _lineRenderer.SetPosition(0, Firepoint.position);
-        _lineRenderer.SetPosition(1, endpoint);
-
+        if(gameObject.transform.root.gameObject.GetComponent<Ship>())
+        {
+            _lineRenderer = GetComponent<LineRenderer>();
+            _lineRenderer.enabled = true;
+            _lineRenderer.SetPosition(0, Firepoint.position);
+            _lineRenderer.SetPosition(1, endpoint);
+        }
     }
     public void CreateSparks()
     {
@@ -84,7 +86,8 @@ public class UseLaserBeam : MonoBehaviour {
                 GetComponent<PhotonView>().RPC("MoveSparks", PhotonTargets.All, sparksObject.GetComponent<PhotonView>().viewID, _endPoint); 
                           
             gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint);
-        }           
+        }
+   
     }
 
     /// <summary>
@@ -98,9 +101,9 @@ public class UseLaserBeam : MonoBehaviour {
     /// Disables the laser
     /// </summary>
     public void Stop() {
+        _isFiring = false;
         if (sparksObject)
-        {
-            _isFiring = false;
+        {        
             PhotonNetwork.Destroy(sparksObject);
             _haveSparks = false;
             sparksObject = null;

@@ -79,7 +79,6 @@ public class PowerUpHandler : Photon.PunBehaviour
             {
                 if (!CurrentPowerUp|| CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
-                    Debug.Log("Zerooo");
                     foreach (GameObject powerup in _powerUpList)
                     {
                         if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
