@@ -57,6 +57,8 @@ public class PowerUpHandler : Photon.PunBehaviour
         return newAudio;
     }
 
+    
+
     /// <summary>
     /// Sets CurrentPowerUp when ship picks up a powerup item.
     /// </summary>
@@ -71,7 +73,7 @@ public class PowerUpHandler : Photon.PunBehaviour
                
                 foreach (GameObject powerup in _powerUpList)
                 {
-                    if (collider.name == powerup.name + "(Clone)")
+                    if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
                     {
                         audioPickUp.Play();
                         CurrentPowerUp = powerup;
@@ -162,15 +164,15 @@ public class PowerUpHandler : Photon.PunBehaviour
         _spawner.ClaimPowerUp(location);
     }
 
+    void Update()
+    {
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0)
+        {
+            CurrentPowerUp = null;
+            _currentPowerUpIcon.GetComponent<Image>().enabled = false;
+        }
+    }
 
-
-
-
-    //public void PowerUpDepleted()
-    //{
-    //    _currentPowerUpIcon.GetComponent<Image>().enabled = false;
-    //    audioDepleted.Play();
-    //}
 
     //[Command]
     //public void CmdKillPowerUp(NetworkInstanceId powerUpId) {
