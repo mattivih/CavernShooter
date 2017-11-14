@@ -32,6 +32,7 @@ public class ZeroGravityGenerator : PowerUp {
 
     public override void UseNormalPowerUp()
     {
+        isUsed = true;
         ZeroGravityHelper++;
         GameManager.Instance.hud.ResetZeroGravity();
 
@@ -62,6 +63,7 @@ public class ZeroGravityGenerator : PowerUp {
         if(ZeroGravityHelper < 2)
         {
             Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale = originalGravity;
+            isUsed = false;
             foreach(Transform child in Ship.LocalPlayerInstance.transform)
             {
                 if (child.name == "ZeroGravityEffect(Clone)")

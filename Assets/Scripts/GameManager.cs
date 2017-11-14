@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : Photon.PunBehaviour {
 
     //Register an active player game object in the scene
     public GameObject Player;
@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
     //Refactored to use Photon Actor ID:s
     //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
     public List<int> players = new List<int>();
+    
 
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;
@@ -43,6 +44,8 @@ public class GameManager : MonoBehaviour {
     /// Ensures there's only one GameManager
     /// </summary>
     void Awake() {
+
+
         if (Instance == null) {
             Instance = this;
             SpriteManager = GetComponent<Level02SpriteManager>();

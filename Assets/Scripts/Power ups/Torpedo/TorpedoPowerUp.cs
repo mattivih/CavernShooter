@@ -43,6 +43,6 @@ public class TorpedoPowerUp : PowerUp {
     //  }
 
     void Recoil() {
-        GameManager.Instance.Player.GetComponent<Rigidbody2D>().AddForce(GameManager.Instance.Player.transform.up * RecoilForce, ForceMode2D.Impulse);
+        Ship.LocalPlayerInstance.GetComponent<Rigidbody2D>().AddForce(Ship.LocalPlayerInstance.transform.up * RecoilForce, ForceMode2D.Impulse);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class HUDManager : MonoBehaviour {
 
-    private bool _zGravityOn = false;
+    public bool _zGravityOn = false;
     private float _zGravityTimer = 15f;
 
     // Use this for initialization
@@ -22,7 +22,7 @@ public class HUDManager : MonoBehaviour {
         {
             _zGravityTimer -= Time.deltaTime;
             GameManager.Instance.powerupBarImage.fillAmount = (_zGravityTimer / 15f);
-            GameManager.Instance.Player.GetComponent<PowerUpHandler>().CurrentPowerUp.GetComponent<PowerUp>().Units = (_zGravityTimer / 15f);
+            
         }
         if (_zGravityTimer <= 0f)
             _zGravityOn = false;
