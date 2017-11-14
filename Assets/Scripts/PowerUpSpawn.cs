@@ -91,7 +91,8 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn(int powerup)
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[3].name, CenterSpawn.position, Quaternion.identity, 0);
+        // 2 = flamer, 3 = laser
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[2].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }

@@ -54,7 +54,7 @@ public class ZeroGravityGenerator : PowerUp {
         var go = PhotonNetwork.Instantiate("ZeroGravityEffect", Vector3.zero, Quaternion.identity, 0);
         photonView.RPC("spawnZeroGravity", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
 
-
+        Units--;
     }
 
     public void NormalGravity()

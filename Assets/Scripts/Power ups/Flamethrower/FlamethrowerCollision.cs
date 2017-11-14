@@ -109,6 +109,7 @@ public class FlamethrowerCollision : ProjectilesBase {
 	public void BeginEffect(GameObject flamethrower)
 	{
         _isFiring = true;
+        if(audioFire)
         audioFire.Play();
 		_flamethrower = flamethrower;
 
