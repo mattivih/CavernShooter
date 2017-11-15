@@ -79,7 +79,7 @@ public class Laser : ProjectilesBase {
             GetComponent<Renderer>().enabled = false;
             //GetComponent<SpriteRenderer>().enabled = false;
             //Debug.Log("Laser hit terrain");
-            audioHitTerrain.PlayOneShot(clipHitTerrain);
+            audioHitTerrain.Play();
             Destroy(gameObject, audioHitTerrain.clip.length);
         } else if (collider.GetComponent<Ship>()) {
             Debug.Log("Laser of " + Source.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " hit player " + collider.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " Laser layer: " + LayerMask.LayerToName(gameObject.layer) + " Target layer: " + LayerMask.LayerToName(collider.gameObject.layer));

@@ -55,6 +55,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //If we try to register it to the Game Manager here it's too soon and causes errors
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
+            GameManager.Instance.Player = LocalPlayerInstance;
         }
         //Don't destroy on load so the instance survives level loading and the loading between scenes is seamless.
         DontDestroyOnLoad(gameObject);

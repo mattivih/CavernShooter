@@ -25,7 +25,6 @@ public class TorpedoPowerUp : PowerUp {
         go.GetComponent<Rigidbody2D>().velocity = Ship.LocalPlayerInstance.GetComponent<Rigidbody2D>().velocity * Time.deltaTime * 5;
         photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
         Units--;
-       
         Recoil();
     }
 
