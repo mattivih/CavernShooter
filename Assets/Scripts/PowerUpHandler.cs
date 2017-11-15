@@ -88,6 +88,8 @@ public class PowerUpHandler : Photon.PunBehaviour
                     {
                         if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
                         {
+                            if (CurrentPowerUp)
+                                Stop();
                             audioPickUp.Play();
                             CurrentPowerUp = powerup;
                             powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
