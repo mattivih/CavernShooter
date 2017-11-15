@@ -77,6 +77,10 @@ public class PowerUpHandler : Photon.PunBehaviour
         {
             if (collider.tag == "PowerUp")
             {
+                if (CurrentPowerUp)
+                    if (CurrentPowerUp.name == "LaserPowerUp")
+                        CurrentPowerUp.GetComponent<LaserBeamPowerUp>().Stop();
+
                 if (!CurrentPowerUp|| CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     foreach (GameObject powerup in _powerUpList)

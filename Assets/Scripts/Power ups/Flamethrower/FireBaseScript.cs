@@ -30,6 +30,8 @@ using System.Collections;
         private float stopTimeMultiplier;
         private float stopTimeIncrement;
 
+        private GameObject p;
+
 		private IEnumerator CleanupEverythingCoRoutine()
         {
             // 2 extra seconds just to make sure animation and graphics have finished ending
@@ -75,20 +77,31 @@ using System.Collections;
             }
         }
 
+    [PunRPC]
+    public void UnSetParent(int viewId)
+    {
+        PhotonView.Find(viewId).gameObject.GetComponent<ParticleSystem>().emissionRate = 0;
+    }
+
+
         public virtual void Stop()
         {
             // cleanup particle systems
             foreach (ParticleSystem p in gameObject.GetComponentsInChildren<ParticleSystem>())
             {
-                p.transform.parent = null;
-				p.emissionRate = 0;
-				Destroy (p.gameObject, p.main.duration);
-            }
+            if(p.gameObject.GetPhotonView())
+            {
+               gameObject.GetComponent<PhotonView>().RPC("UnSetParent", PhotonTargets.All, p.gameObject.GetPhotonView().viewID);
+             
 
-            //StartCoroutine(CleanupEverythingCoRoutine());
+            }
+         
         }
 
-        public bool Starting
+    }
+
+
+    public bool Starting
         {
             get;
             private set;

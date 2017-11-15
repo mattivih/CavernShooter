@@ -6,8 +6,7 @@ using UnityEngine.Networking;
 public class HUDManager : MonoBehaviour {
 
     private bool _zGravityOn = false;
-    private float _zGravityTimer = 15f;
-
+    private float _zGravityTimer = 15f; 
     // Use this for initialization
     void Start()
     {
@@ -17,12 +16,11 @@ public class HUDManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
         if (_zGravityOn)
         {
             _zGravityTimer -= Time.deltaTime;
             GameManager.Instance.powerupBarImage.fillAmount = (_zGravityTimer / 15f);
-            GameManager.Instance.Player.GetComponent<PowerUpHandler>().CurrentPowerUp.GetComponent<PowerUp>().Units = (_zGravityTimer / 15f);
+          
         }
         if (_zGravityTimer <= 0f)
             _zGravityOn = false;
@@ -36,7 +34,6 @@ public class HUDManager : MonoBehaviour {
             GameManager.Instance.powerupBarImage.fillAmount = 1f;
             return;
         }
-
 
         float powerUpFraction = CurrentPowerUp.Units / CurrentPowerUp.MaxUnits;
         GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;

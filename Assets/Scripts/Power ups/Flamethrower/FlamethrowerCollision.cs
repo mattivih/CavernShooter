@@ -70,7 +70,7 @@ public class FlamethrowerCollision : ProjectilesBase {
 	/// <param name="particleCollisionEvent">Particle collision event.</param>
 	void EmitAtLocation (ParticleCollisionEvent particleCollisionEvent) 
 	{
-		_fire = Instantiate(FireEffectPrefab, particleCollisionEvent.intersection, Quaternion.LookRotation (Vector3.forward, particleCollisionEvent.normal));
+	/*	_fire = PhotonNetwork.Instantiate("FlamesEffectsPrefab", particleCollisionEvent.intersection, Quaternion.LookRotation (Vector3.forward, particleCollisionEvent.normal), 0);
 
 		if (particleCollisionEvent.colliderComponent) {
 			_fire.transform.parent = particleCollisionEvent.colliderComponent.transform;
@@ -86,8 +86,8 @@ public class FlamethrowerCollision : ProjectilesBase {
 		}
 		if (_fire.transform.parent == null) 
 		{
-			Destroy (_fire);
-		}
+			PhotonNetwork.Destroy(_fire);
+		}*/
 	}
 
 	public void Stop()
@@ -97,10 +97,29 @@ public class FlamethrowerCollision : ProjectilesBase {
 		{
             _isFiring = false;
             audioFire.Stop();
-            currentPrefabScript.Stop();
+            currentPrefabScript.Stop();           
 		}
+        gameObject.GetPhotonView().RPC("DelayPunDestroy", PhotonTargets.All, gameObject.GetPhotonView().viewID);
 
 	}
+
+
+
+    [PunRPC]
+    public void DelayPunDestroy(int viewId)
+    {
+        StartCoroutine("DestroyTimer", viewId);
+ 
+    }
+
+    IEnumerator DestroyTimer(int viewId)
+    {
+        yield return new WaitForSeconds(2.0f);
+        if(gameObject.GetPhotonView().isMine)
+        PhotonNetwork.Destroy(PhotonView.Find(viewId).gameObject);
+    }
+
+
 
 	/// <summary>
 	/// Starts the flamethrower effect.
@@ -112,6 +131,7 @@ public class FlamethrowerCollision : ProjectilesBase {
         if(audioFire)
         audioFire.Play();
 		_flamethrower = flamethrower;
+      //  _flamethrower.transform.position = Firepoint.position;
 
 		// set the start point near the player
 	}

@@ -73,7 +73,7 @@ public class FlamethrowerEnvironment : MonoBehaviour {
 		// 2 extra seconds just to make sure animation and graphics have finished ending
 		yield return new WaitForSeconds(StopTime + 2.0f);
 
-		GameObject.Destroy(gameObject);
+		//GameObject.Destroy(gameObject);
 	}
 
 	private void StartParticleSystems()
