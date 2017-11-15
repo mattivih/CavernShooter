@@ -64,6 +64,11 @@ public class PowerUpHandler : Photon.PunBehaviour
             CurrentPowerUp = null;
             Destroy(_currentPowerUpIcon);
         }
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().stacking == PowerUp.StackMode.ZeroGravity &&
+            CurrentPowerUp.GetComponent<PowerUp>().isUsed)
+        {
+            CurrentPowerUp.GetComponent<PowerUp>().Units -= (Time.deltaTime / 15f);
+        }
     }
 
     /// <summary>
@@ -77,16 +82,14 @@ public class PowerUpHandler : Photon.PunBehaviour
         {
             if (collider.tag == "PowerUp")
             {
-                if (CurrentPowerUp)
-                    if (CurrentPowerUp.name == "LaserPowerUp")
-                        CurrentPowerUp.GetComponent<LaserBeamPowerUp>().Stop();
-
-                if (!CurrentPowerUp|| CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
+                if (!CurrentPowerUp || CurrentPowerUp.GetComponent<PowerUp>().GetType() != collider.GetComponent<PowerUp>().GetType())
                 {
                     foreach (GameObject powerup in _powerUpList)
                     {
                         if (collider.GetComponent<PowerUp>().GetType() == powerup.GetComponent<PowerUp>().GetType())
                         {
+                            if (CurrentPowerUp)
+                                Stop();
                             audioPickUp.Play();
                             CurrentPowerUp = powerup;
                             powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
@@ -147,7 +150,7 @@ public class PowerUpHandler : Photon.PunBehaviour
     }
     public void Use()
     {
-        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units > 0)
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units > 0.99)
         {
             CurrentPowerUp.GetComponent<PowerUp>().Use();
         }

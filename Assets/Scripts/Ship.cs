@@ -55,6 +55,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //If we try to register it to the Game Manager here it's too soon and causes errors
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
+            GameManager.Instance.Player = LocalPlayerInstance;
         }
         //Don't destroy on load so the instance survives level loading and the loading between scenes is seamless.
         DontDestroyOnLoad(gameObject);
@@ -105,13 +106,13 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         Material newMaterial = new Material(go.GetComponent<Ship>().ShipColorMaterial);
 
         if (viewId == 1001)
-            newMaterial.color = new Color(ShipColors[0].r * 255, ShipColors[0].g * 255, ShipColors[0].b * 255);
+            newMaterial.color = new Color(ShipColors[0].r, ShipColors[0].g, ShipColors[0].b);
         else if (viewId == 2001)
-            newMaterial.color = new Color(ShipColors[1].r * 255, ShipColors[1].g * 255, ShipColors[1].b * 255);
+            newMaterial.color = new Color(ShipColors[1].r, ShipColors[1].g, ShipColors[1].b);
         else if (viewId == 3001)
-            newMaterial.color = new Color(ShipColors[2].r * 255, ShipColors[2].g * 255, ShipColors[2].b * 255);
+            newMaterial.color = new Color(ShipColors[2].r, ShipColors[2].g, ShipColors[2].b);
         else if (viewId == 4001)
-            newMaterial.color = new Color(ShipColors[3].r * 255, ShipColors[3].g * 255, ShipColors[3].b * 255);
+            newMaterial.color = new Color(ShipColors[3].r, ShipColors[3].g, ShipColors[3].b);
 
         // newMaterial.color = new Color(ShipColors[id - 1].r * 255, ShipColors[id - 1].g * 255, ShipColors[id - 1].b * 255);
         var shipmats = go.GetComponentInChildren<MeshRenderer>().materials;
@@ -138,9 +139,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
 
             //TODO: fix later
-            //PlayerID = PhotonNetwork.countOfPlayers;
+            PlayerID = PhotonNetwork.countOfPlayers;
+            
         }
-
+ 
         //TODO: refactor to HUD Manager
         GameManager.Instance.powerupBarImage.fillAmount = 0;
 
@@ -177,7 +179,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         //music.Play();
 
         //Registers the ship to the Game Manager
-        GameManager.Instance.Player = gameObject;
+        if (!GameManager.Instance)
+        {
+            GameManager.Instance.Player = gameObject;
+        }
 
         foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background"))
         {
@@ -425,7 +430,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             //laser.GetComponent<Collider2D>().enabled = false;
 
             //Sends request to fire a laser to the server and fires it on all instances of this player
-            photonView.RPC("CmdFire", PhotonTargets.All, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity, PlayerID);
+            photonView.RPC("CmdFire", PhotonTargets.All, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity,
+                Ship.LocalPlayerInstance.GetPhotonView().viewID);
             //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             _laserCounter++;
         }
@@ -450,17 +456,14 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     // Photon: Fires a projectile on remote clients.
     // </summary>
     [PunRPC]
-    void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int playerID)
+    void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int viewID)
     {
         //Debug.LogError("Player " + playerID + " on client " + PlayerID + " receiving RPC for firing laser");
         GameObject laser = Instantiate(LaserPrefab, pos, rot);
         laser.GetComponent<Rigidbody2D>().velocity = velocity;
         laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-        
-        //Color is not serialized, can't send it as RPC argument
-        //laser.GetComponent<Laser>().myColor = color;
-        laser.GetComponent<Laser>().myColor = ShipColors[playerID - 1];
 
+       
         laser.GetComponent<Laser>().Source = gameObject;
 
         if (LayerMask.LayerToName(gameObject.layer) == "Enemy") {

@@ -38,7 +38,7 @@ public class Laser : ProjectilesBase {
         GetComponent<SpriteRenderer>().material.SetColor("_Color", myColor);
         float h, s, v;
         Color.RGBToHSV(myColor, out h, out s, out v);
-        s *= 0.9f;
+        s *= 0.7f;
         GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
     }
 

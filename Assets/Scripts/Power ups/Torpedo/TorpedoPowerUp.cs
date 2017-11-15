@@ -25,7 +25,6 @@ public class TorpedoPowerUp : PowerUp {
         go.GetComponent<Rigidbody2D>().velocity = Ship.LocalPlayerInstance.GetComponent<Rigidbody2D>().velocity * Time.deltaTime * 5;
         photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
         Units--;
-       
         Recoil();
     }
 
@@ -43,6 +42,6 @@ public class TorpedoPowerUp : PowerUp {
     //  }
 
     void Recoil() {
-        GameManager.Instance.Player.GetComponent<Rigidbody2D>().AddForce(GameManager.Instance.Player.transform.up * RecoilForce, ForceMode2D.Impulse);
+        Ship.LocalPlayerInstance.GetComponent<Rigidbody2D>().AddForce(Ship.LocalPlayerInstance.transform.up * RecoilForce, ForceMode2D.Impulse);
     }
 }
