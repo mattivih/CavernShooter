@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PhotonLobbyManager : Photon.PunBehaviour
 {
@@ -63,16 +64,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public void CreateMatch(string name, int playerCount)
     {
-        //Debug.Log("@CreateMatch Name: \"" + name + "\" Players: " +  playerCount);
-
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = (byte) playerCount;
 
-        if (string.IsNullOrEmpty(PhotonNetwork.playerName))
-        {
-            PhotonNetwork.playerName = "Player 1";
-            OnPlayerNameChanged();
-        }
         if (name == "")
         {
             name = "Match";
@@ -115,7 +109,26 @@ public class PhotonLobbyManager : Photon.PunBehaviour
          _selectedMap = SceneManager.GetSceneByName(name).buildIndex;
     }
 
-#endregion
+    //Sets the player's status ready and updates the UI
+    public void PlayerReady(PhotonPlayer player) {
+        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "true" } };
+        player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
+
+        //Update UI
+       PhotonPlayerlist.Instance.UpdatePlayerStatus(player.ID, true);
+    }
+
+    //Sets the player's status not ready and updates the UI
+    public void PlayerNotReady(PhotonPlayer player)
+    {
+        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
+        player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
+
+        ////Update UI
+        //PhotonPlayerlist.Instance.UpdatePlayerStatus(player.ID, false);
+    }
+
+    #endregion
 
     #region Callbacks
     public override void OnConnectedToMaster()
@@ -126,7 +139,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnCreatedRoom()
     {
-        Debug.Log("@OnCreatedRoom Room name: " + PhotonNetwork.room.Name + " Room view name: " +  PhotonNetwork.room.CustomProperties["MatchName"]);
+        GameObject.Find("Match Name Input").GetComponent<InputField>().text = PhotonNetwork.room.CustomProperties["MatchName"].ToString();
     }
 
     public override void OnJoinedRoom()
@@ -147,7 +160,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     {
         if (PhotonNetwork.playerName == "")
         {
-            PhotonNetwork.playerName = "Player " + PhotonNetwork.room.PlayerCount + 1;
+            PhotonNetwork.playerName = "Player " + PhotonNetwork.room.PlayerCount;
             OnPlayerNameChanged();
         }
     }
@@ -177,7 +190,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
         if (props != null && props["Ready"] != null) {
-            PhotonPlayerlist.Instance.UpdatePlayerStatus(player, Convert.ToBoolean(props["Ready"]));
 
             //Check if all the players are now ready
             bool allReady = true;

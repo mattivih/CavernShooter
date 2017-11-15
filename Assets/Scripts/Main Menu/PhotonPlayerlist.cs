@@ -35,6 +35,7 @@ public class PhotonPlayerlist : MonoBehaviour
     /// </summary>
     void Start()
     {
+        //Get the Transforms of the parent and child objects
         _positions = GetComponentsInChildren<Transform>(true).ToList();
 
         //Delete parent object from the list
@@ -118,26 +119,28 @@ public class PhotonPlayerlist : MonoBehaviour
     /// <summary>
     /// Updates player's status in Players Joined & Connection status-list
     /// </summary>
-    public void UpdatePlayerStatus(PhotonPlayer player, bool isReady)
+    public void UpdatePlayerStatus(int playerID, bool isReady)
     {
-        PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
-            foreach (var entry in playerlist)
-            {
-                if (entry.Player.ID == player.ID)
-                {
-                    if (isReady)
-                    {
-                        entry.PlayerReady();
+        //PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
+        //    foreach (var entry in playerlist)
+        //    {
+        //        if (entry.Player.ID == playerID)
+        //        {
+        //            if (isReady)
+        //            {
+        //                entry.PlayerReady();
 
-                    }
-                    else
-                    {
-                        entry.PlayerNotReady();
-                    }
-                }
-            }
+        //            }
+        //            else
+        //            {
+        //                entry.PlayerNotReady();
+        //            }
+        //        }
+        //    }
+        //Force UI update
+        ClearList();
         }
-    }
+}
 
 
 /// <summary>

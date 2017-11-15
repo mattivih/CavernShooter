@@ -4,24 +4,33 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
 	public GameObject MainMenu, Controls, Credits, HostGame, JoinGame, MatchInProgressError, CreditsBackground;
-	public Button CreateMatch;
-	public InputField MatchName, HostGamePlayerName;
+    private Button _centerButton; //Create Match in Host Game Menu, Select Match in Join Game menu.
+	public InputField MatchName;
 	public bool MatchInProgress { private get; set; }
+
 	private float _ortoSize;
 
 	//------------------ Main Menu Buttons ------------------
 
-	public void OnClickHostButton()
+	public void OnClickHostGameButton()
 	{
 		MainMenu.SetActive(false);
 		HostGame.SetActive(true);
-	}
+        _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton.GetComponentInChildren<Text>().text = "CREATE\nMATCH";
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickCreateMatchButton);
+        _centerButton.interactable = true;
+    }
 
-	public void OnClickJoinButton()
+	public void OnClickJoinGameButton()
 	{
 		MainMenu.SetActive(false);
 		JoinGame.SetActive(true);
-	}
+        _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton.GetComponentInChildren<Text>().text = "SELECT\nMATCH";
+        _centerButton.interactable = false;
+    }
 
 	public void OnClickControlsButton()
 	{
@@ -52,23 +61,46 @@ public class MenuManager : MonoBehaviour
         PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
 		MatchInProgress = true;
 		MatchName.interactable = false;
-		ToggleCreateMatchButton();
+        AddReadyListener();
 	}
 
-	public void ToggleCreateMatchButton()
-	{
-		if (CreateMatch.gameObject.activeInHierarchy)
-		{
-			CreateMatch.gameObject.SetActive(false);
-		}
-		else
-		{
-			CreateMatch.gameObject.SetActive(true);
-		}
-	}
+    //------------------ Join Game Buttons ------------------
 
-	//------------------ Helper Functions ------------------
-	public void OnClickBackButton()
+    public void OnClickJoinMatchButton() {
+        AddReadyListener();
+    }
+
+
+    public void AddReadyListener() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickReadyButton);
+    }
+
+    public void AddNotReadyListener()
+    {
+        _centerButton.GetComponent<Button>().onClick.AddListener(OnClickNotReadyButton);
+    }
+
+    public void OnClickReadyButton() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nNOT\nREADY";
+        PhotonLobbyManager.Instance.PlayerReady(PhotonNetwork.player);
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickNotReadyButton);
+    }
+
+    public void OnClickNotReadyButton() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
+        PhotonLobbyManager.Instance.PlayerNotReady(PhotonNetwork.player);
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickReadyButton);
+    }
+
+
+
+    //------------------ Helper Functions ------------------
+
+    public void OnClickBackButton()
 	{
 		foreach (var canvas in FindObjectsOfType<Canvas>())
 		{

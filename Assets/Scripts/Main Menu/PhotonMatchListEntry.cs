@@ -33,8 +33,8 @@ public class PhotonMatchlistEntry : MonoBehaviour
 		JoinButton.GetComponentInChildren<Text>().text = "JOINED";
 		JoinButton.interactable = false;
 		JoinButton.onClick.RemoveListener(JoinButtonListener);
-		GameObject.Find("Select Match").SetActive(false);
-		PhotonLobbyManager.Instance.JoinMatch(_match.Name);
+        FindObjectOfType<MenuManager>().OnClickJoinMatchButton();
+        PhotonLobbyManager.Instance.JoinMatch(_match.Name);
 	}
 
     public void UpdatePlayerCount(int playerCount) {
