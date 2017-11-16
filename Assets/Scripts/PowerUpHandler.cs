@@ -64,11 +64,11 @@ public class PowerUpHandler : Photon.PunBehaviour
             CurrentPowerUp = null;
             Destroy(_currentPowerUpIcon);
         }
-        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().stacking == PowerUp.StackMode.ZeroGravity &&
+        /*if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().stacking == PowerUp.StackMode.ZeroGravity &&
             CurrentPowerUp.GetComponent<PowerUp>().isUsed)
         {
             CurrentPowerUp.GetComponent<PowerUp>().Units -= (Time.deltaTime / 15f);
-        }
+        }*/
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public class PowerUpHandler : Photon.PunBehaviour
                             photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                             break;
                         case PowerUp.StackMode.ZeroGravity:
-                            powerup.Units += collider.GetComponent<PowerUp>().MaxUnits;
+                            powerup.Units = collider.GetComponent<PowerUp>().MaxUnits;
                             ClaimPrefab(collider.gameObject);
                             photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
                             break;

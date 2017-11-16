@@ -13,7 +13,7 @@ public class Laser : ProjectilesBase {
 
     public GameObject Source;
 
-    public Color myColor = Color.black;
+    public Color myColor = Color.white;
 
     public AudioClip clipHitTerrain, clipHitShip;
     private AudioSource audioHitTerrain, audioHitShip;
@@ -30,16 +30,16 @@ public class Laser : ProjectilesBase {
     void Awake() {
         audioHitTerrain = AddAudio(clipHitTerrain, false, false, 1f);
         audioHitShip = AddAudio(clipHitShip, false, false, 1f);
-    }
+    }   
 
 
     void Start() {
         DestructionCircle.enabled = false;
-        GetComponent<SpriteRenderer>().material.SetColor("_Color", myColor);
+        //GetComponent<SpriteRenderer>().material.SetColor("_Color", myColor);
         float h, s, v;
         Color.RGBToHSV(myColor, out h, out s, out v);
-        s *= 0.7f;
-        GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
+        s *= 0.9f;
+        //GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class Laser : ProjectilesBase {
             GetComponent<Renderer>().enabled = false;
             //GetComponent<SpriteRenderer>().enabled = false;
             //Debug.Log("Laser hit terrain");
-            audioHitTerrain.PlayOneShot(clipHitTerrain);
+            audioHitTerrain.Play();
             Destroy(gameObject, audioHitTerrain.clip.length);
         } else if (collider.GetComponent<Ship>()) {
             Debug.Log("Laser of " + Source.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " hit player " + collider.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " Laser layer: " + LayerMask.LayerToName(gameObject.layer) + " Target layer: " + LayerMask.LayerToName(collider.gameObject.layer));

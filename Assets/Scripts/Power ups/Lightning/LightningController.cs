@@ -15,7 +15,7 @@ public class LightningController : NetworkBehaviour {
     public GameObject Illuminator;
     public LayerMask LayerMaskPlayer;
     public LayerMask LayerMaskEnemy;
-    public LayerMask LayerMask; 
+    public LayerMask LayerMask;
 
     public float DistanceRandomnessPercentageOrig;
     float DistanceRandomnessPercentage;
@@ -61,7 +61,6 @@ public class LightningController : NetworkBehaviour {
         targets = new List<Transform>();
         polycol = GetComponent<PolygonCollider2D>(); 
         polycol.enabled = false;
-        InitializeLightning();
     }
 
     void Start() {
@@ -76,7 +75,6 @@ public class LightningController : NetworkBehaviour {
                 Debug.DrawLine(p.start, p.end, Color.red);
             }
         }
-
     }
 
     void InitializeLightning() {
@@ -90,23 +88,15 @@ public class LightningController : NetworkBehaviour {
 
     public void StartLightning() {
         targets.Clear();
+        InitializeLightning();
         InvokeRepeating("DoLightning", Delay, Interval);
         polycol.enabled = true;
         Illuminator.transform.position = polycol.bounds.center;
         Illuminator.SetActive(true);
     }
 
-    void DoLightning() {
-        ShowLightning();
-        //CmdShowLightning();
-    }
-    [Command]
-    void CmdShowLightning() {
-        RpcShowLaser();
-    }
-    [ClientRpc]
-    void RpcShowLaser() {
-        if (isLocalPlayer) return;
+    void DoLightning()
+    {
         ShowLightning();
     }
 

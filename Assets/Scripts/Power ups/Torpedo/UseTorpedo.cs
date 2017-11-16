@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class UseTorpedo : Photon.PunBehaviour {
 
-	public float Speed = 10f;
-	public float TurningSpeedMultiplier = 1f;
+	public float Speed = 20f;
+	public float TurningSpeedMultiplier = 0.05f;
     public float TurningSpeedAngular;
     public float zRotationSpeed;
 	public float TorpedoLifetime = 2f;
@@ -117,9 +117,12 @@ public class UseTorpedo : Photon.PunBehaviour {
 	}
     public void photonDestroyExplosion()
     {
-        PhotonNetwork.Destroy(t);
-        //PhotonNetwork.Destroy(EmitFire.gameObject);
-        PhotonNetwork.Destroy(gameObject);
+        if (PhotonNetwork.isMasterClient)
+        {
+            PhotonNetwork.Destroy(t);
+            PhotonNetwork.Destroy(EmitFire.gameObject);
+            PhotonNetwork.Destroy(gameObject);
+        }
     }
 
     [PunRPC]

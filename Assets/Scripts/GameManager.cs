@@ -44,8 +44,6 @@ public class GameManager : Photon.PunBehaviour {
     /// Ensures there's only one GameManager
     /// </summary>
     void Awake() {
-
-
         if (Instance == null) {
             Instance = this;
             SpriteManager = GetComponent<Level02SpriteManager>();

@@ -11,22 +11,31 @@ public class FlamethrowerPowerUp : PowerUp {
         controllerReference = typeof(FlamethrowerCollision);
         mode = PowerUpMode.Controller;
     }
+    [PunRPC]
+    public void SetParent(int childId, int parentId)
+    {
+        PhotonView.Find(childId).transform.parent = PhotonView.Find(parentId).transform;
+    }
 
     public override void UseContinuousPowerUp()
     {
-        go = PhotonNetwork.Instantiate("FlameThrowerPrefab", Ship.LocalPlayerInstance.transform.transform.position, Ship.LocalPlayerInstance.transform.rotation, 0);
-        go.transform.parent = Ship.LocalPlayerInstance.transform;
+        go = PhotonNetwork.Instantiate("FlameThrowerPrefab", Ship.LocalPlayerInstance.transform.position, Ship.LocalPlayerInstance.transform.rotation, 0);
+        photonView.RPC("SetParent", PhotonTargets.All, go.GetComponent<PhotonView>().viewID, Ship.LocalPlayerInstance.GetComponent<PhotonView>().viewID);
         go.GetComponentInChildren<FlamethrowerCollision>()._flamethrowerPowerUp = this;
-        go.GetComponent<Flamethrower>().SetParent(Ship.LocalPlayerInstance.transform);
         go.GetComponentInChildren<FlamethrowerCollision>().currentPrefabScript = go.GetComponent<FireBaseScript>();
         go.GetComponentInChildren<FlamethrowerCollision>().BeginEffect(go);    
     }
 
     public override void Stop()
     {
-        if (go)
-            go.GetComponentInChildren<FlamethrowerCollision>().Stop();       
+        if (go && go.GetComponentInChildren<FlamethrowerCollision>())
+        {
+            go.GetComponentInChildren<FlamethrowerCollision>().Stop();
+
+        }
+        
     }
+
 
 
     //[ClientRpc]

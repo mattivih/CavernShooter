@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class UseMine : Photon.PunBehaviour {
 
+
 	private GameObject _base;
 	private GameObject _rotating;
 	public float MineLifetime = 3f;

@@ -42,10 +42,10 @@ public class ZeroGravityGenerator : PowerUp {
         Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale = 0;
         zGravityOn = true;
         Invoke("NormalGravity", ZeroGravityTime);
-
+        Units--;
 
         GameObject i = Ship.LocalPlayerInstance;
-        AudioSource.PlayClipAtPoint(clipActivate, i.transform.position);
+        audioActivate.Play();
         for (int j = 0; j < i.transform.childCount; j++)
         {
             if (i.transform.GetChild(j).name == "ZeroGravityEffect(Clone)")
@@ -55,7 +55,7 @@ public class ZeroGravityGenerator : PowerUp {
         var go = PhotonNetwork.Instantiate("ZeroGravityEffect", Vector3.zero, Quaternion.identity, 0);
         photonView.RPC("spawnZeroGravity", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
 
-        Units--;
+        
     }
 
     public void NormalGravity()

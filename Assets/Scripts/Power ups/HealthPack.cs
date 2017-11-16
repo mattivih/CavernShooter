@@ -7,7 +7,7 @@ public class HealthPack : PowerUp {
 
 	public GameObject HealthEffect;
     public float HealthRegenPercentage = 0.3f;
-	public float effectDuration = 3f;
+	public float effectDuration = 2.0f;
     private GameObject go;
 
     void Awake()
@@ -48,19 +48,5 @@ public class HealthPack : PowerUp {
         PhotonNetwork.Destroy(go);
     }
 
- //   [Command]
- //   void CmdIncreaseHealth(NetworkInstanceId id) {
- //       GameObject p = NetworkServer.FindLocalObject(id);
- //       p.GetComponent<Ship>().RpcIncreaseHealth(p.GetComponent<Ship>().MaxHealth * HealthRegenPercentage);
- //   }
-
-	/*public override void RpcUseNormalPowerUp(NetworkInstanceId id){
-        GameObject i = Ship.LocalPlayerInstance;
-        AudioSource.PlayClipAtPoint(clipActivate, i.transform.position);
-        GameObject o = PhotonNetwork.Instantiate("HealthEffect", i.transform.position, Quaternion.identity, 0);
-        o.transform.localPosition = new Vector3(0, i.GetComponent<Ship>().PowerUpEffectYOffSet, -1);
-        Destroy(o, effectDuration);
-    }
-    */
 }
 
