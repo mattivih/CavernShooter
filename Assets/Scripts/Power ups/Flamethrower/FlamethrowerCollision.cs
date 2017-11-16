@@ -7,6 +7,7 @@ public class FlamethrowerCollision : ProjectilesBase {
 	public ParticleSystem FlamethrowerFire;
 	public GameObject FireEffectPrefab;
     public int ParticleCount;
+    public int EnemyParticleCount;
     public float UnitDuration = 0.5f;
     public FireBaseScript currentPrefabScript;
 
@@ -41,10 +42,12 @@ public class FlamethrowerCollision : ProjectilesBase {
 
     void FixedUpdate()
     {
-        if (_isFiring)
+        if (_isFiring && _flamethrowerPowerUp.Units > 0)
         {
             //Decrease units if the laser is fired continuously
             _flamethrowerPowerUp.Units -= Time.deltaTime / UnitDuration;
+            if (_flamethrowerPowerUp.Units <= 0)
+                Stop();
             //Debug.Log("flamethrowerunits:" + _flamethrowerPowerUp.Units);
         }
     }
@@ -54,30 +57,67 @@ public class FlamethrowerCollision : ProjectilesBase {
     /// </summary>
     /// <param name="other">Other.</param>
     void OnParticleCollision(GameObject other) {
-		ParticleCount++;
-		if (ParticleCount > 30) {
-			ParticlePhysicsExtensions.GetCollisionEvents (FlamethrowerFire, other, collisionEvents);
-			for (int i = 0; i < collisionEvents.Count; i++) {
-				EmitAtLocation (collisionEvents [i]);
-			}
-			ParticleCount = 0;
-		}
+        if(other.transform.root.gameObject.GetComponent<Ship>() && other != transform.root.gameObject)
+        {
+            gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID);
+            EnemyParticleCount++;
+            if (EnemyParticleCount > 15)
+            {
+                for (int i = 0; i < collisionEvents.Count; i++)
+                {
+                    ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
+                    EmitAtLocation(collisionEvents[i], transform.root.gameObject);
+                    EnemyParticleCount = 0;
+                }
+            }
+
+        }           
+        else
+        {
+            ParticleCount++;
+            if (ParticleCount > 30)
+            {
+                ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
+                for (int i = 0; i < collisionEvents.Count; i++)
+                {
+                    EmitAtLocation(collisionEvents[i], transform.root.gameObject);
+                }
+                ParticleCount = 0;
+            }
+        }
+  
 	}
+    [PunRPC]
+    public void SetParentForFire(int childId, int parentId)
+    {
+        if (PhotonView.Find(parentId).transform.root.GetComponent<Ship>())
+            PhotonView.Find(childId).transform.parent = PhotonView.Find(parentId).transform.root;
+        else
+            PhotonView.Find(childId).transform.parent = PhotonView.Find(parentId).transform;
+    }
+    [PunRPC]
+    public void PunTakeDamageFromFire(int viewId, int sourceId)
+    {
+        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(1.0f, PhotonView.Find(sourceId).gameObject);
+    }
+
 
 	/// <summary>
 	/// Creates fire effect at a collision event. Bases and enemy ships take damage.
 	/// </summary>
 	/// <param name="particleCollisionEvent">Particle collision event.</param>
-	void EmitAtLocation (ParticleCollisionEvent particleCollisionEvent) 
+	void EmitAtLocation (ParticleCollisionEvent particleCollisionEvent, GameObject source) 
 	{
-	/*	_fire = PhotonNetwork.Instantiate("FlamesEffectsPrefab", particleCollisionEvent.intersection, Quaternion.LookRotation (Vector3.forward, particleCollisionEvent.normal), 0);
+		_fire = PhotonNetwork.Instantiate("FlamesEffectsPrefab", particleCollisionEvent.intersection, Quaternion.LookRotation (Vector3.forward, particleCollisionEvent.normal), 0);
 
-		if (particleCollisionEvent.colliderComponent) {
-			_fire.transform.parent = particleCollisionEvent.colliderComponent.transform;
+		if (particleCollisionEvent.colliderComponent && source != particleCollisionEvent.colliderComponent.gameObject) {
+            gameObject.GetPhotonView().RPC("SetParentForFire", PhotonTargets.All, _fire.GetPhotonView().viewID, particleCollisionEvent.colliderComponent.gameObject.GetPhotonView().viewID);
+			//_fire.transform.parent = particleCollisionEvent.colliderComponent.transform;
 
-			if (particleCollisionEvent.colliderComponent.transform.gameObject.tag == "Enemy") {
+			if (particleCollisionEvent.colliderComponent.transform.gameObject.GetComponent<Ship>() && particleCollisionEvent.colliderComponent.transform.gameObject != source) {
                 if (_fire.transform.parent) {
-                    _fire.transform.parent.GetComponent<Ship>().TakeDamage(Damage, transform.root.gameObject);
+                  //  gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, _fire.transform.parent.gameObject.GetPhotonView().viewID, source.gameObject.GetPhotonView().viewID);
+                    //_fire.transform.parent.GetComponent<Ship>().TakeDamage(Damage, transform.root.gameObject);
                 }
 			} else if (particleCollisionEvent.colliderComponent.transform.gameObject.tag == "Base") {
 				if (_fire.transform.parent)
@@ -87,7 +127,7 @@ public class FlamethrowerCollision : ProjectilesBase {
 		if (_fire.transform.parent == null) 
 		{
 			PhotonNetwork.Destroy(_fire);
-		}*/
+		}
 	}
 
 	public void Stop()
@@ -109,14 +149,16 @@ public class FlamethrowerCollision : ProjectilesBase {
     public void DelayPunDestroy(int viewId)
     {
         StartCoroutine("DestroyTimer", viewId);
- 
     }
 
     IEnumerator DestroyTimer(int viewId)
     {
         yield return new WaitForSeconds(2.0f);
-        if(gameObject.GetPhotonView().isMine)
-        PhotonNetwork.Destroy(PhotonView.Find(viewId).gameObject);
+        if (gameObject.GetPhotonView().isMine)
+        {
+            PhotonNetwork.Destroy(PhotonView.Find(viewId).gameObject.transform.parent.gameObject);
+        }
+      
     }
 
 
@@ -131,7 +173,6 @@ public class FlamethrowerCollision : ProjectilesBase {
         if(audioFire)
         audioFire.Play();
 		_flamethrower = flamethrower;
-      //  _flamethrower.transform.position = Firepoint.position;
 
 		// set the start point near the player
 	}
