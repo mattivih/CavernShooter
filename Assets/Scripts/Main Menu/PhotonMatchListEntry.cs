@@ -19,7 +19,13 @@ public class PhotonMatchlistEntry : MonoBehaviour
 	public void FillMatchListEntry(RoomInfo match)
 	{
 		_match = match;
-		MatchName.text = match.CustomProperties["MatchName"].ToString();
+        if (match.CustomProperties.ContainsKey("MatchName"))
+        {
+            MatchName.text = match.CustomProperties["MatchName"].ToString();
+        }
+        else {
+            MatchName.text = "Match";
+        }
         UpdatePlayerCount(match.PlayerCount);
 		JoinButton.onClick.RemoveAllListeners();
 		JoinButton.onClick.AddListener(JoinButtonListener);

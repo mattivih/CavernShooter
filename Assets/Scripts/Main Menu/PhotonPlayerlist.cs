@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -50,13 +50,14 @@ public class PhotonPlayerlist : MonoBehaviour
         _positions.Remove(parent);
     }
 
-    public void Update()
+    public void UpdatePlayerlist()
     {
-        if (PhotonNetwork.playerList.Length != _playerCount && PhotonNetwork.inRoom) {
-            ClearList();
-            foreach (var player in PhotonNetwork.playerList) {
-                AddPlayer(player);
-            }
+        ClearList();
+        PhotonPlayer[] players = PhotonNetwork.playerList;
+        //Array.Reverse(players);
+        foreach (var player in players)
+        {
+            AddPlayer(player);
         }
     }
 
@@ -95,53 +96,27 @@ public class PhotonPlayerlist : MonoBehaviour
             Destroy(entry.gameObject);
         }
     }
-
-    public void DeletePlayer(PhotonPlayer player)
-    {
-        _playerCount--;
-        if (_playerCount <= 0)
-        {
-            ClearList();
-        }
-        else
-        {
-            PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
-            foreach (var entry in playerlist)
-            {
-                if (entry.Player.ID == player.ID)
-                {
-                    Destroy(entry.gameObject);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Updates player's status in Players Joined & Connection status-list
-    /// </summary>
-    public void UpdatePlayerStatus(int playerID, bool isReady)
-    {
-        //PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
-        //    foreach (var entry in playerlist)
-        //    {
-        //        if (entry.Player.ID == playerID)
-        //        {
-        //            if (isReady)
-        //            {
-        //                entry.PlayerReady();
-
-        //            }
-        //            else
-        //            {
-        //                entry.PlayerNotReady();
-        //            }
-        //        }
-        //    }
-        //Force UI update
-        ClearList();
-        }
 }
 
+    //public void DeletePlayer(PhotonPlayer player)
+    //{
+    //    _playerCount--;
+    //    if (_playerCount <= 0)
+    //    {
+    //        ClearList();
+    //    }
+    //    else
+    //    {
+    //        PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
+    //        foreach (var entry in playerlist)
+    //        {
+    //            if (entry.Player.ID == player.ID)
+    //            {
+    //                Destroy(entry.gameObject);
+    //            }
+    //        }
+    //    }
+    //}
 
 /// <summary>
 /// Updates player's name in Players Joined & Connection status-list

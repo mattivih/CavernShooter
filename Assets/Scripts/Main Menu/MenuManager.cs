@@ -3,10 +3,12 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-	public GameObject MainMenu, Controls, Credits, HostGame, JoinGame, MatchInProgressError, CreditsBackground;
+    public GameObject MainMenu, Controls, Credits, HostGame, JoinGame;
+    public GameObject ConnectingToServer, MatchInProgressError, CreditsBackground;
     private Button _centerButton; //Create Match in Host Game Menu, Select Match in Join Game menu.
 	public InputField MatchName;
 	public bool MatchInProgress { private get; set; }
+    private bool _hosting;
 
 	private float _ortoSize;
 
@@ -15,7 +17,19 @@ public class MenuManager : MonoBehaviour
 	public void OnClickHostGameButton()
 	{
 		MainMenu.SetActive(false);
-		HostGame.SetActive(true);
+
+        if (PhotonNetwork.connectedAndReady)
+        {
+            OpenHostGame();
+        }
+        else {
+            ConnectingToServer.SetActive(true);
+            _hosting = true;
+        }
+    }
+
+    public void OpenHostGame() {
+        HostGame.SetActive(true);
         _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
         _centerButton.GetComponentInChildren<Text>().text = "CREATE\nMATCH";
         _centerButton.onClick.RemoveAllListeners();
@@ -26,7 +40,18 @@ public class MenuManager : MonoBehaviour
 	public void OnClickJoinGameButton()
 	{
 		MainMenu.SetActive(false);
-		JoinGame.SetActive(true);
+        if (PhotonNetwork.connectedAndReady)
+        {
+            OpenJoinGame();
+        }
+        else {
+            ConnectingToServer.SetActive(true);
+            _hosting = false;
+        }
+    }
+
+    public void OpenJoinGame() {
+        JoinGame.SetActive(true);
         _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
         _centerButton.GetComponentInChildren<Text>().text = "SELECT\nMATCH";
         _centerButton.interactable = false;
@@ -70,6 +95,8 @@ public class MenuManager : MonoBehaviour
         AddReadyListener();
     }
 
+    //------------------ Helper Functions ------------------
+
 
     public void AddReadyListener() {
         _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
@@ -84,21 +111,17 @@ public class MenuManager : MonoBehaviour
 
     public void OnClickReadyButton() {
         _centerButton.GetComponentInChildren<Text>().text = "I'M\nNOT\nREADY";
-        PhotonLobbyManager.Instance.PlayerReady(PhotonNetwork.player);
+        PhotonLobbyManager.Instance.PlayerReady();
         _centerButton.onClick.RemoveAllListeners();
         _centerButton.onClick.AddListener(OnClickNotReadyButton);
     }
 
     public void OnClickNotReadyButton() {
         _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
-        PhotonLobbyManager.Instance.PlayerNotReady(PhotonNetwork.player);
+        PhotonLobbyManager.Instance.PlayerNotReady();
         _centerButton.onClick.RemoveAllListeners();
         _centerButton.onClick.AddListener(OnClickReadyButton);
     }
-
-
-
-    //------------------ Helper Functions ------------------
 
     public void OnClickBackButton()
 	{
@@ -129,7 +152,19 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 
-	void HideError()
+    public void OnConnectedToServer()
+    {
+        ConnectingToServer.SetActive(false);
+        if (_hosting)
+        {
+            OpenHostGame();
+        }
+        else {
+            OpenJoinGame();
+        }
+    }
+
+    void HideError()
 	{
 		MatchInProgressError.SetActive(false);
 	}

@@ -110,32 +110,22 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     }
 
     //Sets the player's status ready and updates the UI
-    public void PlayerReady(PhotonPlayer player) {
+    public void PlayerReady()
+    {
         ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "true" } };
-        player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
-
-        //Update UI
-       PhotonPlayerlist.Instance.UpdatePlayerStatus(player.ID, true);
+        PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
     //Sets the player's status not ready and updates the UI
-    public void PlayerNotReady(PhotonPlayer player)
+    public void PlayerNotReady()
     {
         ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
-        player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
-
-        ////Update UI
-        //PhotonPlayerlist.Instance.UpdatePlayerStatus(player.ID, false);
+        PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
     #endregion
 
     #region Callbacks
-    public override void OnConnectedToMaster()
-    {
-            base.OnConnectedToMaster();
-            Debug.Log("@OnConnectedToMaster()");
-    }
 
     public override void OnCreatedRoom()
     {
@@ -144,18 +134,21 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        // Set Player ready status
-        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
-        PhotonNetwork.player.SetCustomProperties(playerProperties);
+        Debug.Log("@OnJoinedRoom");
+
+        GeneratePlayerNameIfEmpty();
+        PlayerNotReady();
 
         if (PhotonNetwork.player.IsLocal && !PhotonNetwork.isMasterClient) // = Player is in the Join Game menu
         {
             //Update matchlist player count
             FindObjectOfType<PhotonMatchlist>().UpdatePlayerCount(PhotonNetwork.room);
         }
-        GeneratePlayerNameIfEmpty();
     }
 
+    /// <summary>
+    /// Generate an unique name for player if the player leaves the name field empty.
+    /// </summary>
     public void GeneratePlayerNameIfEmpty()
     {
         if (PhotonNetwork.playerName == "")
@@ -165,11 +158,13 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the UI when player changes his/her name.
+    /// </summary>
     public void OnPlayerNameChanged()
     {
         //Update UI
         PhotonPlayerName nameField = FindObjectOfType<PhotonPlayerName>();
-        Debug.Log("Name field: " + nameField);
         if (nameField)
         {
             nameField.UpdatePlayerName(PhotonNetwork.playerName);
@@ -182,14 +177,17 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     }
 
     ///<summary>
-    /// Used for handling player transitions between states Ready/Not ready
+    /// Called when player's custom properties are changed. Used for handling player transitions between states Ready/Not ready.
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
         PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
         Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
-        if (props != null && props["Ready"] != null) {
+        //Update UI
+        PhotonPlayerlist.Instance.UpdatePlayerlist();
+
+        if (props != null && props.ContainsKey("Ready")) {
 
             //Check if all the players are now ready
             bool allReady = true;
