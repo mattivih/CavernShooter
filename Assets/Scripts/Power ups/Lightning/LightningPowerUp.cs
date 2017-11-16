@@ -11,8 +11,42 @@ public class LightningPowerUp : PowerUp {
     void Awake() {
         spawn = LightningUsePowerUpPrefab;
         controllerReference = typeof(LightningController);
-        mode = PowerUpMode.Controller;
+        mode = PowerUpMode.Normal;
     }
+
+    public override void UseNormalPowerUp()
+    {
+        GameObject prefab = PhotonNetwork.Instantiate("Lightning", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
+        prefab.transform.SetParent(Ship.LocalPlayerInstance.transform);
+        LightningController lightning = Ship.LocalPlayerInstance.GetComponentInChildren<LightningController>();
+        
+        photonView.RPC("StartLightning", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, prefab.GetPhotonView().viewID);
+        Units--;
+    }
+
+    [PunRPC]
+    public void StartLightning(int viewID, int objectID)
+    {
+        GameObject prefab = PhotonView.Find(objectID).gameObject;
+        GameObject source = PhotonView.Find(viewID).gameObject;
+        LightningController lightning = prefab.GetComponent<LightningController>();
+        if (Ship.LocalPlayerInstance.GetPhotonView().viewID == viewID)
+        {
+            lightning.SetParent(Ship.LocalPlayerInstance.transform);
+            lightning.transform.rotation = source.transform.rotation;
+            lightning.LayerMask = lightning.LayerMaskPlayer;
+            lightning.StartLightning();
+        }
+        else
+        {
+            prefab.layer = 12;
+            lightning.LayerMask = lightning.LayerMaskEnemy;
+            lightning.SetParent(source.transform);
+            lightning.transform.rotation = source.transform.rotation;
+            lightning.StartLightning();
+        }
+    }
+
 
     //[ClientRpc]
     //public override void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) {
@@ -23,12 +57,7 @@ public class LightningPowerUp : PowerUp {
     //    controller.GetComponent<LightningController>().StartLightning();
     //    this.controller = controller;
 
-    //    if(player != GameManager.Instance.Player) {
-    //        controller.layer = 12;
-    //        controller.GetComponent<LightningController>().LayerMask = controller.GetComponent<LightningController>().LayerMaskEnemy;
-    //    } else {
-    //        controller.GetComponent<LightningController>().LayerMask = controller.GetComponent<LightningController>().LayerMaskPlayer;
-    //    }
+    //    
     //}
     //[ClientRpc]
     //public override void RpcUsePowerUp() {

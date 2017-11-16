@@ -173,6 +173,6 @@ public class RecursiveLightning : NetworkBehaviour {
     IEnumerator FadeOutQuickly() {
         yield return new WaitForSeconds(fadeOutTime);
         lineRenderer.enabled = false;
-        Destroy(gameObject, 1f);
+        Destroy(transform.parent.gameObject, 1f);
     }
 }

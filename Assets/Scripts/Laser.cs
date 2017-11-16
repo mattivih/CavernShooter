@@ -13,7 +13,7 @@ public class Laser : ProjectilesBase {
 
     public GameObject Source;
 
-    public Color myColor = Color.black;
+    public Color myColor = Color.white;
 
     public AudioClip clipHitTerrain, clipHitShip;
     private AudioSource audioHitTerrain, audioHitShip;
@@ -30,16 +30,16 @@ public class Laser : ProjectilesBase {
     void Awake() {
         audioHitTerrain = AddAudio(clipHitTerrain, false, false, 1f);
         audioHitShip = AddAudio(clipHitShip, false, false, 1f);
-    }
+    }   
 
 
     void Start() {
         DestructionCircle.enabled = false;
-        GetComponent<SpriteRenderer>().material.SetColor("_Color", myColor);
+        //GetComponent<SpriteRenderer>().material.SetColor("_Color", myColor);
         float h, s, v;
         Color.RGBToHSV(myColor, out h, out s, out v);
-        s *= 0.7f;
-        GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
+        s *= 0.9f;
+        //GetComponent<SpriteRenderer>().material.SetColor("_MKGlowColor", Color.HSVToRGB(h, s, v));
     }
 
     /// <summary>

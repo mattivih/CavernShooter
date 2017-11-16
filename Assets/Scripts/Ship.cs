@@ -11,7 +11,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
-    public float FireRate = 0.1f, DamageMultiplier = 1f;
+    public float FireRate, DamageMultiplier = 1f;
     public float MaxHealth;
     public float AccelDrag = 1, FreeDrag = 0;
     public float PowerUpEffectYOffSet;
@@ -38,7 +38,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     #region Private variables
     private int _laserCounter;
 
-    private float _timer = 0.5f;
+    private float _timer = 0f;
 
     private Vector3 _originalMeshRotation;
     private Thruster _thruster;
@@ -58,7 +58,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             GameManager.Instance.Player = LocalPlayerInstance;
         }
         //Don't destroy on load so the instance survives level loading and the loading between scenes is seamless.
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     //To be deleted: Replaced wiht OnPhotonInstantiate
