@@ -53,7 +53,7 @@ public class MenuManager : MonoBehaviour
     public void OpenJoinGame() {
         JoinGame.SetActive(true);
         _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
-        _centerButton.GetComponentInChildren<Text>().text = "SELECT\nMATCH";
+        _centerButton.GetComponentInChildren<Text>().text = "PLEASE\nSELECT\nMATCH";
         _centerButton.interactable = false;
     }
 
@@ -92,6 +92,7 @@ public class MenuManager : MonoBehaviour
     //------------------ Join Game Buttons ------------------
 
     public void OnClickJoinMatchButton() {
+        Debug.Log("@OnClickJoinMatchButton");
         AddReadyListener();
     }
 
@@ -102,6 +103,7 @@ public class MenuManager : MonoBehaviour
         _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
         _centerButton.onClick.RemoveAllListeners();
         _centerButton.onClick.AddListener(OnClickReadyButton);
+        _centerButton.interactable = true;
     }
 
     public void AddNotReadyListener()

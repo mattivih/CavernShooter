@@ -33,3 +33,5 @@ sysinfo.txt
 *.apk
 *.unitypackage
 LobbyTestBuild/
+Assets/Video/flying-intro.mp4
+Assets/Video/flying-intro.mp4.meta

@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class PhotonPlayerName : MonoBehaviour
 {
 
-    public void SetPlayerName(string name)
+    public void SetPlayerName()
     {
+        string name = GetComponent<Text>().text;
+       //Debug.Log("Player name set to " + name);
         PhotonNetwork.playerName = name;
     }
 

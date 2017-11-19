@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System;
+﻿using Hashtable = ExitGames.Client.Photon.Hashtable;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 public class PhotonLobbyManager : Photon.PunBehaviour
 {
@@ -17,7 +16,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
 
     #region Private Variables
-    private int _selectedMap = 2;
+    private string _selectedMap = "1_Nort"; //Default level
 
     /// <summary>
     /// This client's game version number. Users are separated from each other by game version (which allows you to make breaking changes).
@@ -72,8 +71,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             name = "Match";
         }
 
-        ExitGames.Client.Photon.Hashtable matchProperties = new ExitGames.Client.Photon.Hashtable() { { "MatchName", name } };
+        //Initialize custom properties for the player
+        PlayerNotReady();
+
+        Hashtable matchProperties = new Hashtable() { { "MatchName", name }, { "SelectedMap", _selectedMap } };
         roomOptions.CustomRoomPropertiesForLobby = new[] {"MatchName"};
+        roomOptions.CustomRoomPropertiesForLobby = new[] {"SelectedMap"};
         roomOptions.CustomRoomProperties = matchProperties;
         if (PhotonNetwork.connected)
         {
@@ -106,20 +109,26 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// <param name="name">Scene name</param>
     public void SelectMap(string name)
     {
-         _selectedMap = SceneManager.GetSceneByName(name).buildIndex;
+        _selectedMap = name;
+        if (PhotonNetwork.inRoom)
+        {
+            Hashtable updatedProperties = new Hashtable() { { "SelectedMap", _selectedMap } };
+            PhotonNetwork.room.SetCustomProperties(updatedProperties);
+            Debug.Log("Selected map " + PhotonNetwork.room.CustomProperties["SelectedMap"]);
+        }
     }
 
     //Sets the player's status ready and updates the UI
     public void PlayerReady()
     {
-        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "true" } };
+        Hashtable playerProperties = new Hashtable() { { "Ready", "true" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
     //Sets the player's status not ready and updates the UI
     public void PlayerNotReady()
     {
-        ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable() { { "Ready", "false" } };
+        Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
@@ -173,7 +182,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnLeftRoom()
     {
-        LoadLevel(0); //Lobby
+        LoadLevel("1_MainMenu");
     }
 
     ///<summary>
@@ -187,26 +196,41 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         //Update UI
         PhotonPlayerlist.Instance.UpdatePlayerlist();
 
-        if (props != null && props.ContainsKey("Ready")) {
+        //Check if all the players are ready
+        if (PhotonNetwork.inRoom && PhotonNetwork.isMasterClient) {
+            // If match is full...
+            if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
+            {
+                //... check if all the players are now ready
+                if (props != null && props.ContainsKey("Ready"))
+                {
+                    bool allReady = true;
+                    foreach (var matchPlayer in PhotonNetwork.playerList)
+                    {
+                        if (!System.Convert.ToBoolean(matchPlayer.CustomProperties["Ready"]))
+                        {
+                            allReady = false;
+                        }
+                    }
 
-            //Check if all the players are now ready
-            bool allReady = true;
-            foreach (var matchPlayer in PhotonNetwork.playerList) {
-                if (!Convert.ToBoolean(matchPlayer.CustomProperties["Ready"])) {
-                    allReady = false;
+                    //If all the players are ready, load the game level.
+                    if (allReady)
+                    {
+                        LoadLevel(PhotonNetwork.room.CustomProperties["SelectedMap"].ToString());
+                    }
                 }
-            }
-
-            //If all the players are ready, load the game level.
-            if (allReady && PhotonNetwork.isMasterClient) {
-                LoadLevel(_selectedMap);
             }
         }
     }
 
-    public void LoadLevel(int buildIndex) {
+
+    public void LoadLevel(string name) {
+        Debug.Log("Loading level " + name);
         if (PhotonNetwork.isMasterClient)
         {
+            //TODO: hard coded build indexes... Any better ideas?
+            int buildIndex = 0;
+            Int32.TryParse(name.Substring(0, 1), out buildIndex);
             PhotonNetwork.LoadLevel(buildIndex);
         }
     }
@@ -215,7 +239,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
     {
         Debug.Log(other.NickName + " disconnected.");
-        LoadLevel(SceneManager.GetSceneByName("1_MainMenu").buildIndex);
+        LoadLevel("1_MainMenu");
     }
 
     public override void OnDisconnectedFromPhoton()
