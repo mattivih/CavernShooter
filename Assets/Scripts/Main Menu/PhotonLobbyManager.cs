@@ -233,7 +233,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             //TODO: hard coded build indexes... Any better ideas?
             int buildIndex = 0;
-            Int32.TryParse(name.Substring(0, 1), out buildIndex);
+            int.TryParse(name.Substring(0, 1), out buildIndex);
             PhotonNetwork.LoadLevel(buildIndex);
         }
     }
