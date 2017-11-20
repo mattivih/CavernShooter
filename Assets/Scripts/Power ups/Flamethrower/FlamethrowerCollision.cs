@@ -67,8 +67,9 @@ public class FlamethrowerCollision : ProjectilesBase {
                 {
                     ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
                     EmitAtLocation(collisionEvents[i], transform.root.gameObject);
-                    EnemyParticleCount = 0;
+                   
                 }
+                EnemyParticleCount = 0;
             }
 
         }           

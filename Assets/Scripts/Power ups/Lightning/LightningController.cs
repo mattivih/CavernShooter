@@ -83,7 +83,7 @@ public class LightningController : NetworkBehaviour {
         yRad = Mathf.Abs(maxY - center.y);
         xRad = Vector3.Distance(leftPos, rightPos);
         OriginalDistance = center.magnitude*2;
-        Debug.Log("dist:" + OriginalDistance + ", center: " + center);
+     //   Debug.Log("dist:" + OriginalDistance + ", center: " + center);
     }
 
     public void StartLightning() {
