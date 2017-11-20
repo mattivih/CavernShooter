@@ -121,7 +121,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     //Sets the player's status ready and updates the UI
     public void PlayerReady()
     {
-        Hashtable playerProperties = new Hashtable() { { "Ready", "true" } };
+        string shipName = FindObjectOfType<ShipManager>().GetSelectedShip();
+        Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipName} };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
@@ -195,6 +196,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
         //Update UI
         PhotonPlayerlist.Instance.UpdatePlayerlist();
+
+        Debug.Log(player.NickName + " selected ship " + props["SelectedShip"]);
 
         //Check if all the players are ready
         if (PhotonNetwork.inRoom && PhotonNetwork.isMasterClient) {

@@ -94,7 +94,12 @@ public class ShipManager : MonoBehaviour
 
 	}
 
-	private void DeleteAttributes()
+    public string GetSelectedShip()
+    {
+        return _wireframeShips[SelectedShip].name;
+    }
+
+    private void DeleteAttributes()
 	{
 		// Tuhoaa aikaisemman aluksen attribuutit uusien tielta
 		for (int i = 0; i < _deleteAttributes.Count; i++)

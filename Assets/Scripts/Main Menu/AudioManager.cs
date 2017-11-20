@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
 		_audioSource = GetComponent<AudioSource>();
 		_audioSource.loop = true;
 		_audioSource.clip = TitleScreen;
-		_audioSource.Play();
+        _audioSource.Play();
         SceneManager.sceneLoaded += OnLevelLoaded;
 	}
 
