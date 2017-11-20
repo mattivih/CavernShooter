@@ -22,7 +22,6 @@ public class Base : Photon.PunBehaviour {
     /// </summary>
     void Start() {
 		BaseHealth = MaxBaseHealth;
-        //CheckLights();
         lights = GetComponentsInChildren<Light>();
     }
 
@@ -36,8 +35,7 @@ public class Base : Photon.PunBehaviour {
             DestroyBase();
         }
 
-        if (
-            GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()))
+        if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()))
         {
             GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.AllBuffered, null);
         }
