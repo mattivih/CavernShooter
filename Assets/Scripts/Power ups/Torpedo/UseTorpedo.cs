@@ -133,6 +133,6 @@ public class UseTorpedo : Photon.PunBehaviour {
     [PunRPC]
     public void damageShip(int viewId)
     {
-        PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(10f, source);
+        PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(100f, source);
     }
 }
