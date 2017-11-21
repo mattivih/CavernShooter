@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UseTorpedo : Photon.PunBehaviour {
 
-	public float Speed = 20f;
+	public float Speed = 15f;
 	public float TurningSpeedMultiplier = 0.05f;
     public float TurningSpeedAngular;
     public float zRotationSpeed;
@@ -76,7 +76,7 @@ public class UseTorpedo : Photon.PunBehaviour {
 			angle *= sign;
 			// apply torque in the opposite direction to decrease angle
 			if (Mathf.Abs(angle) > maxAngle) {
-				GetComponent<Rigidbody2D>().AddTorque(-sign * turn * Time.deltaTime * 30);
+				GetComponent<Rigidbody2D>().AddTorque(-sign * turn * Time.deltaTime);
 			}
 		}
 
@@ -94,45 +94,36 @@ public class UseTorpedo : Photon.PunBehaviour {
     void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject == source)
             return;
-        Invoke("photonDestroyExplosion", TorpedoLifetime);
-        photonView.RPC("disableTorpedo", PhotonTargets.All, photonView.viewID);
 
-        if (collision.gameObject.GetComponent<Ship>())
-            photonView.RPC("damageShip", PhotonTargets.All, collision.gameObject.GetComponent<PhotonView>().viewID);
+        photonView.RPC("disableTorpedo", PhotonTargets.All, photonView.viewID, collision.gameObject.GetComponent<PhotonView>().viewID);
+        Invoke("photonDestroyExplosion", 2.0f);
 
-        t = PhotonNetwork.Instantiate("TorpedoExplosion", collision.otherCollider.transform.position, collision.transform.rotation, 0);
-		//t.transform.position += t.transform.up * 0.5f;
-       
-		//Destroy (t.gameObject, TorpedoLifetime );
-        // Destroy(EmitFire.gameObject, TorpedoLifetime);
+        if(gameObject.GetPhotonView().isMine)
+            t = PhotonNetwork.Instantiate("TorpedoExplosion", collision.otherCollider.transform.position, collision.transform.rotation, 0);
+
+        EmitFire.emissionRate = 0;
+
         // This splits the particle off so it doesn't get deleted with the parent
-        EmitFire.transform.parent = null;
-		// this stops the particle from creating more bits
-		EmitFire.emissionRate = 0;
-      //  Destroy(EmitFire, EmitFire.main.duration);
-		//if (collision.gameObject.tag == "Enemy") {
-		//	collision.gameObject.GetComponent<Ship> ().TakeDamage (Damage, source);
-		//}
-		//Destroy (gameObject);
-	}
+
+        // this stops the particle from creating more bits
+
+
+    }
     public void photonDestroyExplosion()
     {
-        if (PhotonNetwork.isMasterClient)
+        if(gameObject.GetPhotonView().isMine)
         {
-            PhotonNetwork.Destroy(t);
-            PhotonNetwork.Destroy(EmitFire.gameObject);
             PhotonNetwork.Destroy(gameObject);
+            PhotonNetwork.Destroy(t.gameObject);           
         }
+       
     }
 
     [PunRPC]
-    public void disableTorpedo(int objectId)
+    public void disableTorpedo(int objectId, int viewId)
     {
         PhotonView.Find(objectId).gameObject.SetActive(false);
-    }
-    [PunRPC]
-    public void damageShip(int viewId)
-    {
-        PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(10f, source);
+        if (PhotonView.Find(viewId).gameObject.GetComponent<Ship>() && PhotonView.Find(viewId).gameObject != source)
+            PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(100f, source);
     }
 }

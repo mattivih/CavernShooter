@@ -279,64 +279,64 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         //TODO: refactor to HUDManager
         #region Refactor to HUDManager
-        if (GameManager.Instance.healthbarImage)
-        {
-            float healthFraction = (Health / MaxHealth);
-            healthFraction *= 0.92f;
-            healthFraction += 0.04f;
-            GameManager.Instance.healthbarImage.fillAmount = healthFraction;
-            if (healthFraction > 0.5)
-            {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
-            }
-            else
-            {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
-            }
-        }
-        if (GameManager.Instance.shieldbarImage)
-        {
-            GameManager.Instance.shieldbarImage.fillAmount = Shield / MaxHealth;
-        }
-        if (GameManager.Instance.powerupBarImage)
-        {
-            GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
-            if (CurrentPowerUp)
-            {
-                if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
-                {
-                    float waitTime = 15f;
-                    GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
-                }
+        /*   if (GameManager.Instance.healthbarImage)
+           {
+               float healthFraction = (Health / MaxHealth);
+               healthFraction *= 0.92f;
+               healthFraction += 0.04f;
+               GameManager.Instance.healthbarImage.fillAmount = healthFraction;
+               if (healthFraction > 0.5)
+               {
+                   GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
+               }
+               else
+               {
+                   GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
+               }
+           }
+           if (GameManager.Instance.shieldbarImage)
+           {
+               GameManager.Instance.shieldbarImage.fillAmount = Shield / MaxHealth;
+           }
+           if (GameManager.Instance.powerupBarImage)
+           {
+               GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
+               if (CurrentPowerUp)
+               {
+                   if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
+                   {
+                       float waitTime = 15f;
+                       GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
+                   }
 
-                else
-                {
-                    float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                    GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
-                }
+                   else
+                   {
+                       float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
+                       GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
+                   }
 
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
-                {
-                    GameManager.Instance.powerupBarLines.enabled = true;
-                }
+                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
+                   {
+                       GameManager.Instance.powerupBarLines.enabled = true;
+                   }
 
-                else
-                {
-                    GameManager.Instance.powerupBarLines.enabled = false;
-                }
+                   else
+                   {
+                       GameManager.Instance.powerupBarLines.enabled = false;
+                   }
 
-                if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
-                {
-                    GameManager.Instance.powerupBarLines4.enabled = true;
-                }
+                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
+                   {
+                       GameManager.Instance.powerupBarLines4.enabled = true;
+                   }
 
-                else
-                {
-                    GameManager.Instance.powerupBarLines4.enabled = false;
-                }
-            }
-        }
-    #endregion
+                   else
+                   {
+                       GameManager.Instance.powerupBarLines4.enabled = false;
+                   }
+               }
+           }*/
+        #endregion
     }
 
     //Handles user input

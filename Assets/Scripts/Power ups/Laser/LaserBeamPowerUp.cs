@@ -34,7 +34,8 @@ public class LaserBeamPowerUp : PowerUp
         Vector3 _endPoint = Vector3.zero;
         RaycastHit2D hit;
 
-        if (hit = Physics2D.Raycast(i.GetComponent<Ship>().PowerUpPosition.transform.position, i.transform.up, 1000f))
+        var layerMask = ~(1 << 19);
+        if (hit = Physics2D.Raycast(i.GetComponent<Ship>().PowerUpPosition.transform.position, i.transform.up, 1000f, layerMask))
         {
             _endPoint = hit.point;
             if (hit.collider.GetComponent<Ship>() || hit.collider.transform.root.gameObject.GetComponent<Ship>())

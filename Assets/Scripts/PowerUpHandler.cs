@@ -59,11 +59,17 @@ public class PowerUpHandler : Photon.PunBehaviour
 
     void Update()
     {
-        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0)
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0 && CurrentPowerUp.GetComponent<PowerUp>().GetType().ToString() != "ZeroGravityGenerator" )
+        {     
+            CurrentPowerUp = null;
+            Destroy(_currentPowerUpIcon);
+        }
+        else if(CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units <= 0 && CurrentPowerUp.GetComponent<PowerUp>().GetType().ToString() == "ZeroGravityGenerator" && Ship.LocalPlayerInstance.transform.GetComponent<Rigidbody2D>().gravityScale != 0)
         {
             CurrentPowerUp = null;
             Destroy(_currentPowerUpIcon);
         }
+
         /*if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().stacking == PowerUp.StackMode.ZeroGravity &&
             CurrentPowerUp.GetComponent<PowerUp>().isUsed)
         {
