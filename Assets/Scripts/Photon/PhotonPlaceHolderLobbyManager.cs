@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PhotonLobbyManager : Photon.PunBehaviour
+public class PhotonPlaceHolderLobbyManager : Photon.PunBehaviour
 {
     #region Public Variables
     [Tooltip("The maximum number of players per room.")]
