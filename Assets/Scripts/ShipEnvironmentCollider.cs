@@ -19,7 +19,7 @@ public class ShipEnvironmentCollider : Photon.PunBehaviour {
 	/// </summary>
 	/// <param name="collision"></param>
 	void OnCollisionEnter2D(Collision2D collision) {
-		if (photonView.isMine && collision.relativeVelocity.sqrMagnitude > HitVelocityThreshold) {
+		if (GetComponentInParent<PhotonView>().isMine && collision.relativeVelocity.sqrMagnitude > HitVelocityThreshold) {
             audioCollide.pitch = 0.5f;
 			float damage = collision.relativeVelocity.sqrMagnitude * HitDamageScale;
 			//Debug.Log("hit wall! damage: " + damage);
