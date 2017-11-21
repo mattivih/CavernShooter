@@ -32,7 +32,7 @@ public class UseMine : Photon.PunBehaviour {
     void OnTriggerEnter2D(Collider2D collider) {   
         if (collider.gameObject.GetComponent<Ship>() && collider.gameObject != source) {
             if (_base)
-                _base.GetComponent<Base>().TakeDamage(10f);
+                _base.GetComponent<Base>().TakeDamage(100f);
                     
 
             photonView.RPC("disableMine", PhotonTargets.All, photonView.viewID, collider.GetComponent<PhotonView>().viewID);
