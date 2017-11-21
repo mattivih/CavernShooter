@@ -19,7 +19,7 @@ public class FlamethrowerPowerUp : PowerUp {
 
     public override void UseContinuousPowerUp()
     {
-        go = PhotonNetwork.Instantiate("FlameThrowerPrefab", Ship.LocalPlayerInstance.transform.position, Ship.LocalPlayerInstance.transform.rotation, 0);
+        go = PhotonNetwork.Instantiate("FlameThrowerPrefab", Ship.LocalPlayerInstance.gameObject.GetComponent<Ship>().PowerUpPosition.transform.position, Ship.LocalPlayerInstance.transform.rotation, 0);
         photonView.RPC("SetParent", PhotonTargets.All, go.GetComponent<PhotonView>().viewID, Ship.LocalPlayerInstance.GetComponent<PhotonView>().viewID);
         go.GetComponentInChildren<FlamethrowerCollision>()._flamethrowerPowerUp = this;
         go.GetComponentInChildren<FlamethrowerCollision>().currentPrefabScript = go.GetComponent<FireBaseScript>();

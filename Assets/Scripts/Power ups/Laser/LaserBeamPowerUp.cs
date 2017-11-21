@@ -58,7 +58,7 @@ public class LaserBeamPowerUp : PowerUp
 
     public override void UseContinuousPowerUp()
     {
-        go = PhotonNetwork.Instantiate("LaserBeam", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
+        go = PhotonNetwork.Instantiate("LaserBeam", Ship.LocalPlayerInstance.GetComponent<Ship>().PowerUpPosition.transform.position, Quaternion.identity, 0);
         firing = true;
     }
 
