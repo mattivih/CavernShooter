@@ -9,6 +9,7 @@ public class MenuManager : MonoBehaviour
 	public InputField MatchName;
 	public bool MatchInProgress { private get; set; }
     private bool _hosting;
+    private bool customMatchName;
 
 	private float _ortoSize;
 
@@ -83,16 +84,39 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-        PhotonLobbyManager.Instance.CreateMatch(MatchName.text, PlayerCountSelector.PlayersSelected);
-		MatchInProgress = true;
-		MatchName.interactable = false;
+	    string matchName = "";
+	    if (customMatchName)
+	    {
+	        matchName = MatchName.text;
+	    }
+	    if (MatchName.text == "Enter name...")
+	    {
+	        MatchName.text = "";
+	    }
+	    PhotonLobbyManager.Instance.CreateMatch(matchName, PlayerCountSelector.PlayersSelected);
+        MatchInProgress = true;
+        MatchName.interactable = false;
         AddReadyListener();
 	}
+
+    public void OnMatchNameEdit()
+    {
+        customMatchName = true;
+    }
+
+    public void SetMatchName(string name)
+    {
+        MatchName.text = name;
+        MatchName.gameObject.GetComponent<Text>().fontStyle = FontStyle.Normal;
+        ColorBlock colors = MatchName.colors;
+        colors.normalColor = Color.white;
+        MatchName.colors = colors;
+    }
 
     //------------------ Join Game Buttons ------------------
 
     public void OnClickJoinMatchButton() {
-        Debug.Log("@OnClickJoinMatchButton");
+        //Debug.Log("@OnClickJoinMatchButton");
         AddReadyListener();
     }
 

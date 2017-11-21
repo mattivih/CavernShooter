@@ -44,9 +44,21 @@ public class PhotonMatchlist : MonoBehaviour
 
 	public void AddMatchToList(RoomInfo match)
 	{
-		GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
-		matchListEntry.GetComponent<PhotonMatchlistEntry>().FillMatchListEntry(match);
-		_matchCount++;
+	    PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+	    bool matchInList = false;
+	    foreach (var entry in matchlist)
+	    {
+	        if (entry.MatchGUID == match.Name)
+	        {
+	            matchInList = true;
+	        }
+	    }
+	    if (!matchInList)
+	    {
+            GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
+            matchListEntry.GetComponent<PhotonMatchlistEntry>().FillMatchListEntry(match);
+            _matchCount++;
+        }
 	}
 
     public void UpdatePlayerCount(RoomInfo match) {

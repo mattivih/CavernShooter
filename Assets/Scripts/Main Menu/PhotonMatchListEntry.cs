@@ -11,7 +11,9 @@ public class PhotonMatchlistEntry : MonoBehaviour
 	public Text MatchName, Players;
 	public Button JoinButton;
 
-	private RoomInfo _match;
+    public string MatchGUID { get; private set; }
+
+    private RoomInfo _match;
 
 	/// <summary>
 	/// Add a match's information to the UI's match list.
@@ -19,6 +21,7 @@ public class PhotonMatchlistEntry : MonoBehaviour
 	public void FillMatchListEntry(RoomInfo match)
 	{
 		_match = match;
+	    MatchGUID = match.Name;
         if (match.CustomProperties.ContainsKey("MatchName"))
         {
             MatchName.text = match.CustomProperties["MatchName"].ToString();
@@ -31,7 +34,7 @@ public class PhotonMatchlistEntry : MonoBehaviour
 		JoinButton.onClick.AddListener(JoinButtonListener);
 	}
 
-	/// <summary>
+    /// <summary>
 	/// Button listener for Join Button.
 	/// </summary>
 	void JoinButtonListener()

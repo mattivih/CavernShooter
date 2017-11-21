@@ -114,7 +114,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             Hashtable updatedProperties = new Hashtable() { { "SelectedMap", _selectedMap } };
             PhotonNetwork.room.SetCustomProperties(updatedProperties);
-            Debug.Log("Selected map " + PhotonNetwork.room.CustomProperties["SelectedMap"]);
+            //Debug.Log("Selected map " + PhotonNetwork.room.CustomProperties["SelectedMap"]);
         }
     }
 
@@ -139,7 +139,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnCreatedRoom()
     {
-        GameObject.Find("Match Name Input").GetComponent<InputField>().text = PhotonNetwork.room.CustomProperties["MatchName"].ToString();
+        //Debug.Log("Player name " + PhotonNetwork.playerName);
+        FindObjectOfType<MenuManager>().SetMatchName(PhotonNetwork.room.CustomProperties["MatchName"].ToString());
     }
 
     public override void OnJoinedRoom()
@@ -161,7 +162,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// </summary>
     public void GeneratePlayerNameIfEmpty()
     {
-        if (PhotonNetwork.playerName == "")
+        if (string.IsNullOrEmpty(PhotonNetwork.playerName))
         {
             PhotonNetwork.playerName = "Player " + PhotonNetwork.room.PlayerCount;
             OnPlayerNameChanged();
@@ -197,7 +198,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         //Update UI
         PhotonPlayerlist.Instance.UpdatePlayerlist();
 
-        Debug.Log(player.NickName + " selected ship " + props["SelectedShip"]);
+        //Debug.Log(player.NickName + " selected ship " + props["SelectedShip"]);
 
         //Check if all the players are ready
         if (PhotonNetwork.inRoom && PhotonNetwork.isMasterClient) {
@@ -228,7 +229,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
 
     public void LoadLevel(string name) {
-        Debug.Log("Loading level " + name);
         if (PhotonNetwork.isMasterClient)
         {
             //TODO: hard coded build indexes... Any better ideas?
