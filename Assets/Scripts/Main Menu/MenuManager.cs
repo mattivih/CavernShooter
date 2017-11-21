@@ -3,25 +3,60 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-	public GameObject MainMenu, Controls, Credits, HostGame, JoinGame, MatchInProgressError, CreditsBackground;
-	public Button CreateMatch;
+    public GameObject MainMenu, Controls, Credits, HostGame, JoinGame;
+    public GameObject ConnectingToServer, MatchInProgressError, CreditsBackground;
+    private Button _centerButton; //Create Match in Host Game Menu, Select Match in Join Game menu.
 	public InputField MatchName;
-	public bool matchInProgress { private get; set; }
+	public bool MatchInProgress { private get; set; }
+    private bool _hosting;
+    private bool customMatchName;
+
 	private float _ortoSize;
 
 	//------------------ Main Menu Buttons ------------------
 
-	public void OnClickHostButton()
+	public void OnClickHostGameButton()
 	{
 		MainMenu.SetActive(false);
-		HostGame.SetActive(true);
-	}
 
-	public void OnClickJoinButton()
+        if (PhotonNetwork.connectedAndReady)
+        {
+            OpenHostGame();
+        }
+        else {
+            ConnectingToServer.SetActive(true);
+            _hosting = true;
+        }
+    }
+
+    public void OpenHostGame() {
+        HostGame.SetActive(true);
+        _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton.GetComponentInChildren<Text>().text = "CREATE\nMATCH";
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickCreateMatchButton);
+        _centerButton.interactable = true;
+    }
+
+	public void OnClickJoinGameButton()
 	{
 		MainMenu.SetActive(false);
-		JoinGame.SetActive(true);
-	}
+        if (PhotonNetwork.connectedAndReady)
+        {
+            OpenJoinGame();
+        }
+        else {
+            ConnectingToServer.SetActive(true);
+            _hosting = false;
+        }
+    }
+
+    public void OpenJoinGame() {
+        JoinGame.SetActive(true);
+        _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton.GetComponentInChildren<Text>().text = "PLEASE\nSELECT\nMATCH";
+        _centerButton.interactable = false;
+    }
 
 	public void OnClickControlsButton()
 	{
@@ -49,26 +84,72 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-		MyLobbyManager.Instance.CreateMatch(MatchName.text, (uint)PlayerCountSelector.PlayersSelected);
-		matchInProgress = true;
-		MatchName.interactable = false;
-		ToggleCreateMatchButton();
+	    string matchName = "";
+	    if (customMatchName)
+	    {
+	        matchName = MatchName.text;
+	    }
+	    if (MatchName.text == "Enter name...")
+	    {
+	        MatchName.text = "";
+	    }
+	    PhotonLobbyManager.Instance.CreateMatch(matchName, PlayerCountSelector.PlayersSelected);
+        MatchInProgress = true;
+        MatchName.interactable = false;
+        AddReadyListener();
 	}
 
-	public void ToggleCreateMatchButton()
-	{
-		if (CreateMatch.gameObject.activeInHierarchy)
-		{
-			CreateMatch.gameObject.SetActive(false);
-		}
-		else
-		{
-			CreateMatch.gameObject.SetActive(true);
-		}
-	}
+    public void OnMatchNameEdit()
+    {
+        customMatchName = true;
+    }
 
-	//------------------ Helper Functions ------------------
-	public void OnClickBackButton()
+    public void SetMatchName(string name)
+    {
+        MatchName.text = name;
+        MatchName.gameObject.GetComponent<Text>().fontStyle = FontStyle.Normal;
+        ColorBlock colors = MatchName.colors;
+        colors.normalColor = Color.white;
+        MatchName.colors = colors;
+    }
+
+    //------------------ Join Game Buttons ------------------
+
+    public void OnClickJoinMatchButton() {
+        //Debug.Log("@OnClickJoinMatchButton");
+        AddReadyListener();
+    }
+
+    //------------------ Helper Functions ------------------
+
+
+    public void AddReadyListener() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickReadyButton);
+        _centerButton.interactable = true;
+    }
+
+    public void AddNotReadyListener()
+    {
+        _centerButton.GetComponent<Button>().onClick.AddListener(OnClickNotReadyButton);
+    }
+
+    public void OnClickReadyButton() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nNOT\nREADY";
+        PhotonLobbyManager.Instance.PlayerReady();
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickNotReadyButton);
+    }
+
+    public void OnClickNotReadyButton() {
+        _centerButton.GetComponentInChildren<Text>().text = "I'M\nREADY";
+        PhotonLobbyManager.Instance.PlayerNotReady();
+        _centerButton.onClick.RemoveAllListeners();
+        _centerButton.onClick.AddListener(OnClickReadyButton);
+    }
+
+    public void OnClickBackButton()
 	{
 		foreach (var canvas in FindObjectsOfType<Canvas>())
 		{
@@ -82,14 +163,14 @@ public class MenuManager : MonoBehaviour
 			}
 			else if (name == "HostGame" || name == "JoinGame")
 			{
-				if (matchInProgress)
+				if (MatchInProgress)
 				{
 					//Can't exit, show error
 					MatchInProgressError.SetActive(true);
 					Invoke("HideError", 1f);
 				}
 			}
-			if (!matchInProgress && name != "Background")
+			if (!MatchInProgress && name != "Background")
 			{
 				canvas.gameObject.SetActive(false);
 				MainMenu.SetActive(true);
@@ -97,7 +178,19 @@ public class MenuManager : MonoBehaviour
 		}
 	}
 
-	void HideError()
+    public void OnConnectedToServer()
+    {
+        ConnectingToServer.SetActive(false);
+        if (_hosting)
+        {
+            OpenHostGame();
+        }
+        else {
+            OpenJoinGame();
+        }
+    }
+
+    void HideError()
 	{
 		MatchInProgressError.SetActive(false);
 	}

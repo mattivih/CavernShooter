@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class MapManager : MonoBehaviour
+public class PhotonMapManager : MonoBehaviour
 {
 
 	public GameObject[] Maps;
@@ -45,11 +45,11 @@ public class MapManager : MonoBehaviour
 		//Informs the lobby manager which scene is chosen
 		if (Maps[_currentMap].name == "Nort")
 		{
-			MyLobbyManager.Instance.SelectMap("2_Nort");
+			PhotonLobbyManager.Instance.SelectMap("2_Nort");
 		}
 		else if (Maps[_currentMap].name == "Limbo")
 		{
-			MyLobbyManager.Instance.SelectMap("3_Limbo");
+			PhotonLobbyManager.Instance.SelectMap("3_Limbo");
 		}
 	}
 

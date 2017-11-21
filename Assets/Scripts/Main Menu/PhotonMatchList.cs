@@ -6,7 +6,7 @@ using UnityEngine.Networking.Match;
 /// <summary>
 /// UI script: Matchlist that shows available matches, max players and currently joined players per match.
 /// </summary>
-public class MyMatchList : MonoBehaviour
+public class PhotonMatchlist : MonoBehaviour
 {
 
 	public GameObject MatchListEntryPrefab, NoMatchesFoundPrefab, LoadingPrefab;
@@ -34,7 +34,7 @@ public class MyMatchList : MonoBehaviour
 		Transform parent = null;
 		foreach (var pos in _positions)
 		{
-			if (pos.gameObject.GetComponent<MyMatchList>())
+			if (pos.gameObject.GetComponent<PhotonMatchlist>())
 			{
 				parent = pos;
 			}
@@ -42,14 +42,35 @@ public class MyMatchList : MonoBehaviour
 		_positions.Remove(parent);
 	}
 
-	public void AddMatchToList(MatchInfoSnapshot match)
+	public void AddMatchToList(RoomInfo match)
 	{
-		GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
-		matchListEntry.GetComponent<MyMatchListEntry>().FillMatchListEntry(match);
-		_matchCount++;
+	    PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+	    bool matchInList = false;
+	    foreach (var entry in matchlist)
+	    {
+	        if (entry.MatchGUID == match.Name)
+	        {
+	            matchInList = true;
+	        }
+	    }
+	    if (!matchInList)
+	    {
+            GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
+            matchListEntry.GetComponent<PhotonMatchlistEntry>().FillMatchListEntry(match);
+            _matchCount++;
+        }
 	}
 
-	/// <summary>
+    public void UpdatePlayerCount(RoomInfo match) {
+        PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+        foreach (var entry in matchlist) {
+            if (entry.MatchName.text == match.CustomProperties["MatchName"].ToString()) {
+                entry.UpdatePlayerCount(PhotonNetwork.room.PlayerCount);
+            }
+        }
+    }
+
+    /// <summary>
 	/// Show message "No matches found" if no matches are found.
 	/// </summary>
 	public void ShowNoMatchesFound()

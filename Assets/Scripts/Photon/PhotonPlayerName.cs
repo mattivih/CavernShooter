@@ -1,25 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PhotonPlayerName : MonoBehaviour
 {
 
-    // Use this for initialization
-    void Start()
+    public void SetPlayerName()
     {
-        string defaultName = "Player";
-        InputField inputField = GetComponentInChildren<InputField>();
-        inputField.text = defaultName;
-        PhotonNetwork.playerName = defaultName;
+        string name = GetComponent<Text>().text;
+        PhotonNetwork.playerName = name;
     }
 
-    public void SetPlayerName(string name)
+    public void UpdatePlayerName(string name)
     {
-        PhotonNetwork.playerName = name + " "; // force a trailing space string in case value is an empty string, else playerName would not be updated.
+        InputField nameField = GetComponent<InputField>();
+        ColorBlock colors = nameField.colors;
+        colors.normalColor = Color.white;
+        nameField.colors = colors;
+        nameField.gameObject.GetComponent<Text>().fontStyle = FontStyle.Normal;
+        nameField.text = name;
     }
-
-
 }
 
