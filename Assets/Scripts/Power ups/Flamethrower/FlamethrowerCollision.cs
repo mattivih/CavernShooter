@@ -7,7 +7,7 @@ public class FlamethrowerCollision : ProjectilesBase {
 	public ParticleSystem FlamethrowerFire;
 	public GameObject FireEffectPrefab;
     public int ParticleCount;
-    public int EnemyParticleCount;
+    public float EnemyParticleCount;
     public float UnitDuration = 0.5f;
     public FireBaseScript currentPrefabScript;
 
@@ -23,7 +23,6 @@ public class FlamethrowerCollision : ProjectilesBase {
     void Awake() {
         audioFire = AddAudio(clipFire, true, false, 1f);
     }
-
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();
         newAudio.clip = clip;
@@ -59,9 +58,10 @@ public class FlamethrowerCollision : ProjectilesBase {
     void OnParticleCollision(GameObject other) {
         if(other.transform.root.gameObject.GetComponent<Ship>() && other != transform.root.gameObject)
         {
-            gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID);
-            EnemyParticleCount++;
-            if (EnemyParticleCount > 10)
+            gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID, Time.deltaTime);
+            EnemyParticleCount = EnemyParticleCount +  1.0f * Time.deltaTime;
+            Debug.Log(EnemyParticleCount);
+            if (EnemyParticleCount >= 1.0f)
             {
                 for (int i = 0; i < collisionEvents.Count; i++)
                 {
@@ -69,7 +69,7 @@ public class FlamethrowerCollision : ProjectilesBase {
                     EmitAtLocation(collisionEvents[i], transform.root.gameObject);
                    
                 }
-                EnemyParticleCount = 0;
+                EnemyParticleCount = 0.0f;
             }
 
         }           
@@ -97,9 +97,9 @@ public class FlamethrowerCollision : ProjectilesBase {
             PhotonView.Find(childId).transform.parent = PhotonView.Find(parentId).transform;
     }
     [PunRPC]
-    public void PunTakeDamageFromFire(int viewId, int sourceId)
+    public void PunTakeDamageFromFire(int viewId, int sourceId, float deltaTime)
     {
-        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(1.0f, PhotonView.Find(sourceId).gameObject);
+        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(20.0f * deltaTime, PhotonView.Find(sourceId).gameObject);
     }
 
 
