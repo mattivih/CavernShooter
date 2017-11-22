@@ -61,7 +61,7 @@ public class FlamethrowerCollision : ProjectilesBase {
         {
             gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID);
             EnemyParticleCount++;
-            if (EnemyParticleCount > 15)
+            if (EnemyParticleCount > 10)
             {
                 for (int i = 0; i < collisionEvents.Count; i++)
                 {
@@ -116,10 +116,9 @@ public class FlamethrowerCollision : ProjectilesBase {
 			//_fire.transform.parent = particleCollisionEvent.colliderComponent.transform;
 
 			if (particleCollisionEvent.colliderComponent.transform.gameObject.GetComponent<Ship>() && particleCollisionEvent.colliderComponent.transform.gameObject != source) {
-                if (_fire.transform.parent) {
-                  //  gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, _fire.transform.parent.gameObject.GetPhotonView().viewID, source.gameObject.GetPhotonView().viewID);
-                    //_fire.transform.parent.GetComponent<Ship>().TakeDamage(Damage, transform.root.gameObject);
-                }
+                if (_fire.transform.parent) 
+                    _fire.transform.position = _fire.transform.parent.position;
+                
 			} else if (particleCollisionEvent.colliderComponent.transform.gameObject.tag == "Base") {
 				if (_fire.transform.parent)
 				_fire.transform.parent.GetComponent<Base> ().TakeDamage (Damage);
