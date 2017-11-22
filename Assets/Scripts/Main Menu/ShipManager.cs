@@ -94,9 +94,9 @@ public class ShipManager : MonoBehaviour
 
 	}
 
-    public string GetSelectedShip()
+    public int GetSelectedShip()
     {
-        return _wireframeShips[SelectedShip].name;
+        return SelectedShip;
     }
 
     private void DeleteAttributes()

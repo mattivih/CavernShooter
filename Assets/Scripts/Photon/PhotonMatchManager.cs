@@ -1,30 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PhotonMatchManager : Photon.PunBehaviour {
     
     public static PhotonMatchManager Instance;
-    public GameObject CameraPrefab;
+
+    private string[] _ships = { "Untied Fighter", "Retro-Wing", "Discovery Shuttle", "U.F.O", "Tesla Rossa" };
 
     public void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
         if (Instance == null) {
             Instance = this;
         }
-    }
-
-    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name != "0_Title_Screen" || scene.name != "1_Main_Menu")
+        if (SceneManager.GetActiveScene().name != "0_Title_Screen" || SceneManager.GetActiveScene().name != "1_Main_Menu")
         {
+            int shipID = 0;
+            int.TryParse(PhotonNetwork.player.CustomProperties["SelectedShip"].ToString(), out shipID);
+            Debug.Log("Instantiating " + PhotonNetwork.player + " with ship " + _ships[shipID]);
+
             //Instantiate player
             if (Ship.LocalPlayerInstance == null)
             {
                 //TODO: replace vector3 with one of the spawn points
-                GameObject player = PhotonNetwork.Instantiate(PhotonNetwork.player.CustomProperties["SelectedShip"].ToString(), Vector3.zero, Quaternion.identity, 0);
+                //Debug.Log("Instantiating " + PhotonNetwork.player +" with ship " + _ships[shipID]);
+                GameObject player = PhotonNetwork.Instantiate(_ships[shipID], Vector3.zero, Quaternion.identity, 0);
                 player.name = PhotonNetwork.player.NickName;
             }
         }

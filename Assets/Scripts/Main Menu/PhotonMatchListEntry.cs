@@ -5,13 +5,13 @@ using UnityEngine.UI;
 /// <summary>
 /// UI script: handles viewing the information of one match in the match list.
 /// </summary>
-public class PhotonMatchlistEntry : MonoBehaviour
+public class PhotonMatchListEntry : MonoBehaviour
 {
 
-	public Text MatchName, Players;
+	public Text MatchNameText, Players;
 	public Button JoinButton;
 
-    public string MatchGUID { get; private set; }
+    public string MatchName { get; private set; }
 
     private RoomInfo _match;
 
@@ -21,13 +21,13 @@ public class PhotonMatchlistEntry : MonoBehaviour
 	public void FillMatchListEntry(RoomInfo match)
 	{
 		_match = match;
-	    MatchGUID = match.Name;
+        MatchName = match.Name;
         if (match.CustomProperties.ContainsKey("MatchName"))
         {
-            MatchName.text = match.CustomProperties["MatchName"].ToString();
+            MatchNameText.text = match.CustomProperties["MatchName"].ToString();
         }
         else {
-            MatchName.text = "Match";
+            MatchNameText.text = "Match";
         }
         UpdatePlayerCount(match.PlayerCount);
 		JoinButton.onClick.RemoveAllListeners();

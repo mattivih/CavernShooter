@@ -20,7 +20,7 @@ public class AudioManager : MonoBehaviour
 		}
 		_audioSource = GetComponent<AudioSource>();
 		_audioSource.loop = true;
-		_audioSource.clip = TitleScreen;
+        _audioSource.clip = TitleScreen;
         _audioSource.Play();
         SceneManager.sceneLoaded += OnLevelLoaded;
 	}
@@ -28,8 +28,10 @@ public class AudioManager : MonoBehaviour
 	public void OnEnterMainMenu()
 	{
         //TODO: Don't change clip if it's already playing.
-		_audioSource.clip = MenuMusic;
-		_audioSource.Play();
+        if (_audioSource.clip != MenuMusic) {
+            _audioSource.clip = MenuMusic;
+            _audioSource.Play();
+        }
 	}
 
 	public void OnEnterCreditsMenu()

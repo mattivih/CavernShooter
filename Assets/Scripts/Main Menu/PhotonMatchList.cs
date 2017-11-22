@@ -6,7 +6,7 @@ using UnityEngine.Networking.Match;
 /// <summary>
 /// UI script: Matchlist that shows available matches, max players and currently joined players per match.
 /// </summary>
-public class PhotonMatchlist : MonoBehaviour
+public class PhotonMatchList : MonoBehaviour
 {
 
 	public GameObject MatchListEntryPrefab, NoMatchesFoundPrefab, LoadingPrefab;
@@ -34,7 +34,7 @@ public class PhotonMatchlist : MonoBehaviour
 		Transform parent = null;
 		foreach (var pos in _positions)
 		{
-			if (pos.gameObject.GetComponent<PhotonMatchlist>())
+			if (pos.gameObject.GetComponent<PhotonMatchList>())
 			{
 				parent = pos;
 			}
@@ -44,11 +44,11 @@ public class PhotonMatchlist : MonoBehaviour
 
 	public void AddMatchToList(RoomInfo match)
 	{
-	    PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+	    PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
 	    bool matchInList = false;
 	    foreach (var entry in matchlist)
 	    {
-	        if (entry.MatchGUID == match.Name)
+	        if (entry.MatchName == match.Name)
 	        {
 	            matchInList = true;
 	        }
@@ -56,15 +56,15 @@ public class PhotonMatchlist : MonoBehaviour
 	    if (!matchInList)
 	    {
             GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
-            matchListEntry.GetComponent<PhotonMatchlistEntry>().FillMatchListEntry(match);
+            matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(match);
             _matchCount++;
         }
 	}
 
     public void UpdatePlayerCount(RoomInfo match) {
-        PhotonMatchlistEntry[] matchlist = GetComponentsInChildren<PhotonMatchlistEntry>();
+        PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
         foreach (var entry in matchlist) {
-            if (entry.MatchName.text == match.CustomProperties["MatchName"].ToString()) {
+            if (entry.MatchNameText.text == match.CustomProperties["MatchName"].ToString()) {
                 entry.UpdatePlayerCount(PhotonNetwork.room.PlayerCount);
             }
         }

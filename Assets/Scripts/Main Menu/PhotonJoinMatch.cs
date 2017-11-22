@@ -4,7 +4,7 @@ public class PhotonJoinMatch : Photon.PunBehaviour
 {
     public int MaxMatchesToList = 4;
 
-    private PhotonMatchlist _matchList;
+    private PhotonMatchList _matchList;
 
     /// <summary>
     /// Updates the matchlist (on Join Game Menu)
@@ -12,13 +12,13 @@ public class PhotonJoinMatch : Photon.PunBehaviour
     public override void OnReceivedRoomListUpdate()
     {
         RoomInfo[] matches = PhotonNetwork.GetRoomList();
-        foreach (RoomInfo match in matches)
-        {
-            Debug.Log("@OnReceivedRoomListUpdate Matchname: " + match.CustomProperties["MatchName"]);
-        }
+        //foreach (RoomInfo match in matches)
+        //{
+        //    Debug.Log("@OnReceivedRoomListUpdate Matchname: " + match.CustomProperties["MatchName"]);
+        //}
         if (!_matchList)
         {
-            _matchList = FindObjectOfType<PhotonMatchlist>();
+            _matchList = FindObjectOfType<PhotonMatchList>();
         }
 
         if (matches.Length > 0)

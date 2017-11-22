@@ -121,8 +121,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     //Sets the player's status ready and updates the UI
     public void PlayerReady()
     {
-        string shipName = FindObjectOfType<ShipManager>().GetSelectedShip();
-        Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipName} };
+        int shipID = FindObjectOfType<ShipManager>().GetSelectedShip();
+        Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
     }
 
@@ -153,7 +153,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         if (PhotonNetwork.player.IsLocal && !PhotonNetwork.isMasterClient) // = Player is in the Join Game menu
         {
             //Update matchlist player count
-            FindObjectOfType<PhotonMatchlist>().UpdatePlayerCount(PhotonNetwork.room);
+            FindObjectOfType<PhotonMatchList>().UpdatePlayerCount(PhotonNetwork.room);
         }
     }
 

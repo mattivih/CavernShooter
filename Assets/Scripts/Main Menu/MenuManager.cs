@@ -107,10 +107,6 @@ public class MenuManager : MonoBehaviour
     public void SetMatchName(string name)
     {
         MatchName.text = name;
-        MatchName.gameObject.GetComponent<Text>().fontStyle = FontStyle.Normal;
-        ColorBlock colors = MatchName.colors;
-        colors.normalColor = Color.white;
-        MatchName.colors = colors;
     }
 
     //------------------ Join Game Buttons ------------------
