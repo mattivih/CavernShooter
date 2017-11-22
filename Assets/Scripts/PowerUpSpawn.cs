@@ -61,24 +61,38 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
                 if (InnerTimer <= 0)
                 {
-                    if (InnerCount < 4)
+                    foreach (var spawn in InnerSpawnPoints)
                     {
-                        NewSpawn(NewPickUp(), InnerSpawnPoints, PowerUp.SpawnLocation.Inner);
-                        InnerCount++;
-                    }
-                    InnerTimer = InnerTime;
+                        if (spawn.childCount != 0)
+                            continue;
+                        else
+                        {
+                            NewSpawn(NewPickUp(), InnerSpawnPoints, PowerUp.SpawnLocation.Inner);
+                            InnerTimer = InnerTime;
+                            break;
+                        }
+                       
+                    }                                                 
                 }
-
 
                 if (OuterTimer <= 0)
                 {
-                    if (OuterSpawnPoints.Count > 0 && OuterCount < 4)
+
+                    foreach (var spawn in OuterSpawnPoints)
                     {
-                        NewSpawn(NewPickUp(), OuterSpawnPoints, PowerUp.SpawnLocation.Outer);
-                        OuterCount++;
+                        if (spawn.childCount != 0)
+                            continue;
+                        else
+                        {
+                            NewSpawn(NewPickUp(), OuterSpawnPoints, PowerUp.SpawnLocation.Outer);
+                            OuterTimer = OuterTime;
+                            break;
+                        }
+                     
                     }
-                    OuterTimer = OuterTime;
+
                 }
+
             }
         }
     }
@@ -91,7 +105,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn(int powerup)
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[5].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[2].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }
@@ -114,10 +128,8 @@ public class PowerUpSpawn : Photon.PunBehaviour
         switch (location)
         {
             case 1:
-                InnerCount--;
                 break;
             case 2:
-                OuterCount--;
                 break;
             default:
                 break;

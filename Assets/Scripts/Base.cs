@@ -35,13 +35,18 @@ public class Base : Photon.PunBehaviour {
             DestroyBase();
         }
 
-         if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()))
+      /*   if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()))
         {
-            GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.AllBuffered, null);
+            GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All, null);
+      
         }
 
         else
-            GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.AllBuffered, null);
+        {
+            GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
+  
+        }*/
+          
     }
 
 
@@ -76,7 +81,8 @@ public class Base : Photon.PunBehaviour {
     /// <param name="collision">Collision.</param>
     void OnCollisionStay2D(Collision2D collision) {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy") {
-            if(collision.gameObject.tag == "Player")
+            GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All, null);
+            if (collision.gameObject.tag == "Player")
                 _isCollidingPlayer = true;
             if(collision.gameObject.tag == "Enemy")
                 _isCollidingEnemy = true;
@@ -90,13 +96,30 @@ public class Base : Photon.PunBehaviour {
 
         }
     }
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Enemy")
+        {
+            _isCollidingEnemy = false;
+            if(!_isCollidingPlayer)
+                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
+        }
+         
+        if (collision.transform.tag == "Player")
+        {
+            _isCollidingPlayer = false;
+            if (!_isCollidingEnemy)
+                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
+        }
+           
+    }
+    
 
-
-    /// <summary>
-    /// Call for Base to take damage if hit by a projectile.
-    /// </summary>
-    /// <param name="collision">Collision.</param>
-    void OnCollisionEnter2D(Collision2D collision) {
+        /// <summary>
+        /// Call for Base to take damage if hit by a projectile.
+        /// </summary>
+        /// <param name="collision">Collision.</param>
+        void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.GetComponent<ProjectilesBase> ()) {
 			TakeDamage (collision.gameObject.GetComponent<ProjectilesBase> ().Damage);
 		}
