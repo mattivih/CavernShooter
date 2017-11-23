@@ -97,10 +97,10 @@ public class Level02SpriteManager : MonoBehaviour {
         for(int i = 0; i < 2; i++) {
             float yPos = 0;
             yPos = i == 0 ? yPos + levelHeight : yPos - levelHeight;
-            GameObject left = Instantiate(LevelLeft.gameObject, new Vector3(LevelLeft.position.x, LevelLeft.position.y+yPos, LevelLeft.position.z), LevelLeft.rotation);
-            Destroy(left.GetComponent<PolygonCollider2D>());
-            GameObject right = Instantiate(LevelRight.gameObject, new Vector3(LevelRight.position.x, LevelRight.position.y + yPos, LevelRight.position.z), LevelLeft.rotation);
-            Destroy(right.GetComponent<PolygonCollider2D>());
+           // GameObject left = Instantiate(LevelLeft.gameObject, new Vector3(LevelLeft.position.x, LevelLeft.position.y+yPos, LevelLeft.position.z), LevelLeft.rotation);
+           // Destroy(left.GetComponent<PolygonCollider2D>());
+           // GameObject right = Instantiate(LevelRight.gameObject, new Vector3(LevelRight.position.x, LevelRight.position.y + yPos, LevelRight.position.z), LevelLeft.rotation);
+          //  Destroy(right.GetComponent<PolygonCollider2D>());
         }
 
     }
