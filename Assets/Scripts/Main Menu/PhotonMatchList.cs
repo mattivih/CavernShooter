@@ -42,22 +42,37 @@ public class PhotonMatchList : MonoBehaviour
 		_positions.Remove(parent);
 	}
 
-	public void AddMatchToList(RoomInfo match)
+	public void AddOrUpdateMatch(RoomInfo match)
 	{
 	    PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
-	    bool matchInList = false;
+	    bool nameChanged = false;
+	    string viewName = null;
+	    if (match.CustomProperties.ContainsKey("MatchName"))
+	    {
+	        viewName = match.CustomProperties["MatchName"].ToString();
+	    }
+	    PhotonMatchListEntry matchInList = null;
 	    foreach (var entry in matchlist)
 	    {
 	        if (entry.MatchName == match.Name)
 	        {
-	            matchInList = true;
+	            matchInList = entry;
+                if (!string.IsNullOrEmpty(viewName) && entry.ViewName != viewName)
+	            {
+	                nameChanged = true;
+	            }
 	        }
 	    }
 	    if (!matchInList)
 	    {
+            //Add match
             GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
             matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(match);
             _matchCount++;
+        } else if (nameChanged)
+        {
+            //Update match details
+            matchInList.UpdateMatchName(viewName);
         }
 	}
 

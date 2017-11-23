@@ -93,7 +93,7 @@
 //	//		{
 //	//			for (int i = 0; i < matches.Count && i < MaxMatchesToList; i++)
 //	//			{
-//	//				_matchList.AddMatchToList(matches[i]);
+//	//				_matchList.AddOrUpdateMatch(matches[i]);
 //	//			}
 
 //	//		}
