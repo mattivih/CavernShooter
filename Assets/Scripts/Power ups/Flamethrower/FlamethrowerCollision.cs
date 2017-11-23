@@ -63,12 +63,10 @@ public class FlamethrowerCollision : ProjectilesBase {
             Debug.Log(EnemyParticleCount);
             if (EnemyParticleCount >= 1.0f)
             {
-                for (int i = 0; i < collisionEvents.Count; i++)
-                {
-                    ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
-                    EmitAtLocation(collisionEvents[i], transform.root.gameObject);
-                   
-                }
+                ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
+                for (int i = 0; i < collisionEvents.Count; i++)                          
+                    EmitAtLocation(collisionEvents[i], transform.root.gameObject);                  
+                
                 EnemyParticleCount = 0.0f;
             }
 
@@ -99,7 +97,7 @@ public class FlamethrowerCollision : ProjectilesBase {
     [PunRPC]
     public void PunTakeDamageFromFire(int viewId, int sourceId, float deltaTime)
     {
-        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(20.0f * deltaTime, PhotonView.Find(sourceId).gameObject);
+        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(40.0f * deltaTime, PhotonView.Find(sourceId).gameObject);
     }
 
 

@@ -119,7 +119,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         for (int i = 0; i < shipmats.Length; i++)
         {
-            if (shipmats[i].name == "_Ship_Colour (Instance)")
+            if (shipmats[i].name == "_Ship_Colour (Instance)" || shipmats[i].name == "_Ship_Colour")
             {
                 shipmats[i] = newMaterial;
             }

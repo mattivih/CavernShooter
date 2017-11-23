@@ -50,10 +50,23 @@ public class UseLaserBeam : MonoBehaviour {
     }
 
     [PunRPC]
-    public void FireLaser(Vector3 endpoint)
-    {
+    public void FireLaser(Vector3 endpoint, int viewId)
+    {  
         if(gameObject.transform.root.gameObject.GetComponent<Ship>())
         {
+            Color color = new Color();
+            var mats = GetComponent<LineRenderer>().materials;
+            var shipmats = PhotonView.Find(viewId).GetComponent<Ship>().GetComponentInChildren<MeshRenderer>().materials;
+            foreach (var mat in shipmats)
+            {
+                if (mat.name == "_Ship_Colour (Instance)"  || mat.name == "_Ship_Colour")
+                    color = mat.color;
+
+            }
+            mats[0].SetColor("_TintColor", color);
+           // mats[0].SetColor("_MKGlowColor", color);
+
+
             _lineRenderer = GetComponent<LineRenderer>();
             _lineRenderer.enabled = true;
             _lineRenderer.SetPosition(0, Firepoint.position);
@@ -85,7 +98,7 @@ public class UseLaserBeam : MonoBehaviour {
             else           
                 GetComponent<PhotonView>().RPC("MoveSparks", PhotonTargets.All, sparksObject.GetComponent<PhotonView>().viewID, _endPoint); 
                           
-            gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint);
+            gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint, transform.root.gameObject.GetComponent<PhotonView>().viewID);
         }
    
     }
