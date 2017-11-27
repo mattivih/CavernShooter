@@ -9,7 +9,6 @@ public class PhotonGameManager : Photon.PunBehaviour {
 
     public GameObject PlayerPrefab;
     public GameObject CameraPrefab;
-    public GameObject BasePrefab;
 
     public void Start() {
 		

@@ -34,92 +34,134 @@ public class PowerUpSpawn : Photon.PunBehaviour
     void Update()
     {
 
-        //Debug.Log("inner count:" + InnerCount);
-        //Debug.Log("outer count:" + OuterCount);
-
         if (PhotonNetwork.isMasterClient && PhotonNetwork.playerList.Length > 0)
         {
-            if (!active)
-            {
-                NewCenterSpawn(NewPickUp());
-            }
+            if (!active)            
+                NewCenterSpawn();
+            
             active = true;
             if (active)
             {
-                CenterTimer -= Time.deltaTime;
-                InnerTimer -= Time.deltaTime;
-                OuterTimer -= Time.deltaTime;
+                if (CenterSpawn.childCount == 0)               
+                    CenterTimer -= Time.deltaTime;
+                
 
                 if (CenterTimer <= 0)
                 {
                     if (CenterSpawn.childCount == 0)
                     {
-                        NewCenterSpawn(NewPickUp());
+                        NewCenterSpawn();
                     }
                     CenterTimer = CenterTime;
                 }
 
-                if (InnerTimer <= 0)
+                if (_firstspawn)
                 {
-                    foreach (var spawn in InnerSpawnPoints)
-                    {
-                        if (spawn.childCount != 0)
-                            continue;
-                        else
-                        {
-                            NewSpawn(NewPickUp(), InnerSpawnPoints, PowerUp.SpawnLocation.Inner);
-                            InnerTimer = InnerTime;
-                            break;
-                        }
-                       
-                    }                                                 
-                }
+                    FirstInnerTimers[0] -= Time.deltaTime;
+                    FirstInnerTimers[1] -= Time.deltaTime;
+                    FirstInnerTimers[2] -= Time.deltaTime;
+                    FirstInnerTimers[3] -= Time.deltaTime;
 
-                if (OuterTimer <= 0)
-                {
+                    FirstOuterTimers[0] -= Time.deltaTime;
+                    FirstOuterTimers[1] -= Time.deltaTime;
+                    FirstOuterTimers[2] -= Time.deltaTime;
+                    FirstOuterTimers[3] -= Time.deltaTime;
 
-                    foreach (var spawn in OuterSpawnPoints)
+                    if (FirstInnerTimers[0] <= 0)
                     {
-                        if (spawn.childCount != 0)
-                            continue;
-                        else
-                        {
-                            NewSpawn(NewPickUp(), OuterSpawnPoints, PowerUp.SpawnLocation.Outer);
-                            OuterTimer = OuterTime;
-                            break;
-                        }
-                     
+                        NewSpawn(InnerSpawnPoints[0], PowerUp.SpawnLocation.Inner);
+                        FirstInnerTimers[0] = 100f;
+                    }
+                    if (FirstInnerTimers[1] <= 0)
+                    {
+                        NewSpawn(InnerSpawnPoints[1], PowerUp.SpawnLocation.Inner);
+                        FirstInnerTimers[1] = 100f;
+                    }
+                    if (FirstInnerTimers[2] <= 0)
+                    {
+                        NewSpawn(InnerSpawnPoints[2], PowerUp.SpawnLocation.Inner);
+                        FirstInnerTimers[2] = 100f;
+                    }
+                    if (FirstInnerTimers[3] <= 0)
+                    {
+                        NewSpawn(InnerSpawnPoints[3], PowerUp.SpawnLocation.Inner);
+                        FirstInnerTimers[3] = 100f;
+                    }
+
+                    if (FirstOuterTimers[0] <= 0)
+                    {
+                        NewSpawn(OuterSpawnPoints[0], PowerUp.SpawnLocation.Outer);
+                        FirstOuterTimers[0] = 100f;
+                    }
+                    if (FirstOuterTimers[1] <= 0)
+                    {
+                        NewSpawn(OuterSpawnPoints[1], PowerUp.SpawnLocation.Outer);
+                        FirstOuterTimers[1] = 100f;
+                    }
+                    if (FirstOuterTimers[2] <= 0)
+                    {
+                        NewSpawn(OuterSpawnPoints[2], PowerUp.SpawnLocation.Outer);
+                        FirstOuterTimers[2] = 100f;
+                    }
+                    if (FirstOuterTimers[3] <= 0)
+                    {
+                        NewSpawn(OuterSpawnPoints[3], PowerUp.SpawnLocation.Outer);
+                        FirstOuterTimers[3] = 100f;
+                        _firstspawn = false;
                     }
 
                 }
+                else
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (InnerSpawnPoints[i].childCount == 0)
+                            InnerTimers[i] -= Time.deltaTime;
+                        if (OuterSpawnPoints[i].childCount == 0)
+                            OuterTimers[i] -= Time.deltaTime;
 
+                        if (InnerTimers[i] <= 0)
+                        {
+                            if (InnerSpawnPoints.Count > 0 && InnerCount < 4)
+                            {
+                                NewSpawn(InnerSpawnPoints[i], PowerUp.SpawnLocation.Inner);
+                                InnerCount++;
+                            }
+                            InnerTimers[i] = InnerTime;
+                        }
+                        if (OuterTimers[i] <= 0)
+                        {
+                            if (OuterSpawnPoints.Count > 0 && OuterCount < 4)
+                            {
+                                NewSpawn(OuterSpawnPoints[i], PowerUp.SpawnLocation.Outer);
+                                OuterCount++;
+                            }
+                            OuterTimers[i] = OuterTime;
+                        }
+
+                    }
+                }
             }
         }
     }
-    
-    public int NewPickUp()
+
+    public string NewPickUp()
     {
         int random = Random.Range(0, PowerUpPrefabs.Count);
-        return random;
+        return PowerUpPrefabs[random].name;
     }
 
-    public void NewCenterSpawn(int powerup)
+    public void NewCenterSpawn()
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[2].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[5].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }
 
-    public void NewSpawn(int powerup, List<Transform> spawns, PowerUp.SpawnLocation location)
+    public void NewSpawn(Transform spawn, PowerUp.SpawnLocation location)
     {
-        int randomSpawnIndex = 0;
-        do
-        {
-            randomSpawnIndex = Random.Range(0, spawns.Count);
-        } while (spawns[randomSpawnIndex].childCount > 0);
-
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[powerup].name, spawns[randomSpawnIndex].position, Quaternion.identity, 0);
-        pickup.transform.SetParent(spawns[randomSpawnIndex]);
+        GameObject pickup = PhotonNetwork.Instantiate(NewPickUp(), spawn.transform.position, Quaternion.identity, 0);
+        pickup.transform.SetParent(spawn.transform);
         pickup.gameObject.GetComponent<PowerUp>().location = location;
     }
 
