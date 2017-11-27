@@ -26,16 +26,14 @@ public class PhotonMatchManager : Photon.PunBehaviour {
             int.TryParse(PhotonNetwork.player.CustomProperties["Spawnpoint"].ToString(), out spawnpoint);
 
             GameObject[] spawnpoints = GameObject.FindGameObjectsWithTag("Base");
+            float baseHeight = spawnpoints[0].gameObject.GetComponent<BoxCollider2D>().size.y * spawnpoints[0].gameObject.transform.localScale.y/2;
 
-            Vector3 spawnPos = spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up;
+            Vector3 spawnPos = spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up * baseHeight;
 
             //Instantiate player
             if (Ship.LocalPlayerInstance == null)
             {
                 GameObject player = PhotonNetwork.Instantiate(shipName, spawnPos, Quaternion.identity, 0);
-                MeshFilter meshFilter = player.GetComponentInChildren<MeshFilter>();
-                float shipHeight = (meshFilter.mesh.bounds.size.y * meshFilter.gameObject.transform.localScale.y) / 2;
-                player.transform.position = player.transform.position + Vector3.up * shipHeight;
                 player.name = PhotonNetwork.player.NickName;
             }
         }

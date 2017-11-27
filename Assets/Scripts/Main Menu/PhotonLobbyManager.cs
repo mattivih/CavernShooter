@@ -229,23 +229,13 @@ public class PhotonLobbyManager : Photon.PunBehaviour
                     //If all the players are ready, load the game level.
                     if (allReady)
                     {
-                        //Masterclient draws spawn order for the players
-                        System.Random random = new System.Random();
-                        int[] spawnpoints = new int[PhotonNetwork.playerList.Length];
-                        int i = 0;
+                        //Masterclient sets the spawn order for the players
                         int spawnpoint = 0;
-                        Debug.Log("Drawing spawnpoints.");
                         foreach (var player in PhotonNetwork.playerList)
                         {
-                            //do
-                            //{
-                            //    spawnpoint = random.Next(0, PhotonNetwork.playerList.Length);
-                            //} while (spawnpoints.Contains(spawnpoint));
                             Hashtable playerProperties = new Hashtable() { { "Spawnpoint", spawnpoint } };
                             player.SetCustomProperties(playerProperties);
-                            spawnpoints[i] = spawnpoint;
-                            ++i;
-                            Debug.Log("Spawnpoint " + spawnpoint + " drew for " + player.NickName);
+                            ++spawnpoint;
                         }
                         LoadLevel(PhotonNetwork.room.CustomProperties["SelectedMap"].ToString());
                     }
