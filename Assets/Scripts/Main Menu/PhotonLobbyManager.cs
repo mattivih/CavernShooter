@@ -124,9 +124,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
 
-        //Disable player and match name changing
+        //TODO: Disable player and match name changing
 
-        //Disable ship selection
+        //TODO: Disable ship selection
     }
 
     //Sets the player's status not ready and updates the UI
@@ -135,9 +135,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
 
-        //Enable player and match name changing
+        //TODO: Enable player and match name changing
 
-        //Enable ship selection
+        //TODO: Enable ship selection
     }
 
     #endregion
@@ -199,7 +199,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
         Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
         //Update UI
@@ -212,13 +211,16 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             // If match is full...
             if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
             {
+
+                //TODO: Close the match if it's full
+
                 //... check if all the players are now ready
                 if (props != null && props.ContainsKey("Ready"))
                 {
                     bool allReady = true;
-                    foreach (var matchPlayer in PhotonNetwork.playerList)
+                    foreach (var player in PhotonNetwork.playerList)
                     {
-                        if (!System.Convert.ToBoolean(matchPlayer.CustomProperties["Ready"]))
+                        if (!Convert.ToBoolean(player.CustomProperties["Ready"]))
                         {
                             allReady = false;
                         }
@@ -227,6 +229,24 @@ public class PhotonLobbyManager : Photon.PunBehaviour
                     //If all the players are ready, load the game level.
                     if (allReady)
                     {
+                        //Masterclient draws spawn order for the players
+                        System.Random random = new System.Random();
+                        int[] spawnpoints = new int[PhotonNetwork.playerList.Length];
+                        int i = 0;
+                        int spawnpoint = 0;
+                        Debug.Log("Drawing spawnpoints.");
+                        foreach (var player in PhotonNetwork.playerList)
+                        {
+                            //do
+                            //{
+                            //    spawnpoint = random.Next(0, PhotonNetwork.playerList.Length);
+                            //} while (spawnpoints.Contains(spawnpoint));
+                            Hashtable playerProperties = new Hashtable() { { "Spawnpoint", spawnpoint } };
+                            player.SetCustomProperties(playerProperties);
+                            spawnpoints[i] = spawnpoint;
+                            ++i;
+                            Debug.Log("Spawnpoint " + spawnpoint + " drew for " + player.NickName);
+                        }
                         LoadLevel(PhotonNetwork.room.CustomProperties["SelectedMap"].ToString());
                     }
                 }

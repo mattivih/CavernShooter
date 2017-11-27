@@ -153,4 +153,8 @@ public class Base : Photon.PunBehaviour {
         Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation);
         Destroy(gameObject);
     }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+    }
 }

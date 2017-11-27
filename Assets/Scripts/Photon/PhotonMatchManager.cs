@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,25 +6,36 @@ public class PhotonMatchManager : Photon.PunBehaviour {
     
     public static PhotonMatchManager Instance;
 
-    private string[] _ships = { "Untied Fighter", "Retro-Wing", "Discovery Shuttle", "U.F.O", "Tesla Rossa" };
+    private string[] _shipNames = { "Untied Fighter", "Retro-Wing", "Discovery Shuttle", "U.F.O", "Tesla Rossa" };
+
+    
 
     public void Start()
     {
         if (Instance == null) {
             Instance = this;
         }
+
         if (SceneManager.GetActiveScene().name != "0_Title_Screen" || SceneManager.GetActiveScene().name != "1_Main_Menu")
         {
             int shipID = 0;
             int.TryParse(PhotonNetwork.player.CustomProperties["SelectedShip"].ToString(), out shipID);
-            Debug.Log("Instantiating " + PhotonNetwork.player + " with ship " + _ships[shipID]);
+            string shipName = _shipNames[shipID];
+
+            int spawnpoint = 0;
+            int.TryParse(PhotonNetwork.player.CustomProperties["Spawnpoint"].ToString(), out spawnpoint);
+
+            GameObject[] spawnpoints = GameObject.FindGameObjectsWithTag("Base");
+
+            Vector3 spawnPos = spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up;
 
             //Instantiate player
             if (Ship.LocalPlayerInstance == null)
             {
-                //TODO: replace vector3 with one of the spawn points
-                //Debug.Log("Instantiating " + PhotonNetwork.player +" with ship " + _ships[shipID]);
-                GameObject player = PhotonNetwork.Instantiate(_ships[shipID], Vector3.zero, Quaternion.identity, 0);
+                GameObject player = PhotonNetwork.Instantiate(shipName, spawnPos, Quaternion.identity, 0);
+                MeshFilter meshFilter = player.GetComponentInChildren<MeshFilter>();
+                float shipHeight = (meshFilter.mesh.bounds.size.y * meshFilter.gameObject.transform.localScale.y) / 2;
+                player.transform.position = player.transform.position + Vector3.up * shipHeight;
                 player.name = PhotonNetwork.player.NickName;
             }
         }
