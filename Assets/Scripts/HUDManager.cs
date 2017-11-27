@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 public class HUDManager : MonoBehaviour {
 
+    
     public bool _zGravityOn = false;
     public bool shieldOn = false;
     private float _zGravityTimer = 15f;
@@ -22,47 +23,54 @@ public class HUDManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if(CurrentPU)
+        if (GameManager.Instance.Player)
         {
-            powerUpFraction = CurrentPU.Units / CurrentPU.MaxUnits;
-            GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
-        }
-
-
-        if (GameManager.Instance.healthbarImage)
-        {
-            float healthFraction = GameManager.Instance.Player.GetComponent<Ship>().Health / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
-            healthFraction *= 0.92f;
-            healthFraction += 0.04f;
-            GameManager.Instance.healthbarImage.fillAmount = healthFraction;
-            if (healthFraction > 0.5)
+            if (CurrentPU)
             {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
+                powerUpFraction = CurrentPU.Units / CurrentPU.MaxUnits;
+                GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
             }
-            else
+
+
+            if (GameManager.Instance.healthbarImage)
             {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
+                float healthFraction = GameManager.Instance.Player.GetComponent<Ship>().Health / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
+                healthFraction *= 0.92f;
+                healthFraction += 0.04f;
+                GameManager.Instance.healthbarImage.fillAmount = healthFraction;
+                if (healthFraction > 0.5)
+                {
+                    GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
+                }
+                else
+                {
+                    GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
+                }
             }
+
+
+            if (_zGravityOn)
+            {
+                _zGravityTimer -= Time.deltaTime;
+                GameManager.Instance.powerupBarImage.fillAmount = (_zGravityTimer / 15f);
+
+            }
+            if (_zGravityTimer <= 0f)
+                _zGravityOn = false;
+
+            if (shieldOn)
+            {
+                shieldTimer -= Time.deltaTime;
+                GameManager.Instance.powerupBarImage.fillAmount = (shieldTimer / 15f);
+
+            }
+            if (_zGravityTimer <= 0f)
+                _zGravityOn = false;
         }
-
-
-        if (_zGravityOn)
+        else
         {
-            _zGravityTimer -= Time.deltaTime;
-            GameManager.Instance.powerupBarImage.fillAmount = (_zGravityTimer / 15f);
-            
+            gameObject.SetActive(false);
         }
-        if (_zGravityTimer <= 0f)
-            _zGravityOn = false;
-
-        if (shieldOn)
-        {
-            shieldTimer -= Time.deltaTime;
-            GameManager.Instance.powerupBarImage.fillAmount = (shieldTimer / 15f);
-
-        }
-        if (_zGravityTimer <= 0f)
-            _zGravityOn = false;
     }
 
     public void UpdatePowerUp(PowerUp CurrentPowerUp) {
