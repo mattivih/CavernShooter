@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ShieldEffect : MonoBehaviour {
 
+    public Shield parent;
+
     ParticleSystem.EmissionModule emission;
     ParticleSystem.MinMaxCurve noEmission = new ParticleSystem.MinMaxCurve();
     public AudioClip clipActivateShield, clipShieldEnd;
@@ -20,19 +22,21 @@ public class ShieldEffect : MonoBehaviour {
     }
 
     void Start() {
-        audioActivateShield.Play();
     }
 
     void Update()
     {
-        if (Ship.LocalPlayerInstance.GetComponent<Ship>().Shield <= 0 && GetComponent<PhotonView>().isMine)
-            Die();
+        
     }
 
-    public void Die() {
+    public IEnumerator Die() {
+        audioActivateShield.Play();
+        yield return new WaitForSeconds(parent.shieldDuration);
         emission.rateOverTime = noEmission;
         audioShieldEnd.Play();
         float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
+        GetComponentInParent<Ship>().Shield = false;
+        parent.alreadyOn = null;
         PhotonNetwork.Destroy(gameObject);
     }
 

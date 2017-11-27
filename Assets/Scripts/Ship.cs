@@ -32,7 +32,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     //[SyncVar]
     public float Health;
     //[SyncVar(hook = "OnChangeShield")]
-    public float Shield;
+    public bool Shield = false;
     #endregion
 
     #region Private variables
@@ -511,23 +511,12 @@ public class Ship : Photon.PunBehaviour, IPunObservable
        // Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
 
-        if (Shield > 0)
+        if (!Shield)
         {
-            if (damage < Shield)
-            {   
-                Shield -= damage;
-                damage = 0;
-            }
-            else
-            {
-                damage -= Shield;
-                Shield = 0;
-            }
-            GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
+            Health -= damage;
+            GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         }
-        Health -= damage;
-        GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
-
+        
 
         if (Health <= 0)
         {
