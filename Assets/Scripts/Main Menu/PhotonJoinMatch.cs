@@ -12,10 +12,6 @@ public class PhotonJoinMatch : Photon.PunBehaviour
     public override void OnReceivedRoomListUpdate()
     {
         RoomInfo[] matches = PhotonNetwork.GetRoomList();
-        //foreach (RoomInfo match in matches)
-        //{
-        //    Debug.Log("@OnReceivedRoomListUpdate Matchname: " + match.CustomProperties["MatchName"]);
-        //}
         if (!_matchList)
         {
             _matchList = FindObjectOfType<PhotonMatchList>();
@@ -26,7 +22,7 @@ public class PhotonJoinMatch : Photon.PunBehaviour
             _matchList.HideLoadingIcon();
             for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
             {
-                _matchList.AddMatchToList(matches[i]);
+                _matchList.AddOrUpdateMatch(matches[i]);
             }
         }
     }

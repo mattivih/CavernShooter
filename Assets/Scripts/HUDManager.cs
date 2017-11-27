@@ -6,7 +6,9 @@ using UnityEngine.Networking;
 public class HUDManager : MonoBehaviour {
 
     public bool _zGravityOn = false;
+    public bool shieldOn = false;
     private float _zGravityTimer = 15f;
+    private float shieldTimer = 15f;
     PowerUp CurrentPU;
     float powerUpFraction;
 
@@ -42,10 +44,6 @@ public class HUDManager : MonoBehaviour {
                 GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
             }
         }
-        if (GameManager.Instance.shieldbarImage)
-        {
-            GameManager.Instance.shieldbarImage.fillAmount = GameManager.Instance.Player.GetComponent<Ship>().Shield / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
-        }
 
 
         if (_zGravityOn)
@@ -56,17 +54,29 @@ public class HUDManager : MonoBehaviour {
         }
         if (_zGravityTimer <= 0f)
             _zGravityOn = false;
+
+        if (shieldOn)
+        {
+            shieldTimer -= Time.deltaTime;
+            GameManager.Instance.powerupBarImage.fillAmount = (shieldTimer / 15f);
+
+        }
+        if (_zGravityTimer <= 0f)
+            _zGravityOn = false;
     }
 
     public void UpdatePowerUp(PowerUp CurrentPowerUp) {
         CurrentPU = CurrentPowerUp;
         if (CurrentPowerUp.name != "ZeroGravityPowerUp")
             _zGravityOn = false;
+        if (CurrentPowerUp.name != "ShieldPowerUp")
+            shieldOn = false;
         else
         {
             GameManager.Instance.powerupBarImage.fillAmount = 1f;
             return;
         }
+
 
 
         if(CurrentPowerUp.Units == 0)
@@ -103,6 +113,14 @@ public class HUDManager : MonoBehaviour {
 
     }
 
+    public void ResetShield()
+    {
+        GameManager.Instance.powerupBarLines.enabled = false;
+        GameManager.Instance.powerupBarLines4.enabled = false;
+        shieldOn = true;
+        shieldTimer = 15f;
+    }
+
     public void UpdateHealthBar(float health, float maxHealth)
     {
         float healthFraction = (health / maxHealth);
@@ -119,14 +137,4 @@ public class HUDManager : MonoBehaviour {
         }
 
     }
-
-    public void UpdateShieldBar(float shield, float maxHealth)
-    {
-        /*if (GameManager.Instance.shieldbarImage)
-        {*/
-        GameManager.Instance.shieldbarImage.fillAmount = shield / maxHealth;
-        /*}*/
-    }
-
-
 }

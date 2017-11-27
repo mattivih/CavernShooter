@@ -63,10 +63,6 @@ public class GameManager : Photon.PunBehaviour {
         hud.UpdateHealthBar(health, maxHealth);
     }
 
-    public void UpdateShieldBar(float shield, float maxHealth)
-    {
-        hud.UpdateShieldBar(shield, maxHealth);
-    }
 
     public void UpdatePowerUp(PowerUp CurrentPowerUp) {
         hud.UpdatePowerUp(CurrentPowerUp);

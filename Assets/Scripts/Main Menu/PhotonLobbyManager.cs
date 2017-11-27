@@ -66,7 +66,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = (byte) playerCount;
 
-        if (name == "")
+        if (string.IsNullOrEmpty(name))
         {
             name = "Match";
         }
@@ -75,8 +75,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         PlayerNotReady();
 
         Hashtable matchProperties = new Hashtable() { { "MatchName", name }, { "SelectedMap", _selectedMap } };
-        roomOptions.CustomRoomPropertiesForLobby = new[] {"MatchName"};
-        roomOptions.CustomRoomPropertiesForLobby = new[] {"SelectedMap"};
+        roomOptions.CustomRoomPropertiesForLobby = new[] {"MatchName", "SelectedMap"};
         roomOptions.CustomRoomProperties = matchProperties;
         if (PhotonNetwork.connected)
         {
@@ -124,6 +123,10 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         int shipID = FindObjectOfType<ShipManager>().GetSelectedShip();
         Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
+
+        //Disable player and match name changing
+
+        //Disable ship selection
     }
 
     //Sets the player's status not ready and updates the UI
@@ -131,6 +134,10 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     {
         Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
+
+        //Enable player and match name changing
+
+        //Enable ship selection
     }
 
     #endregion

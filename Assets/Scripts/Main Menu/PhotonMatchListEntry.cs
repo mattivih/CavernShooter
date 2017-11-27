@@ -12,6 +12,7 @@ public class PhotonMatchListEntry : MonoBehaviour
 	public Button JoinButton;
 
     public string MatchName { get; private set; }
+    public string ViewName { get; private set; }
 
     private RoomInfo _match;
 
@@ -24,11 +25,12 @@ public class PhotonMatchListEntry : MonoBehaviour
         MatchName = match.Name;
         if (match.CustomProperties.ContainsKey("MatchName"))
         {
-            MatchNameText.text = match.CustomProperties["MatchName"].ToString();
+            ViewName = match.CustomProperties["MatchName"].ToString();
         }
         else {
-            MatchNameText.text = "Match";
+            ViewName = "Match";
         }
+	    MatchNameText.text = ViewName;
         UpdatePlayerCount(match.PlayerCount);
 		JoinButton.onClick.RemoveAllListeners();
 		JoinButton.onClick.AddListener(JoinButtonListener);
@@ -48,5 +50,11 @@ public class PhotonMatchListEntry : MonoBehaviour
 
     public void UpdatePlayerCount(int playerCount) {
         Players.text = playerCount + "/" + _match.MaxPlayers;
+    }
+
+    public void UpdateMatchName(string name)
+    {
+        ViewName = name;
+        MatchNameText.text = name;
     }
 }
