@@ -60,7 +60,6 @@ public class FlamethrowerCollision : ProjectilesBase {
         {
             gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID, Time.deltaTime);
             EnemyParticleCount = EnemyParticleCount +  1.0f * Time.deltaTime;
-            Debug.Log(EnemyParticleCount);
             if (EnemyParticleCount >= 1.0f)
             {
                 ParticlePhysicsExtensions.GetCollisionEvents(FlamethrowerFire, other, collisionEvents);
