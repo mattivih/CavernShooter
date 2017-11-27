@@ -23,7 +23,7 @@ public class HUDManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.Player)
+        if (GameManager.Instance.Player.GetPhotonView().isMine)
         {
             if (CurrentPU)
             {

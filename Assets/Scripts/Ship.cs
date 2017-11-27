@@ -520,22 +520,21 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (Health <= 0)
         {
-            //Is Dead
-            //GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
-            //CmdInformServerPlayerIsDead(gameObject.name);
 
-            // Checks if damage was dealt by a ship. If yes, follow the killer's camera.
-
-            //Destroy(gameObject);
-            //GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
-            //NetworkServer.Spawn(explosion);
-            //NetworkServer.Destroy(gameObject);
-            //Destroy(gameObject);
-            GameManager.Instance.Player = source;
-            LocalPlayerInstance = source;
             if (source != null && source.GetComponent<Ship>())
             {
+                GameManager.Instance.Player = source;
+                LocalPlayerInstance = source;
                 Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
+            }
+
+            else
+            {
+                GameObject shipToFollow = FindObjectOfType<Ship>().gameObject;
+                GameManager.Instance.Player = shipToFollow;
+                LocalPlayerInstance = shipToFollow;
+                Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
+
             }
             photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
 			PhotonNetwork.Destroy (gameObject);
