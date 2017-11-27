@@ -531,7 +531,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             //NetworkServer.Spawn(explosion);
             //NetworkServer.Destroy(gameObject);
             //Destroy(gameObject);
-            GameManager.Instance.Player = null;
+            GameManager.Instance.Player = source;
             LocalPlayerInstance = source;
             if (source != null && source.GetComponent<Ship>())
             {
