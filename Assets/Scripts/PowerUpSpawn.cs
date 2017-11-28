@@ -36,15 +36,15 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
         if (PhotonNetwork.isMasterClient && PhotonNetwork.playerList.Length > 0)
         {
-            if (!active)            
+            if (!active)
                 NewCenterSpawn();
-            
+
             active = true;
             if (active)
             {
-                if (CenterSpawn.childCount == 0)               
+                if (CenterSpawn.childCount == 0)
                     CenterTimer -= Time.deltaTime;
-                
+
 
                 if (CenterTimer <= 0)
                 {
@@ -54,7 +54,6 @@ public class PowerUpSpawn : Photon.PunBehaviour
                     }
                     CenterTimer = CenterTime;
                 }
-
                 if (_firstspawn)
                 {
                     FirstInnerTimers[0] -= Time.deltaTime;
@@ -110,6 +109,34 @@ public class PowerUpSpawn : Photon.PunBehaviour
                         _firstspawn = false;
                     }
 
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (InnerSpawnPoints[i].childCount == 0 && FirstInnerTimers[i] > 50f)
+                            InnerTimers[i] -= Time.deltaTime;
+                        if (OuterSpawnPoints[i].childCount == 0 && FirstOuterTimers[i] > 50f)
+                            OuterTimers[i] -= Time.deltaTime;
+
+                        if (InnerTimers[i] <= 0)
+                        {
+                            if (InnerSpawnPoints.Count > 0 && InnerCount < 4)
+                            {
+                                NewSpawn(InnerSpawnPoints[i], PowerUp.SpawnLocation.Inner);
+                                InnerCount++;
+                            }
+                            InnerTimers[i] = InnerTime;
+                        }
+                        if (OuterTimers[i] <= 0)
+                        {
+                            if (OuterSpawnPoints.Count > 0 && OuterCount < 4)
+                            {
+                                NewSpawn(OuterSpawnPoints[i], PowerUp.SpawnLocation.Outer);
+                                OuterCount++;
+                            }
+                            OuterTimers[i] = OuterTime;
+                        }
+
+                    }
                 }
                 else
                 {
@@ -144,6 +171,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
             }
         }
     }
+    
 
     public string NewPickUp()
     {
@@ -153,7 +181,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn()
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[0].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[5].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }
@@ -170,8 +198,10 @@ public class PowerUpSpawn : Photon.PunBehaviour
         switch (location)
         {
             case 1:
+                InnerCount--;
                 break;
             case 2:
+               OuterCount--;
                 break;
             default:
                 break;
