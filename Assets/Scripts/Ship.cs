@@ -534,9 +534,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 GameManager.Instance.Player = shipToFollow;
                 LocalPlayerInstance = shipToFollow;
                 Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
-
             }
-           // photonView.RPC("DestroyShip", PhotonTargets.All, photonView.viewID);
             GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
             PhotonNetwork.Destroy (gameObject);
         }
