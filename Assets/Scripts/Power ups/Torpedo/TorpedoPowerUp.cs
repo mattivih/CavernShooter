@@ -16,11 +16,12 @@ public class TorpedoPowerUp : PowerUp {
     public void assignSource(int viewId, int objectId)
     {
         PhotonView.Find(objectId).gameObject.GetComponent<UseTorpedo>().source = PhotonView.Find(viewId).gameObject;
+        Debug.Log(PhotonView.Find(objectId).gameObject.GetComponent<UseTorpedo>().source);
 
     }
     public override void UseNormalPowerUp()
     {
-        GameObject go = PhotonNetwork.Instantiate("Torpedo", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
+        GameObject go = PhotonNetwork.Instantiate("Torpedo", Ship.LocalPlayerInstance.transform.position, Ship.LocalPlayerInstance.transform.rotation, 0);
         go.transform.rotation = Ship.LocalPlayerInstance.transform.rotation;
         go.GetComponent<Rigidbody2D>().velocity = Ship.LocalPlayerInstance.GetComponent<Rigidbody2D>().velocity * Time.deltaTime * 5;
         photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);

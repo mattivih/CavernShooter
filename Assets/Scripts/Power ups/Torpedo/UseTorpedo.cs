@@ -19,6 +19,7 @@ public class UseTorpedo : Photon.PunBehaviour {
 
     void Start()
     {
+        
         tags = new string[] { "Enemy", "Player" };
         foreach (GameObject go in GameObject.FindObjectsOfType(typeof(GameObject)))
         {
@@ -27,8 +28,7 @@ public class UseTorpedo : Photon.PunBehaviour {
             if (go == source)
                 targetObjects.Remove(go);
         }
-        
-
+        Debug.Log(source);
     }
 
     /// <summary>

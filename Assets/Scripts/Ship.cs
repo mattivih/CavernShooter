@@ -32,7 +32,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     //[SyncVar]
     public float Health;
     //[SyncVar(hook = "OnChangeShield")]
-    public float Shield;
+    public bool Shield = false;
     #endregion
 
     #region Private variables
@@ -474,7 +474,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 	[PunRPC]
 	void DestroyShip(Vector3 position)
 	{
-		GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
+		GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
 	}
 
     //[ClientRpc]
@@ -511,45 +511,36 @@ public class Ship : Photon.PunBehaviour, IPunObservable
        // Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
 
-        if (Shield > 0)
+        if (!Shield)
         {
-            if (damage < Shield)
-            {   
-                Shield -= damage;
-                damage = 0;
-            }
-            else
-            {
-                damage -= Shield;
-                Shield = 0;
-            }
-            GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
+            Health -= damage;
+            GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         }
-        Health -= damage;
-        GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
-
+        
 
         if (Health <= 0)
         {
-            //Is Dead
-            //GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
-            //CmdInformServerPlayerIsDead(gameObject.name);
 
-            // Checks if damage was dealt by a ship. If yes, follow the killer's camera.
             if (source != null && source.GetComponent<Ship>())
             {
+                GameManager.Instance.Player = source;
+                LocalPlayerInstance = source;
                 Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
             }
-            //Destroy(gameObject);
-            //GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
-            //NetworkServer.Spawn(explosion);
-            //NetworkServer.Destroy(gameObject);
-            //Destroy(gameObject);
 
-			photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
+            else
+            {
+                GameObject shipToFollow = FindObjectOfType<Ship>().gameObject;
+                GameManager.Instance.Player = shipToFollow;
+                LocalPlayerInstance = shipToFollow;
+                Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
+
+            }
+            photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
 			PhotonNetwork.Destroy (gameObject);
         }
     }
+
 
     /// <summary>
     /// Saves player's name to server.

@@ -165,9 +165,11 @@ public class Base : Photon.PunBehaviour {
 
     void DestroyBase()
     {
-        Instantiate(BaseExplosion, gameObject.transform.position, gameObject.transform.rotation);
-        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation);
-        Instantiate(BaseExplosion, gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation);
-        Destroy(gameObject);
+        PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position, gameObject.transform.rotation, 0);
+        PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation, 0);
+        PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation, 0);
+        PhotonNetwork.Destroy(gameObject);
     }
+
+
 }

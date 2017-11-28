@@ -16,6 +16,7 @@ public class PowerUp : Photon.PunBehaviour {
     //public NetworkInstanceId ownerId;
 
     public static bool zGravityOn = false;
+    public static bool shieldOn = false;
     public bool readyToDie = true;
     public bool dying = false;
     public bool dieDelay = false;
