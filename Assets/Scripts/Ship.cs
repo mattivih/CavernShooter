@@ -45,6 +45,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     private GameObject _lastDamageSource;
     private AudioSource _music;
     private Rigidbody2D _rigid;
+    public ParticleSystem _smoking30;
+    public ParticleSystem _smoking60;
+    public ParticleSystem _sparks30;
+    public ParticleSystem _sparks60;
     #endregion
 
     void Awake()
@@ -277,6 +281,38 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             ProcessInputs();
         }
 
+        if (Health < (MaxHealth * 0.3f))
+        {
+            Debug.Log("Under 30 Health");
+            _smoking60.Stop();
+            _sparks60.Stop();
+            if (!_smoking30.isPlaying)
+                _smoking30.Play();
+            if (!_sparks30.isPlaying)
+                _sparks30.Play();
+
+        }
+
+        else if (Health >= (MaxHealth * 0.3f) && Health <= (MaxHealth * 0.6f))
+        {
+            Debug.Log("Under 60 Health");
+            _smoking30.Stop();
+            _sparks30.Stop();
+            if (!_smoking60.isPlaying)
+                _smoking60.Play();
+            if (!_sparks60.isPlaying)
+                _sparks60.Play();
+        }
+
+        if (Health > (MaxHealth * 0.6f))
+        {
+            Debug.Log("Over 60 Health");
+            _smoking30.Stop();
+            _sparks30.Stop();
+            _smoking60.Stop();
+            _sparks60.Stop();
+        }
+
         //TODO: refactor to HUDManager
         #region Refactor to HUDManager
         /*   if (GameManager.Instance.healthbarImage)
@@ -338,6 +374,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
            }*/
         #endregion
     }
+
+    
 
     //Handles user input
     void ProcessInputs() {
@@ -540,6 +578,88 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 			PhotonNetwork.Destroy (gameObject);
         }
     }
+
+    /*#region Ship smokes and sparks
+    public void Smoking30On()
+    {
+        var smokes = GetComponentsInChildren<ParticleSystem>();
+        foreach (var smoke in smokes)
+        {
+           if (smoke.name == "Smoking30")
+                smoke.Play();
+        }
+    }
+
+    public void Smoking30Off()
+    {
+        var smokes = GetComponentsInChildren<ParticleSystem>();
+        foreach (var smoke in smokes)
+        {
+            if (smoke.name == "Smoking30")
+                smoke.Stop();
+        }
+    }
+
+    public void Smoking60On()
+    {
+        var smokes = GetComponentsInChildren<ParticleSystem>();
+        foreach (var smoke in smokes)
+        {
+            if (smoke.name == "Smoking60")
+                smoke.Play();
+        }
+    }
+
+    public void Smoking60Off()
+    {
+        var smokes = GetComponentsInChildren<ParticleSystem>();
+        foreach (var smoke in smokes)
+        {
+            if (smoke.name == "Smoking30")
+                smoke.Stop();
+        }
+    }
+
+    public void Sparks30On()
+    {
+        var sparks = GetComponentsInChildren<ParticleSystem>();
+        foreach (var spark in sparks)
+        {
+            if (spark.name == "Sparks30")
+                spark.Play();
+        }
+    }
+
+    public void Sparks30Off()
+    {
+        var sparks = GetComponentsInChildren<ParticleSystem>();
+        foreach (var spark in sparks)
+        {
+            if (spark.name == "Sparks30")
+                spark.Stop();
+        }
+    }
+
+    public void Sparks60On()
+    {
+        var sparks = GetComponentsInChildren<ParticleSystem>();
+        foreach (var spark in sparks)
+        {
+            if (spark.name == "Sparks60")
+                spark.Play();
+        }
+    }
+
+    public void Sparks60Off()
+    {
+        var sparks = GetComponentsInChildren<ParticleSystem>();
+        foreach (var spark in sparks)
+        {
+            if (spark.name == "Sparks60")
+                spark.Stop();
+        }
+    }
+    #endregion*/
 
 
     /// <summary>
