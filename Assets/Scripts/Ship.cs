@@ -25,6 +25,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public Transform MeshTransform;
     public Material ShipColorMaterial;
     public Color[] ShipColors;
+    public ParticleSystem Smoking30;
+    public ParticleSystem Smoking60;
+    public ParticleSystem Sparks30;
+    public ParticleSystem Sparks60;
 
     #endregion
     #region SyncVars
@@ -45,10 +49,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     private GameObject _lastDamageSource;
     private AudioSource _music;
     private Rigidbody2D _rigid;
-    public ParticleSystem _smoking30;
-    public ParticleSystem _smoking60;
-    public ParticleSystem _sparks30;
-    public ParticleSystem _sparks60;
     #endregion
 
     void Awake()
@@ -281,37 +281,37 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             ProcessInputs();
         }
 
+
+        #region Ship damage indicators (smokes and sparks)
         if (Health < (MaxHealth * 0.3f))
         {
-            Debug.Log("Under 30 Health");
-            _smoking60.Stop();
-            _sparks60.Stop();
-            if (!_smoking30.isPlaying)
-                _smoking30.Play();
-            if (!_sparks30.isPlaying)
-                _sparks30.Play();
-
+            Smoking60.Stop();
+            Sparks60.Stop();
+            if (!Smoking30.isPlaying)
+                Smoking30.Play();
+            if (!Sparks30.isPlaying)
+                Sparks30.Play();
         }
 
         else if (Health >= (MaxHealth * 0.3f) && Health <= (MaxHealth * 0.6f))
         {
-            Debug.Log("Under 60 Health");
-            _smoking30.Stop();
-            _sparks30.Stop();
-            if (!_smoking60.isPlaying)
-                _smoking60.Play();
-            if (!_sparks60.isPlaying)
-                _sparks60.Play();
+            Smoking30.Stop();
+            Sparks30.Stop();
+            if (!Smoking60.isPlaying)
+                Smoking60.Play();
+            if (!Sparks60.isPlaying)
+                Sparks60.Play();
         }
 
         if (Health > (MaxHealth * 0.6f))
         {
-            Debug.Log("Over 60 Health");
-            _smoking30.Stop();
-            _sparks30.Stop();
-            _smoking60.Stop();
-            _sparks60.Stop();
+            Smoking30.Stop();
+            Sparks30.Stop();
+            Smoking60.Stop();
+            Sparks60.Stop();
         }
+        #endregion 
+
 
         //TODO: refactor to HUDManager
         #region Refactor to HUDManager
@@ -474,21 +474,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             _laserCounter++;
         }
     }
-
-    /// <summary>
-    /// Unet: Fires a projectile.
-    /// </summary>
-    //[Command]
-    //TODO: Refactor with [PunRPC]
-    //void CmdFire(NetworkInstanceId id, Vector3 pos, Quaternion rot, Vector2 velocity, int laserid, Color color) {
-    //    GameObject laser = Instantiate(LaserPrefab, pos, rot);
-    //    laser.GetComponent<Rigidbody2D>().velocity = velocity;
-    //    laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-    //    laser.GetComponent<Laser>().myColor = color;
-    //    NetworkServer.Spawn(laser);
-    //    RpcFire(id, laser, laserid);
-    //}
-
+    
 
     //<summary>
     // Photon: Fires a projectile on remote clients.
@@ -578,111 +564,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         }
     }
 
-    /*#region Ship smokes and sparks
-    public void Smoking30On()
-    {
-        var smokes = GetComponentsInChildren<ParticleSystem>();
-        foreach (var smoke in smokes)
-        {
-           if (smoke.name == "Smoking30")
-                smoke.Play();
-        }
-    }
-
-    public void Smoking30Off()
-    {
-        var smokes = GetComponentsInChildren<ParticleSystem>();
-        foreach (var smoke in smokes)
-        {
-            if (smoke.name == "Smoking30")
-                smoke.Stop();
-        }
-    }
-
-    public void Smoking60On()
-    {
-        var smokes = GetComponentsInChildren<ParticleSystem>();
-        foreach (var smoke in smokes)
-        {
-            if (smoke.name == "Smoking60")
-                smoke.Play();
-        }
-    }
-
-    public void Smoking60Off()
-    {
-        var smokes = GetComponentsInChildren<ParticleSystem>();
-        foreach (var smoke in smokes)
-        {
-            if (smoke.name == "Smoking30")
-                smoke.Stop();
-        }
-    }
-
-    public void Sparks30On()
-    {
-        var sparks = GetComponentsInChildren<ParticleSystem>();
-        foreach (var spark in sparks)
-        {
-            if (spark.name == "Sparks30")
-                spark.Play();
-        }
-    }
-
-    public void Sparks30Off()
-    {
-        var sparks = GetComponentsInChildren<ParticleSystem>();
-        foreach (var spark in sparks)
-        {
-            if (spark.name == "Sparks30")
-                spark.Stop();
-        }
-    }
-
-    public void Sparks60On()
-    {
-        var sparks = GetComponentsInChildren<ParticleSystem>();
-        foreach (var spark in sparks)
-        {
-            if (spark.name == "Sparks60")
-                spark.Play();
-        }
-    }
-
-    public void Sparks60Off()
-    {
-        var sparks = GetComponentsInChildren<ParticleSystem>();
-        foreach (var spark in sparks)
-        {
-            if (spark.name == "Sparks60")
-                spark.Stop();
-        }
-    }
-    #endregion*/
-
-
-    /// <summary>
-    /// Saves player's name to server.
-    /// </summary>
-    //[Command]
-    //TODO: Refactor with [PunRPC]
-    //public void CmdInformServerPlayerIsDead(string playerName) {
-    //    if (MyLobbyManager.Instance) {
-    //        MyLobbyManager.Instance.OnServerOnPlayerDeath(playerName);
-    //    }
-    //}
-
-    /// <summary>
-    /// Increases ship's health when it lands on a base (or via powerup).
-    /// </summary>
-    /// <param name="amount">Amount of health</param>
-    //[ClientRpc]
-    //public void RpcIncreaseHealth(float amount) {
-    //    Health += amount;
-    //    if (Health > MaxHealth) {
-    //        Health = MaxHealth;
-    //    }
-    //}
 
     public void IncreaseHealth(float amount)
     {
