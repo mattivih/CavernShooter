@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System;
 using ExitGames.Client.Photon;
 
-public class Ship : Photon.PunBehaviour, IPunObservable
+public class Ship : Photon.PunBehaviour
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
-    public static int PlayerID;
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
@@ -55,67 +54,27 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     {
         _thruster = GetComponentInChildren<Thruster>();
 
-        //Register this player as a local player to this script
-        //If we try to register it to the Game Manager here it's too soon and causes errors
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
             GameManager.Instance.Player = LocalPlayerInstance;
         }
-        //Don't destroy on load so the instance survives level loading and the loading between scenes is seamless.
-        //DontDestroyOnLoad(gameObject);
     }
 
-    //To be deleted: Replaced wiht OnPhotonInstantiate
-    //public override void OnStartClient() {
-    //    _rigid = GetComponentInChildren<Rigidbody2D>();
-    //    Health = MaxHealth;
-    //    originalMeshRotation = mesh.localEulerAngles;
-    //    //CmdSpawnPlayer(GetComponent<NetworkIdentity>().netId);
-    //    playerNum = GameManager.Instance.GetPlayerNum(GetComponent<NetworkIdentity>().netId);
-
-    //    if (playerNum < 4) {
-    //        //Assign player's color to ship material
-    //        //1. copy original material
-    //        Material newMaterial = new Material(shipColorMaterial);
-    //        //2. change the copy's colour to ship colour
-    //        newMaterial.color = shipColors[playerNum];
-
-    //        //3. find and replace material in ships's renderer's materials
-    //        var shipmats = GetComponentInChildren<MeshRenderer>().materials;
-    //        for (int i = 0; i < shipmats.Length; i++) {
-    //            if (shipmats[i].name == "_Ship_Colour (Instance)") {
-    //                shipmats[i] = newMaterial;
-    //            }
-    //        }
-    //        GetComponentInChildren<MeshRenderer>().materials = shipmats;
-    //    }
-    //}
-
-    //[Command]
-    //void CmdSpawnPlayer(NetworkInstanceId id) {
-    //    RpcSpawnPlayer(id);
-    //}
-    //[ClientRpc]
-    //void RpcSpawnPlayer(NetworkInstanceId id) {
-    //    playerNum = GameManager.Instance.GetPlayerNum(id);
-    //}
-
-
-    //public override void OnStartLocalPlayer() {
   
     [PunRPC]
     public void setColors(int viewId)
     {
-        GameObject go = PhotonView.Find(viewId).gameObject;            
+        GameObject go = PhotonView.Find(viewId).gameObject;
+        int ownerid = go.GetPhotonView().ownerId;
         Material newMaterial = new Material(go.GetComponent<Ship>().ShipColorMaterial);
 
-        if (viewId == 1001)
+        if (ownerid == 1)
             newMaterial.color = new Color(ShipColors[0].r, ShipColors[0].g, ShipColors[0].b);
-        else if (viewId == 2001)
+        else if (ownerid == 2)
             newMaterial.color = new Color(ShipColors[1].r, ShipColors[1].g, ShipColors[1].b);
-        else if (viewId == 3001)
+        else if (ownerid == 3)
             newMaterial.color = new Color(ShipColors[2].r, ShipColors[2].g, ShipColors[2].b);
-        else if (viewId == 4001)
+        else if (ownerid == 4)
             newMaterial.color = new Color(ShipColors[3].r, ShipColors[3].g, ShipColors[3].b);
 
         // newMaterial.color = new Color(ShipColors[id - 1].r * 255, ShipColors[id - 1].g * 255, ShipColors[id - 1].b * 255);
@@ -141,10 +100,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         if (photonView.isMine)
         {
             Camera.main.GetComponent<CameraController>().FollowShip(transform);
-
-            //TODO: fix later
-            PlayerID = PhotonNetwork.countOfPlayers;
-            
         }
  
         //TODO: refactor to HUD Manager
@@ -153,48 +108,22 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _rigid = GetComponentInChildren<Rigidbody2D>();
         Health = MaxHealth;
         _originalMeshRotation = MeshTransform.localEulerAngles;
-
-        #region Assign color to the player
-        if (PlayerID < 4)
-        {
-            //Assign player's color to ship material
-            //1. copy original material
-
-            //2. change the copy's colour to ship colour
-            if (PlayerID > 0)
-            {
-                //  newMaterial.color = new Color(ShipColors[PlayerID - 1].r * 255, ShipColors[PlayerID - 1].g * 255, ShipColors[PlayerID - 1].b * 255);
-                // photonView.RPC("setColor", PhotonTargets.AllBuffered, PlayerID);
-                photonView.RPC("setColors", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID);
-
-            }
-
-            //3. find and replace material in ships's renderer's materials
-
-        }
-
-
-        #endregion
+        photonView.RPC("setColors", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID);
     }
 
     void Start()
     {
-        //music = AddAudio(musicArray[Random.Range(0, musicArray.Length)], true, false, 1f);
-        //music.Play();
-
-        //Registers the ship to the Game Manager
-        if (!GameManager.Instance)
+        if (photonView.isMine)
         {
-            GameManager.Instance.Player = gameObject;
+            foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background"))
+            {
+                float xOffset = (o.GetComponent<Parallax>().Scale * transform.position.x * -1) / 4;
+                float yOffset = (o.GetComponent<Parallax>().Scale * transform.position.y * -1) / 4;
+                //Debug.Log("x: " + xOffset + ", y:" + yOffset);
+                o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
+            }
         }
 
-        foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background"))
-        {
-            float xOffset = (o.GetComponent<Parallax>().Scale * transform.position.x * -1) / 4;
-            float yOffset = (o.GetComponent<Parallax>().Scale * transform.position.y * -1) / 4;
-            //Debug.Log("x: " + xOffset + ", y:" + yOffset);
-            o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
-        }
     }
 
 
@@ -458,19 +387,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     {
         foreach (GameObject t in Firepoints)
         {
-            // Creates a dummy laser on local client without a collider.
-            //GameObject laser = Instantiate(LaserPrefab, t.transform.position, t.transform.rotation);
-            //laser.GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity;
-            //laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
-            //laser.name = "Clientlaser " + _laserCounter;
-            //laser.GetComponent<Laser>().clientSide = true;
-            //laser.GetComponent<Laser>().myColor = ShipColors[PlayerID - 1];
-            //laser.GetComponent<Collider2D>().enabled = false;
 
             //Sends request to fire a laser to the server and fires it on all instances of this player
             photonView.RPC("CmdFire", PhotonTargets.All, t.transform.position, t.transform.rotation, GetComponent<Rigidbody2D>().velocity,
                 Ship.LocalPlayerInstance.GetPhotonView().viewID);
-            //CmdFire(GetComponent<NetworkIdentity>().netId, t.transform.position, t.transform.rotation, laser.GetComponent<Rigidbody2D>().velocity, laserCounter, color);
             _laserCounter++;
         }
     }
@@ -482,12 +402,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     [PunRPC]
     void CmdFire(Vector3 pos, Quaternion rot, Vector2 velocity, int viewID)
     {
-        //Debug.LogError("Player " + playerID + " on client " + PlayerID + " receiving RPC for firing laser");
         GameObject laser = Instantiate(LaserPrefab, pos, rot);
         laser.GetComponent<Rigidbody2D>().velocity = velocity;
         laser.GetComponent<Rigidbody2D>().AddForce(transform.up * ProjectileSpeed, ForceMode2D.Impulse);
 
-       
         laser.GetComponent<Laser>().Source = gameObject;
 
         if (LayerMask.LayerToName(gameObject.layer) == "Enemy") {
@@ -501,26 +419,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 		GameObject explosion = Instantiate(ShipExplosionPrefab, PhotonView.Find(viewId).transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
 	}
 
-    //[ClientRpc]
-    //void RpcFire(NetworkInstanceId id, GameObject projectile, int laserid) {
-    //    projectile.name = "Serverlaser " + laserid;
-    //    GameObject player = ClientScene.FindLocalObject(id);
-    //    //TODO: gives null reference error
-    //    projectile.GetComponent<Laser>().Source = player;
-    //    if (player != GameManager.Instance.Player) {
-    //        projectile.layer = 12;
-    //    } else {
-    //        projectile.GetComponent<Renderer>().enabled = false;
-    //        projectile.GetComponent<SpriteRenderer>().material.SetFloat("_MKGlowPower", 0f);
-
-    //        //projectile.GetComponent<SpriteRenderer>().material.color = Color.red;
-    //        GameObject clientlaser = GameObject.Find("Clientlaser " + laserid);
-
-    //        if (clientlaser) {
-    //            clientlaser.GetComponent<Laser>().SetServerObj(projectile);
-    //        }
-    //    }
-    //}
 
     /// <summary>
     /// Decreases the ship's health.
@@ -590,24 +488,5 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         newAudio.playOnAwake = playAwake;
         newAudio.volume = vol;
         return newAudio;
-    }
-
-    /// <summary>
-    /// Send data over the network
-    /// </summary>
-    /// <param name="stream"></param>
-    /// <param name="info"></param>
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.isWriting)
-        {
-            //This is local player: send other players our stats
-            stream.SendNext(Health);
-        }
-        else
-        {
-            //This is remote player: receive data
-            Health = (float)stream.ReceiveNext();
-        }
     }
 }
