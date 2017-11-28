@@ -48,10 +48,18 @@ public class Base : Photon.PunBehaviour {
                 LightTimer = 0.1f;
             }
         }
-        
+
+
+
+
         if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()) && !_lightToggle)
         {
             GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All, null);
+        }
+        else if (!GameObject.FindWithTag("Enemy"))
+        {
+            if (!_lightToggle)
+                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
         }
 
         else if (GameObject.FindWithTag("Enemy"))
@@ -60,15 +68,10 @@ public class Base : Photon.PunBehaviour {
             {
                 GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All, null);
             }
-        }
-        
-        else 
-        {
-            if (!_lightToggle)
-
+            else
+                if (!_lightToggle)
                 GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
         }
-          
     }
 
 
@@ -134,11 +137,12 @@ public class Base : Photon.PunBehaviour {
     /// <param name="collision">Collision.</param>
     void OnCollisionEnter2D(Collision2D collision) {
     if (collision.gameObject.GetComponent<ProjectilesBase>()) {
-		TakeDamage (collision.gameObject.GetComponent<ProjectilesBase> ().Damage);
-        GetComponent<PhotonView>().RPC("BlinkLights", PhotonTargets.All, null);
-        _lightToggle = true;
+            TakeDamage(collision.gameObject.GetComponent<ProjectilesBase>().Damage);
+            GetComponent<PhotonView>().RPC("BlinkLights", PhotonTargets.All, null);
+            _lightToggle = true;
+
         }
-	}
+    }
 
 
 	/// <summary>
@@ -160,15 +164,18 @@ public class Base : Photon.PunBehaviour {
 	/// <param name="damage">Damage.</param>
 	public void TakeDamage(float damage) {
 		BaseHealth = BaseHealth - damage;
-	}
+    }
 
 
     void DestroyBase()
     {
+     
         PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position, gameObject.transform.rotation, 0);
         PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation, 0);
         PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation, 0);
-        PhotonNetwork.Destroy(gameObject);
+        if (PhotonNetwork.isMasterClient)       
+            PhotonNetwork.Destroy(gameObject);
+        
     }
 
 

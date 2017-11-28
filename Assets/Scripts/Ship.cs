@@ -472,9 +472,9 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     }
 
 	[PunRPC]
-	void DestroyShip(Vector3 position)
+	void DestroyShip(int viewId)
 	{
-		GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
+		GameObject explosion = Instantiate(ShipExplosionPrefab, PhotonView.Find(viewId).transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
 	}
 
     //[ClientRpc]
@@ -536,8 +536,9 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
 
             }
-            photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
-			PhotonNetwork.Destroy (gameObject);
+           // photonView.RPC("DestroyShip", PhotonTargets.All, photonView.viewID);
+            GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
+            PhotonNetwork.Destroy (gameObject);
         }
     }
 

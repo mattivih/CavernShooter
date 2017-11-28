@@ -7,15 +7,18 @@ public class PhotonDelayedDestroy : MonoBehaviour {
 
     private void Awake()
     {
-        Invoke("DestroyDelayed", 2.0f);
-       // GetComponent<PhotonView>().RPC("DestroyDelayed", PhotonTargets.All, null);
+        if (gameObject.GetComponentInChildren<Light>())
+            Invoke("DestroyDelayed", 1.0f);
+        else
+            Invoke("DestroyDelayed", 2.0f);
+
     }
 
     [PunRPC]
     public void DestroyDelayed()
     {
         if(GetComponent<PhotonView>().isMine)
-            PhotonNetwork.Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject.GetPhotonView());
     }
 
 
