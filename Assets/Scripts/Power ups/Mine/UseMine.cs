@@ -12,6 +12,15 @@ public class UseMine : Photon.PunBehaviour {
 	public ParticleSystem MineExplosionPrefab;
     private GameObject m;
 
+    private void Start()
+    {
+        var colliders = source.GetComponentsInChildren<Collider2D>();
+        var colliders2 = GetComponentsInChildren<Collider2D>();
+        foreach (Collider2D c in colliders)        
+            foreach (Collider2D c2 in colliders2)          
+                Physics2D.IgnoreCollision(c, c2);                  
+    }
+
     public void photonDestroyExplosion()
     {
         PhotonNetwork.Destroy(m);

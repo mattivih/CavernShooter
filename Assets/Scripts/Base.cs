@@ -48,10 +48,11 @@ public class Base : Photon.PunBehaviour {
             }
         }
 
-        if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()) && !_lightToggle)
+        if (GameObject.FindWithTag("Player")  && GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()) && !_lightToggle)
         {
             GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All, null);
         }
+
 
         else if (!GameObject.FindWithTag("Enemy"))
         {
