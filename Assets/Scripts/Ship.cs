@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using ExitGames.Client.Photon;
 
-public class Ship : Photon.PunBehaviour
+public class Ship : Photon.PunBehaviour, IPunObservable
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
@@ -128,89 +128,8 @@ public class Ship : Photon.PunBehaviour
 
 
     void Update()
-    { 
-
-        if (!photonView.isMine && PhotonNetwork.connected)
-        {
-            tag = "Enemy";
-            gameObject.layer = LayerMask.NameToLayer("Enemy"); //enemy layer = 11
-            return;
-        } else {
-
-            float vertical = Input.GetAxis("Vertical");
-            float horizontal = Input.GetAxis("Horizontal");
-
-            if (vertical > 0)
-            {
-                Move(vertical);
-                GetComponent<Rigidbody2D>().drag = AccelDrag;
-                if (_thruster)
-                {
-                    //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOn();
-                    photonView.RPC("CmdThrusterOn", PhotonTargets.All);
-
-                    //CmdThrusterOn();
-                }
-            }
-            else
-            {
-                GetComponent<Rigidbody2D>().drag = FreeDrag;
-                if (_thruster)
-                {
-                    //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOff();
-                    photonView.RPC("CmdThrusterOff", PhotonTargets.All);
-                    //CmdThrusterOff();
-                }
-            }
-
-            #region Bank the ship
-            if (horizontal != 0)
-            {
-                transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
-                //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
-                Vector3 bank = _originalMeshRotation;
-                bank.y += Mathf.Sign(horizontal) * -MaxRotation;
-                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
-            }
-            else
-            {
-                Vector3 bankNone = _originalMeshRotation;
-                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
-            }
-            #endregion
-            #region To be deleted: Code moved to function ProcessInputs()
-            ////Fire normal weapon
-            //if (Input.GetKey(KeyCode.Period))
-            //{
-            //    if (_timer > FireRate)
-            //    {
-            //        Fire();
-            //        _timer = 0;
-            //    }
-            //    _timer += Time.deltaTime;
-            //}
-            //if (Input.GetKeyUp(KeyCode.Period))
-            //{
-            //    _timer = FireRate;
-            //}
-
-            ////Use Power-Up
-            //if (Input.GetKeyDown(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Use();
-            //}
-            //if (Input.GetKeyUp(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Stop();
-            //}
-            #endregion
-
-            ProcessInputs();
-        }
-
-
+    {
+        
         #region Ship damage indicators (smokes and sparks)
         if (Health < (MaxHealth * 0.3f))
         {
@@ -241,67 +160,65 @@ public class Ship : Photon.PunBehaviour
         }
         #endregion 
 
+        if (!photonView.isMine && PhotonNetwork.connected)
+        {
+            Debug.Log(Health);
+            tag = "Enemy";
+            gameObject.layer = LayerMask.NameToLayer("Enemy"); //enemy layer = 11
+            return;
+        }
 
-        //TODO: refactor to HUDManager
-        #region Refactor to HUDManager
-        /*   if (GameManager.Instance.healthbarImage)
-           {
-               float healthFraction = (Health / MaxHealth);
-               healthFraction *= 0.92f;
-               healthFraction += 0.04f;
-               GameManager.Instance.healthbarImage.fillAmount = healthFraction;
-               if (healthFraction > 0.5)
-               {
-                   GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
-               }
-               else
-               {
-                   GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
-               }
-           }
-           if (GameManager.Instance.shieldbarImage)
-           {
-               GameManager.Instance.shieldbarImage.fillAmount = Shield / MaxHealth;
-           }
-           if (GameManager.Instance.powerupBarImage)
-           {
-               GameObject CurrentPowerUp = GetComponent<PowerUpHandler>().CurrentPowerUp;
-               if (CurrentPowerUp)
-               {
-                   if (CurrentPowerUp.GetComponent<PowerUp>().isUsed)
-                   {
-                       float waitTime = 15f;
-                       GameManager.Instance.powerupBarImage.fillAmount -= 1.0f / waitTime * Time.deltaTime;
-                   }
+        else
+        {
 
-                   else
-                   {
-                       float powerUpFraction = CurrentPowerUp.GetComponent<PowerUp>().Units / CurrentPowerUp.GetComponent<PowerUp>().MaxUnits;
-                       GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
-                   }
+            float vertical = Input.GetAxis("Vertical");
+            float horizontal = Input.GetAxis("Horizontal");
 
-                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 3)
-                   {
-                       GameManager.Instance.powerupBarLines.enabled = true;
-                   }
+            if (vertical > 0)
+            {
+                Move(vertical);
+                GetComponent<Rigidbody2D>().drag = AccelDrag;
+                if (_thruster)
+                {
+                    //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
+                    //_thruster.ThrusterOn();
+                    photonView.RPC("CmdThrusterOn", PhotonTargets.All);
 
-                   else
-                   {
-                       GameManager.Instance.powerupBarLines.enabled = false;
-                   }
+                    //CmdThrusterOn();
+                }
+            }
+            else
+            {
+                GetComponent<Rigidbody2D>().drag = FreeDrag;
+                if (_thruster)
+                {
+                    //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
+                    //_thruster.ThrusterOff();
+                    photonView.RPC("CmdThrusterOff", PhotonTargets.All);
+                    //CmdThrusterOff();
+                }
+            }
 
-                   if (CurrentPowerUp.GetComponent<PowerUp>().MaxUnits == 4)
-                   {
-                       GameManager.Instance.powerupBarLines4.enabled = true;
-                   }
+            ProcessInputs();
+            
+            #region Bank the ship
+            if (horizontal != 0)
+            {
+                transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
+                //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
+                Vector3 bank = _originalMeshRotation;
+                bank.y += Mathf.Sign(horizontal) * -MaxRotation;
+                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
+            }
+            else
+            {
+                Vector3 bankNone = _originalMeshRotation;
+                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
+            }
+            #endregion
+  
+        }
 
-                   else
-                   {
-                       GameManager.Instance.powerupBarLines4.enabled = false;
-                   }
-               }
-           }*/
-        #endregion
     }
 
     
@@ -350,25 +267,6 @@ public class Ship : Photon.PunBehaviour
 
     #endregion
 
-    #region To be deleted: Old Unet methods 
-
-    //[Command]
-    //void CmdThrusterOn() {
-    //    RpcThrusterOn();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOn() {
-    //    ThrusterScript.ThrusterOn();
-    //}
-    //[Command]
-    //void CmdThrusterOff() {
-    //    RpcThrusterOff();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOff() {
-    //    ThrusterScript.ThrusterOff();
-    //}
-    #endregion
 
     /// <summary>
     /// Moves the ship.
@@ -488,5 +386,17 @@ public class Ship : Photon.PunBehaviour
         newAudio.playOnAwake = playAwake;
         newAudio.volume = vol;
         return newAudio;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            stream.SendNext(Health);
+        }
+        else
+        {
+            Health = (float)stream.ReceiveNext();
+        }
     }
 }

@@ -70,52 +70,42 @@ public class PowerUpSpawn : Photon.PunBehaviour
                     {
                         NewSpawn(InnerSpawnPoints[0], PowerUp.SpawnLocation.Inner);
                         FirstInnerTimers[0] = 100f;
-                        InnerCount++;
                     }
                     if (FirstInnerTimers[1] <= 0)
                     {
                         NewSpawn(InnerSpawnPoints[1], PowerUp.SpawnLocation.Inner);
                         FirstInnerTimers[1] = 100f;
-                        InnerCount++;
                     }
                     if (FirstInnerTimers[2] <= 0)
                     {
                         NewSpawn(InnerSpawnPoints[2], PowerUp.SpawnLocation.Inner);
                         FirstInnerTimers[2] = 100f;
-                        InnerCount++;
                     }
                     if (FirstInnerTimers[3] <= 0)
                     {
                         NewSpawn(InnerSpawnPoints[3], PowerUp.SpawnLocation.Inner);
                         FirstInnerTimers[3] = 100f;
-                        InnerCount++;
                     }
 
                     if (FirstOuterTimers[0] <= 0)
                     {
                         NewSpawn(OuterSpawnPoints[0], PowerUp.SpawnLocation.Outer);
                         FirstOuterTimers[0] = 100f;
-                        OuterCount++;
                     }
                     if (FirstOuterTimers[1] <= 0)
                     {
                         NewSpawn(OuterSpawnPoints[1], PowerUp.SpawnLocation.Outer);
                         FirstOuterTimers[1] = 100f;
-                        OuterCount++;
-
                     }
                     if (FirstOuterTimers[2] <= 0)
                     {
                         NewSpawn(OuterSpawnPoints[2], PowerUp.SpawnLocation.Outer);
                         FirstOuterTimers[2] = 100f;
-                        OuterCount++;
-
                     }
                     if (FirstOuterTimers[3] <= 0)
                     {
                         NewSpawn(OuterSpawnPoints[3], PowerUp.SpawnLocation.Outer);
                         FirstOuterTimers[3] = 100f;
-                        OuterCount++;
                         _firstspawn = false;
                     }
 
@@ -129,7 +119,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
                         if (InnerTimers[i] <= 0)
                         {
-                            if (InnerSpawnPoints.Count > 0 )
+                            if (InnerSpawnPoints.Count > 0 && InnerCount < 4)
                             {
                                 NewSpawn(InnerSpawnPoints[i], PowerUp.SpawnLocation.Inner);
                                 InnerCount++;
@@ -138,7 +128,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
                         }
                         if (OuterTimers[i] <= 0)
                         {
-                            if (OuterSpawnPoints.Count > 0 )
+                            if (OuterSpawnPoints.Count > 0 && OuterCount < 4)
                             {
                                 NewSpawn(OuterSpawnPoints[i], PowerUp.SpawnLocation.Outer);
                                 OuterCount++;
@@ -159,7 +149,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
                         if (InnerTimers[i] <= 0)
                         {
-                            if (InnerSpawnPoints.Count > 0 )
+                            if (InnerSpawnPoints.Count > 0 && InnerCount < 4)
                             {
                                 NewSpawn(InnerSpawnPoints[i], PowerUp.SpawnLocation.Inner);
                                 InnerCount++;
@@ -168,7 +158,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
                         }
                         if (OuterTimers[i] <= 0)
                         {
-                            if (OuterSpawnPoints.Count > 0 )
+                            if (OuterSpawnPoints.Count > 0 && OuterCount < 4)
                             {
                                 NewSpawn(OuterSpawnPoints[i], PowerUp.SpawnLocation.Outer);
                                 OuterCount++;
@@ -191,7 +181,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn()
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[3].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[6].name, CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }

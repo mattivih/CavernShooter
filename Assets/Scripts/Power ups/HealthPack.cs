@@ -35,7 +35,7 @@ public class HealthPack : PowerUp {
             p.GetComponent<Ship>().Health = p.GetComponent<Ship>().MaxHealth;
         Units--;
 
-        AudioSource.PlayClipAtPoint(clipActivate, p.transform.position);
+        GetComponent<AudioSource>().Play();
         go = PhotonNetwork.Instantiate("HealthEffect", Vector3.zero, Quaternion.identity, 0);
 
         photonView.RPC("spawnHealthEffect", PhotonTargets.All, p.GetPhotonView().viewID, go.GetPhotonView().viewID);

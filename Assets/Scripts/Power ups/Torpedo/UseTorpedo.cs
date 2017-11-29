@@ -53,6 +53,8 @@ public class UseTorpedo : Photon.PunBehaviour {
 			float closest = float.MaxValue;
 			GameObject closestTarget=null;
 			for(int i=0;i<targetObjects.Count;i++) {
+                if (targetObjects[i] == null)
+                    return;
 				float dist = Vector3.Distance(targetObjects[i].transform.position, transform.position);
 				if (dist < closest) {
 					closest = dist;
