@@ -30,7 +30,7 @@ public class UseMine : Photon.PunBehaviour {
     [PunRPC]
     public void disableMine(int objectID, int viewId)
     {
-        PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(10f, source);
+        PhotonView.Find(viewId).gameObject.GetComponent<Ship>().TakeDamage(100f, source);
         PhotonView.Find(objectID).gameObject.SetActive(false);
     }
 
