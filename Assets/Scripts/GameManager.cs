@@ -34,7 +34,7 @@ public class GameManager : Photon.PunBehaviour {
 
     //Refactored to use Photon Actor ID:s
     //public List<NetworkInstanceId> players = new List<NetworkInstanceId>();
-    public List<int> players = new List<int>();
+    //public List<int> players = new List<int>();
     
 
     public static GameManager Instance = null;
@@ -60,40 +60,21 @@ public class GameManager : Photon.PunBehaviour {
 
     public void UpdateHealthBar(float health, float maxHealth)
     {
-        hud.UpdateHealthBar(health, maxHealth);
+        if (hud) {
+            hud.UpdateHealthBar(health, maxHealth);
+        }
     }
 
     public void UpdateShieldBar(float shield, float maxHealth)
     {
-        hud.UpdateShieldBar(shield, maxHealth);
+        if (hud) {
+            hud.UpdateShieldBar(shield, maxHealth);
+        }
     }
 
     public void UpdatePowerUp(PowerUp CurrentPowerUp) {
-        hud.UpdatePowerUp(CurrentPowerUp);
+        if (hud) {
+            hud.UpdatePowerUp(CurrentPowerUp);
+        }
     }
-
-    //    public int GetPlayerNum(NetworkInstanceId playerid) {
-    //        if (!players.Contains(playerid)) {
-    //            players.Add(playerid);
-    //        }
-    //        List<NetworkInstanceId> sortedList = players.OrderBy(o => o.Value).ToList();
-    //        return sortedList.IndexOf(playerid);
-    //    }
-
-    //    public void CallEndGame(string[] deadPlayers) {
-    //        RpcShowMatchResult(deadPlayers);
-    //    }
-
-
-    //    [ClientRpc]
-    //    public void RpcShowMatchResult(string[] deadPlayers)
-    //    {
-    //        GameObject gameOverScreen = Instantiate(GameOverPrefab);
-    //        MatchResultList result = gameOverScreen.GetComponentInChildren<MatchResultList>();
-    //        for (int i = deadPlayers.Length - 1; i >= 0; i--)
-    //        {
-    //            result.FillPlayerInfo(deadPlayers[i]);
-    //        }
-    //    }
-    //
 }

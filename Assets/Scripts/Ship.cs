@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System;
 using ExitGames.Client.Photon;
+using System.Collections;
 
 public class Ship : Photon.PunBehaviour, IPunObservable
 {
     #region Public variables
     public static GameObject LocalPlayerInstance;
-    public static int PlayerID;
 
     public float Rotation, MaxRotation = 30f;
     public float Speed, MaxSpeed, ProjectileSpeed = 50f;
@@ -98,11 +98,32 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     //public override void OnStartLocalPlayer() {
-  
-    [PunRPC]
-    public void setColors(int viewId)
+
+    public override void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        GameObject go = PhotonView.Find(viewId).gameObject;            
+        base.OnPhotonInstantiate(info);
+        //Local client initialization
+        //Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
+        if (photonView.isMine)
+        {
+            Camera.main.GetComponent<CameraController>().FollowShip(transform);
+        }
+
+        //TODO: refactor to HUD Manager
+        GameManager.Instance.powerupBarImage.fillAmount = 0;
+
+        _rigid = GetComponentInChildren<Rigidbody2D>();
+        Health = MaxHealth;
+        _originalMeshRotation = MeshTransform.localEulerAngles;
+
+        //TODO: Is the viewID unique for the player? Other objects have viewID:s too.
+        photonView.RPC("RPCSetColors", PhotonTargets.All, LocalPlayerInstance.GetPhotonView().viewID);
+    }
+
+    [PunRPC]
+    public void RPCSetColors(int viewId)
+    {
+        GameObject go = PhotonView.Find(viewId).gameObject;
         Material newMaterial = new Material(go.GetComponent<Ship>().ShipColorMaterial);
 
         if (viewId == 1001)
@@ -124,53 +145,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 shipmats[i] = newMaterial;
             }
         }
-
         go.GetComponentInChildren<MeshRenderer>().materials = shipmats;
-    }
-
-    public override void OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        base.OnPhotonInstantiate(info);
-        gameObject.name = "Player " + photonView.viewID;
-        //Local client initialization
-        //Debug.LogError("Player: "+ photonView.viewID + " GameManager found: " + GameManager.Instance + " Photonview is mine: " + photonView.isMine);
-        if (photonView.isMine)
-        {
-            Camera.main.GetComponent<CameraController>().FollowShip(transform);
-
-            //TODO: fix later
-            PlayerID = PhotonNetwork.countOfPlayers;
-            
-        }
- 
-        //TODO: refactor to HUD Manager
-        GameManager.Instance.powerupBarImage.fillAmount = 0;
-
-        _rigid = GetComponentInChildren<Rigidbody2D>();
-        Health = MaxHealth;
-        _originalMeshRotation = MeshTransform.localEulerAngles;
-
-        #region Assign color to the player
-        if (PlayerID < 4)
-        {
-            //Assign player's color to ship material
-            //1. copy original material
-
-            //2. change the copy's colour to ship colour
-            if (PlayerID > 0)
-            {
-                //  newMaterial.color = new Color(ShipColors[PlayerID - 1].r * 255, ShipColors[PlayerID - 1].g * 255, ShipColors[PlayerID - 1].b * 255);
-                // photonView.RPC("setColor", PhotonTargets.AllBuffered, PlayerID);
-                photonView.RPC("setColors", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID);
-
-            }
-
-            //3. find and replace material in ships's renderer's materials
-
-        }
-
-
-        #endregion
     }
 
     void Start()
@@ -191,12 +166,31 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             //Debug.Log("x: " + xOffset + ", y:" + yOffset);
             o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
         }
+
+        if (PhotonNetwork.player.IsMasterClient)
+        {
+            StartCoroutine("TestDying");
+        }
+    }
+
+    IEnumerator TestDying()
+    {
+        Debug.Log("Dying in 5 seconds...");
+        yield return new WaitForSeconds(5);
+        //Ship[] ships = FindObjectsOfType<Ship>();
+        //GameObject killer = null;
+        //foreach (var ship in ships)
+        //{
+        //    if (!ship.gameObject.GetPhotonView().owner.IsMasterClient) {
+        //        killer = ship.gameObject;
+        //    }
+        //}
+        TakeDamage(10000, null);
     }
 
 
     void Update()
     { 
-
         if (!photonView.isMine && PhotonNetwork.connected)
         {
             tag = "Enemy";
@@ -211,24 +205,19 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             {
                 Move(vertical);
                 GetComponent<Rigidbody2D>().drag = AccelDrag;
-                if (_thruster)
+                if (_thruster && PhotonNetwork.inRoom)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOn();
                     photonView.RPC("CmdThrusterOn", PhotonTargets.All);
-
-                    //CmdThrusterOn();
                 }
             }
             else
             {
                 GetComponent<Rigidbody2D>().drag = FreeDrag;
-                if (_thruster)
+                if (_thruster && PhotonNetwork.inRoom)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOff();
                     photonView.RPC("CmdThrusterOff", PhotonTargets.All);
-                    //CmdThrusterOff();
                 }
             }
 
@@ -246,32 +235,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Vector3 bankNone = _originalMeshRotation;
                 MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
             }
-            #endregion
-            #region To be deleted: Code moved to function ProcessInputs()
-            ////Fire normal weapon
-            //if (Input.GetKey(KeyCode.Period))
-            //{
-            //    if (_timer > FireRate)
-            //    {
-            //        Fire();
-            //        _timer = 0;
-            //    }
-            //    _timer += Time.deltaTime;
-            //}
-            //if (Input.GetKeyUp(KeyCode.Period))
-            //{
-            //    _timer = FireRate;
-            //}
-
-            ////Use Power-Up
-            //if (Input.GetKeyDown(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Use();
-            //}
-            //if (Input.GetKeyUp(KeyCode.Comma))
-            //{
-            //    //GetComponent<PowerUpHandler>().Stop();
-            //}
             #endregion
 
             ProcessInputs();
@@ -383,33 +346,12 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     #endregion
 
-    #region To be deleted: Old Unet methods 
-
-    //[Command]
-    //void CmdThrusterOn() {
-    //    RpcThrusterOn();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOn() {
-    //    ThrusterScript.ThrusterOn();
-    //}
-    //[Command]
-    //void CmdThrusterOff() {
-    //    RpcThrusterOff();
-    //}
-    //[ClientRpc]
-    //void RpcThrusterOff() {
-    //    ThrusterScript.ThrusterOff();
-    //}
-    #endregion
-
     /// <summary>
     /// Moves the ship.
     /// </summary>
     void Move(float mult)
     {
         float vel = transform.InverseTransformDirection(GetComponent<Rigidbody2D>().velocity).sqrMagnitude;
-        //Debug.Log(vel);
         if (vel < MaxSpeed)
         {
             _rigid.AddForce(transform.up * Speed * mult *Time.deltaTime * 20, ForceMode2D.Force);
@@ -508,7 +450,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             return;
         }
-       // Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
+        //Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
 
         if (Shield > 0)
@@ -525,54 +467,36 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             }
             GameManager.Instance.UpdateShieldBar(Shield, MaxHealth);
         }
-        Health -= damage;
+        if (damage > Health)
+        {
+            Health = 0;
+        }
+        else {
+            Health -= damage;
+        }
         GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
 
 
         if (Health <= 0)
         {
-            //Is Dead
-            //GameManager.Instance.players.Remove(GetComponent<NetworkIdentity>().netId);
-            //CmdInformServerPlayerIsDead(gameObject.name);
-
             // Checks if damage was dealt by a ship. If yes, follow the killer's camera.
             if (source != null && source.GetComponent<Ship>())
             {
                 Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, source.GetPhotonView().owner.ID, true);
             }
-            //Destroy(gameObject);
-            //GameObject explosion = Instantiate(ShipExplosionPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
-            //NetworkServer.Spawn(explosion);
-            //NetworkServer.Destroy(gameObject);
-            //Destroy(gameObject);
-
-			photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
+            else {
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, 0, false);
+            }
+            photonView.RPC("DestroyShip", PhotonTargets.All, transform.position);
 			PhotonNetwork.Destroy (gameObject);
         }
     }
 
-    /// <summary>
-    /// Saves player's name to server.
-    /// </summary>
-    //[Command]
-    //TODO: Refactor with [PunRPC]
-    //public void CmdInformServerPlayerIsDead(string playerName) {
-    //    if (MyLobbyManager.Instance) {
-    //        MyLobbyManager.Instance.OnServerOnPlayerDeath(playerName);
-    //    }
-    //}
-
-    /// <summary>
-    /// Increases ship's health when it lands on a base (or via powerup).
-    /// </summary>
-    /// <param name="amount">Amount of health</param>
-    //[ClientRpc]
-    //public void RpcIncreaseHealth(float amount) {
-    //    Health += amount;
-    //    if (Health > MaxHealth) {
-    //        Health = MaxHealth;
-    //    }
-    //}
+    [PunRPC]
+    public void PlayerIsDead(int killerID, bool killedByEnemy) {
+       PhotonMatchManager.Instance.OnMasterClientOnPlayerDeath(killerID, killedByEnemy);
+    }
 
     public void IncreaseHealth(float amount)
     {

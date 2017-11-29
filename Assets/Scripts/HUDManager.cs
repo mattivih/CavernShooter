@@ -26,27 +26,27 @@ public class HUDManager : MonoBehaviour {
             GameManager.Instance.powerupBarImage.fillAmount = powerUpFraction;
         }
 
-
-        if (GameManager.Instance.healthbarImage)
-        {
-            float healthFraction = GameManager.Instance.Player.GetComponent<Ship>().Health / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
-            healthFraction *= 0.92f;
-            healthFraction += 0.04f;
-            GameManager.Instance.healthbarImage.fillAmount = healthFraction;
-            if (healthFraction > 0.5)
+        if (GameManager.Instance.Player) {
+            if (GameManager.Instance.healthbarImage)
             {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
+                float healthFraction = GameManager.Instance.Player.GetComponent<Ship>().Health / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
+                healthFraction *= 0.92f;
+                healthFraction += 0.04f;
+                GameManager.Instance.healthbarImage.fillAmount = healthFraction;
+                if (healthFraction > 0.5)
+                {
+                    GameManager.Instance.healthbarImage.color = Color.Lerp(Color.yellow, Color.green, (healthFraction - 0.5f) * 2);
+                }
+                else
+                {
+                    GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
+                }
             }
-            else
+            if (GameManager.Instance.shieldbarImage)
             {
-                GameManager.Instance.healthbarImage.color = Color.Lerp(Color.red, Color.yellow, healthFraction * 2);
+                GameManager.Instance.shieldbarImage.fillAmount = GameManager.Instance.Player.GetComponent<Ship>().Shield / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
             }
         }
-        if (GameManager.Instance.shieldbarImage)
-        {
-            GameManager.Instance.shieldbarImage.fillAmount = GameManager.Instance.Player.GetComponent<Ship>().Shield / GameManager.Instance.Player.GetComponent<Ship>().MaxHealth;
-        }
-
 
         if (_zGravityOn)
         {

@@ -52,13 +52,16 @@ public class PhotonPlayerlist : MonoBehaviour
 
     public void UpdatePlayerlist()
     {
-        ClearList();
-        PhotonPlayer[] players = PhotonNetwork.playerList;
-        //Array.Reverse(players);
-        foreach (var player in players)
-        {
-            AddPlayer(player);
-        }
+            ClearList();
+            PhotonPlayer[] players = PhotonNetwork.playerList;
+            if (!players[0].IsMasterClient)
+            {
+                Array.Reverse(players);
+            }
+            foreach (var player in players)
+            {
+                AddPlayer(player);
+            }
     }
 
 
