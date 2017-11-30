@@ -43,13 +43,10 @@ public class PhotonMatchManager : Photon.PunBehaviour
             }
 
             //Instantiate bases
-            if (PhotonNetwork.room.PlayerCount == 1)
-            {
-                PhotonNetwork.Instantiate("Base", new Vector3(16.065f, 12.403f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(15.89226f, -17.77634f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0);
-            }
+            PhotonNetwork.Instantiate("Base", new Vector3(16.065f, 12.403f, 0f), Quaternion.identity, 0);
+            PhotonNetwork.Instantiate("Base", new Vector3(15.89226f, -17.77634f, 0f), Quaternion.identity, 0);
+            PhotonNetwork.Instantiate("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0);
+            PhotonNetwork.Instantiate("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0);
         }
         #endregion 
     }
