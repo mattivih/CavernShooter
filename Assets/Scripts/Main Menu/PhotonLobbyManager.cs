@@ -43,7 +43,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             Instance = this;
         }
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         PhotonNetwork.ConnectUsingSettings(_gameVersion);
     }
 
@@ -165,7 +165,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     public override void OnLeftLobby()
     {
         base.OnLeftLobby();
-        //Debug.Log("@OnLeftLobby");
+        Debug.Log("@OnLeftLobby");
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        if (PhotonNetwork.inRoom) {
+        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu") {
             Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
             //Update UI
