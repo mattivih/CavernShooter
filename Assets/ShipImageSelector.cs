@@ -27,18 +27,10 @@ public class ShipImageSelector : Photon.PunBehaviour {
             if (p.NickName == GetComponentInParent<Text>().text)
             {
                 thisPlayer = p;
+                color = p.ID - 1;
             }
         }
 
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i] == thisPlayer)
-            {
-                color = i;
-            }
-        }
-        Debug.Log(thisPlayer.CustomProperties["SelectedShip"].ToString());
-        Debug.Log(color);
 
         if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "2")
         {
