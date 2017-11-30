@@ -121,23 +121,3 @@ public class PhotonPlayerlist : MonoBehaviour
     //    }
     //}
 
-/// <summary>
-/// Updates player's name in Players Joined & Connection status-list
-/// </summary>
-//public void UpdatePlayerName(MyLobbyPlayer player)
-//{
-//	PhotonPlayerlistEntry[] listEntries = GetComponentsInChildren<PhotonPlayerlistEntry>();
-
-//	foreach (var entry in listEntries)
-//	{
-//		if (entry.Player.netId == player.netId)
-//		{
-//			entry.SetName(player.PlayerName);
-//		}
-//	}
-//}
-
-/// <summary>
-/// Updates player's name in Players Joined & Connection status-list
-/// </summary>
-

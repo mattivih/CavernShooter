@@ -9,8 +9,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public static PhotonLobbyManager Instance;
 
-    [Tooltip("The maximum number of players per room.")]
-    public byte MaxPlayersPerRoom = 4;
     public PhotonLogLevel Loglevel = PhotonLogLevel.ErrorsOnly;
 
     #endregion
@@ -142,6 +140,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
+        Debug.Log(PhotonNetwork.player + " joined room.");
         GeneratePlayerNameIfEmpty();
         PlayerNotReady();
 

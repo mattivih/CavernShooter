@@ -28,15 +28,16 @@ public class PhotonMatchManager : Photon.PunBehaviour
             //Instantiate player
             if (Ship.LocalPlayerInstance == null && PhotonNetwork.player.IsLocal)
             {
-                int shipID = 0;
+                int shipID;
                 int.TryParse(PhotonNetwork.player.CustomProperties["SelectedShip"].ToString(), out shipID);
                 string shipName = _shipNames[shipID];
 
-                int spawnpoint = 0;
+                int spawnpoint;
                 int.TryParse(PhotonNetwork.player.CustomProperties["Spawnpoint"].ToString(), out spawnpoint);
 
                 float baseHeight = 0.624321f / 2;
                 Vector3 spawnPos = Spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up * baseHeight;
+                Debug.Log("Spawning " + PhotonNetwork.player.NickName + " to spawnpoint " + spawnpoint);
 
                 GameObject player = PhotonNetwork.Instantiate(shipName, spawnPos, Quaternion.identity, 0);
                 player.name = PhotonNetwork.player.NickName;
@@ -50,8 +51,6 @@ public class PhotonMatchManager : Photon.PunBehaviour
                 PhotonNetwork.Instantiate("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0);
                 PhotonNetwork.Instantiate("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0);
             }
-
-
         }
         #endregion 
     }
