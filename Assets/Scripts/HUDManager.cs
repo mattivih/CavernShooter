@@ -1,23 +1,77 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
-public class HUDManager : MonoBehaviour {
+public class HUDManager : Photon.PunBehaviour
+{
 
-    
+
     public bool _zGravityOn = false;
     public bool shieldOn = false;
     private float _zGravityTimer = 15f;
     private float shieldTimer = 15f;
     PowerUp CurrentPU;
     float powerUpFraction;
+    public Text player1;
+    public Text player2;
+    public Text player3;
+    public Text player4;
+    public Image ship1;
+    public Image ship2;
+    public Image ship3;
+    public Image ship4;
+    public PhotonPlayer[] players;
+
 
     // Use this for initialization
     void Start()
     {
+        #region enable texts based on the number of players
+        players = PhotonNetwork.playerList;
+        Text[] texts = new Text[players.Length];
 
-      
+        if (players.Length == 4)
+        {
+            player1.text = players[0].NickName;
+            player2.text = players[1].NickName;
+            player3.text = players[2].NickName;
+            player4.text = players[3].NickName;
+            texts[0] = player1;
+            texts[1] = player2;
+            texts[2] = player3;
+            texts[3] = player4;
+
+        }
+        else if (players.Length == 3)
+        {
+            player4.GetComponentInChildren<Image>().enabled = false;
+            player4.enabled = false;
+            player1.text = players[0].NickName;
+            player2.text = players[1].NickName;
+            player3.text = players[2].NickName;
+            texts[0] = player1;
+            texts[1] = player2;
+            texts[2] = player3;
+        }
+        else
+        {
+            player3.GetComponentInChildren<Image>().enabled = false;
+            player4.GetComponentInChildren<Image>().enabled = false;
+            player3.enabled = false;
+            player4.enabled = false;
+            player1.text = players[0].NickName;
+            player2.text = players[1].NickName;
+            texts[0] = player1;
+            texts[1] = player2;
+        }
+        #endregion
+
+        foreach (ShipImageSelector s in GetComponentsInChildren<ShipImageSelector>())
+        {
+            s.GetInfo();
+        }
     }
 
     // Update is called once per frame
@@ -73,7 +127,8 @@ public class HUDManager : MonoBehaviour {
         }
     }
 
-    public void UpdatePowerUp(PowerUp CurrentPowerUp) {
+    public void UpdatePowerUp(PowerUp CurrentPowerUp)
+    {
         CurrentPU = CurrentPowerUp;
         if (CurrentPowerUp.name != "ZeroGravityPowerUp")
             _zGravityOn = false;
@@ -87,7 +142,7 @@ public class HUDManager : MonoBehaviour {
 
 
 
-        if(CurrentPowerUp.Units == 0)
+        if (CurrentPowerUp.Units == 0)
         {
             GameManager.Instance.powerupBarLines.enabled = false;
             GameManager.Instance.powerupBarLines4.enabled = false;
@@ -108,7 +163,7 @@ public class HUDManager : MonoBehaviour {
         {
             GameManager.Instance.powerupBarLines.enabled = false;
             GameManager.Instance.powerupBarLines4.enabled = false;
-        }   
+        }
 
     }
 
