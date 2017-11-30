@@ -15,6 +15,7 @@ public class PhotonPlayerlist : MonoBehaviour
 
     //Private variables
     private List<Transform> _positions;
+    //private List<PhotonPlayerlistEntry> _playerlist;
     private int _playerCount = 0;
 
     /// <summary>
@@ -54,10 +55,10 @@ public class PhotonPlayerlist : MonoBehaviour
     {
             ClearList();
             PhotonPlayer[] players = PhotonNetwork.playerList;
-            if (!players[0].IsMasterClient)
-            {
-                Array.Reverse(players);
-            }
+            //if (!players[0].IsMasterClient)
+            //{
+            //    Array.Reverse(players);
+            //}
             foreach (var player in players)
             {
                 AddPlayer(player);

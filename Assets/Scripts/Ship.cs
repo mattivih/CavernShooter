@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using System.Collections;
 using System;
 using ExitGames.Client.Photon;
 
@@ -123,9 +123,20 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
             }
         }
-
+        StartCoroutine("TestDying");
     }
 
+  IEnumerator TestDying() {
+        yield return new WaitForSeconds(5f);
+        GameObject killer = null;
+        Ship[] ships = FindObjectsOfType<Ship>();
+        foreach (var ship in ships) {
+            if (ship.gameObject.GetPhotonView().owner.IsMasterClient) {
+                killer = ship.gameObject;
+            }
+        }
+        TakeDamage(1000, killer);
+    }
 
     void Update()
     {
@@ -345,20 +356,20 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             if (source != null && source.GetComponent<Ship>())
             {
                 //If killed by another player
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, source.GetPhotonView().ownerId, true);
                 GameManager.Instance.Player = source;
                 LocalPlayerInstance = source;
                 Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
-                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, source.GetPhotonView().ownerId, true);
             }
 
             else
             {
                 //If killed by something else i. e. environment
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, 0, false);
                 GameObject shipToFollow = FindObjectOfType<Ship>().gameObject;
                 GameManager.Instance.Player = shipToFollow;
                 LocalPlayerInstance = shipToFollow;
                 Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
-                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, 0, false);
             }
 
             GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
@@ -368,9 +379,9 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
 
     [PunRPC]
-    public void PlayerIsDead(int killerID, bool killedByEnemy)
+    public void PlayerIsDead(int playerID, int killerID, bool killedByEnemy)
     {
-        PhotonMatchManager.Instance.OnMasterClientOnPlayerDeath(killerID, killedByEnemy);
+        PhotonMatchManager.Instance.OnMasterClientOnPlayerDeath(playerID, killerID, killedByEnemy);
     }
 
 
