@@ -125,5 +125,10 @@ public class UseLaserBeam : MonoBehaviour {
         audioFire.Stop();
         PhotonNetwork.Destroy(gameObject);
     }
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+            Stop();
+    }
 
 }

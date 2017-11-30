@@ -162,7 +162,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (!photonView.isMine && PhotonNetwork.connected)
         {
-            Debug.Log(Health);
             tag = "Enemy";
             gameObject.layer = LayerMask.NameToLayer("Enemy"); //enemy layer = 11
             return;
