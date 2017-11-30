@@ -98,12 +98,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// <param name="name">Scene name</param>
     public void SelectMap(string name)
     {
+        Debug.Log("Selected map " + name);
         _selectedMap = name;
         if (PhotonNetwork.inRoom)
         {
             Hashtable updatedProperties = new Hashtable() { { "SelectedMap", _selectedMap } };
             PhotonNetwork.room.SetCustomProperties(updatedProperties);
-            //Debug.Log("Selected map " + PhotonNetwork.room.CustomProperties["SelectedMap"]);
         }
     }
 

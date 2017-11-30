@@ -35,11 +35,20 @@ public class PhotonMatchManager : Photon.PunBehaviour
                 int spawnpoint = 0;
                 int.TryParse(PhotonNetwork.player.CustomProperties["Spawnpoint"].ToString(), out spawnpoint);
 
-                float baseHeight = Spawnpoints[0].GetComponent<BoxCollider2D>().size.y * Spawnpoints[0].transform.localScale.y / 2;
+                float baseHeight = 0.624321f / 2;
                 Vector3 spawnPos = Spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up * baseHeight;
 
                 GameObject player = PhotonNetwork.Instantiate(shipName, spawnPos, Quaternion.identity, 0);
                 player.name = PhotonNetwork.player.NickName;
+            }
+
+            //Instantiate bases
+            if (PhotonNetwork.room.PlayerCount == 1)
+            {
+                PhotonNetwork.Instantiate("Base", new Vector3(16.065f, 12.403f, 0f), Quaternion.identity, 0);
+                PhotonNetwork.Instantiate("Base", new Vector3(15.89226f, -17.77634f, 0f), Quaternion.identity, 0);
+                PhotonNetwork.Instantiate("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0);
+                PhotonNetwork.Instantiate("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0);
             }
         }
         #endregion 
@@ -68,7 +77,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
                 killerProperties.Add("Kills", (kills + 1));
                 killer.SetCustomProperties(killerProperties);
             }
-            Debug.Log(PhotonNetwork.player.NickName + " killed by " + killer.NickName + ". " + killer.NickName + "'s kills: " + killer.CustomProperties["Kills"].ToString());
+            //Debug.Log(PhotonNetwork.player.NickName + " killed by " + killer.NickName + ". " + killer.NickName + "'s kills: " + killer.CustomProperties["Kills"].ToString());
         }
 
         //Save the dead players position.
