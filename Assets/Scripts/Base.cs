@@ -7,6 +7,9 @@ public class Base : Photon.PunBehaviour {
     public SpriteRenderer spriteRenderer;
     public float HealthRegen, MaxBaseHealth;
     public ParticleSystem BaseExplosion;
+    public ParticleSystem BaseSmoke60;
+    public ParticleSystem BaseSmoke301;
+    public ParticleSystem BaseSmoke302;
     Light[] lights;
     private Color _color;
     private bool _isCollidingPlayer = false;
@@ -36,6 +39,31 @@ public class Base : Photon.PunBehaviour {
         if (BaseHealth <= 0)
         {
             DestroyBase();
+        }
+
+        if (BaseHealth > 0 && BaseHealth <= (MaxBaseHealth * 0.3f))
+        {
+            if (!BaseSmoke60.isPlaying)
+                BaseSmoke60.Play();
+            if (!BaseSmoke301.isPlaying)
+                BaseSmoke301.Play();
+            if (!BaseSmoke302.isPlaying)
+                BaseSmoke302.Play();
+        }
+
+        if (BaseHealth > (MaxBaseHealth * 0.3f) && BaseHealth <= (MaxBaseHealth * 0.6f))
+        {
+            BaseSmoke301.Stop();
+            BaseSmoke302.Stop();
+            if (!BaseSmoke60.isPlaying)
+                BaseSmoke60.Play();
+        }
+
+        if (BaseHealth > (MaxBaseHealth * 0.6f))
+        {
+            BaseSmoke301.Stop();
+            BaseSmoke302.Stop();
+            BaseSmoke60.Stop();
         }
 
         if (_lightToggle)
