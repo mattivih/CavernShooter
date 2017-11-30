@@ -162,7 +162,6 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (!photonView.isMine && PhotonNetwork.connected)
         {
-            Debug.Log(Health);
             tag = "Enemy";
             gameObject.layer = LayerMask.NameToLayer("Enemy"); //enemy layer = 11
             return;
@@ -181,10 +180,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 if (_thruster)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOn();
                     photonView.RPC("CmdThrusterOn", PhotonTargets.All);
-
-                    //CmdThrusterOn();
                 }
             }
             else
@@ -193,9 +189,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 if (_thruster)
                 {
                     //TODO: Gives NullreferenceException because using new Particlesystem.MinMaxCurve()
-                    //_thruster.ThrusterOff();
                     photonView.RPC("CmdThrusterOff", PhotonTargets.All);
-                    //CmdThrusterOff();
                 }
             }
 
@@ -333,7 +327,14 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (!Shield)
         {
-            Health -= damage;
+            if (damage > Health)
+            {
+                Health = 0;
+            }
+            else
+            {
+                Health -= damage;
+            }
             GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         }
         
@@ -343,21 +344,33 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
             if (source != null && source.GetComponent<Ship>())
             {
+                //If killed by another player
                 GameManager.Instance.Player = source;
                 LocalPlayerInstance = source;
                 Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, source.GetPhotonView().ownerId, true);
             }
 
             else
             {
+                //If killed by something else i. e. environment
                 GameObject shipToFollow = FindObjectOfType<Ship>().gameObject;
                 GameManager.Instance.Player = shipToFollow;
                 LocalPlayerInstance = shipToFollow;
                 Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, 0, false);
             }
+
             GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
             PhotonNetwork.Destroy (gameObject);
         }
+    }
+
+
+    [PunRPC]
+    public void PlayerIsDead(int killerID, bool killedByEnemy)
+    {
+        PhotonMatchManager.Instance.OnMasterClientOnPlayerDeath(killerID, killedByEnemy);
     }
 
 

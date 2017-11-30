@@ -1,4 +1,4 @@
-﻿    using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -96,7 +96,7 @@ public class FlamethrowerCollision : ProjectilesBase {
     [PunRPC]
     public void PunTakeDamageFromFire(int viewId, int sourceId, float deltaTime)
     {
-        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(40.0f * deltaTime, PhotonView.Find(sourceId).gameObject);
+        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(Damage * deltaTime, PhotonView.Find(sourceId).gameObject);
     }
 
 
@@ -140,6 +140,11 @@ public class FlamethrowerCollision : ProjectilesBase {
 
 	}
 
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+            Stop();
+    }
 
 
     [PunRPC]

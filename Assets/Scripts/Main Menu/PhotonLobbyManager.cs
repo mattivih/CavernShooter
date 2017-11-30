@@ -1,7 +1,7 @@
 ﻿using Hashtable = ExitGames.Client.Photon.Hashtable;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PhotonLobbyManager : Photon.PunBehaviour
 {
@@ -12,6 +12,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     [Tooltip("The maximum number of players per room.")]
     public byte MaxPlayersPerRoom = 4;
     public PhotonLogLevel Loglevel = PhotonLogLevel.ErrorsOnly;
+
     #endregion
 
 
@@ -27,56 +28,45 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         #endregion
 
 
-        #region MonoBehaviour CallBacks
+    #region MonoBehaviour CallBacks
 
         void Awake()
         {
-            // we don't join the lobby. There is no need to join a lobby to get the list of rooms.
             PhotonNetwork.autoJoinLobby = false;
-
-
-            // #Critical
-            // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
             PhotonNetwork.automaticallySyncScene = true;
-
             PhotonNetwork.logLevel = Loglevel;
-    }
+        }
 
-
-        /// <summary>
-        /// MonoBehaviour method called on GameObject by Unity during initialization phase.
-        /// </summary>
         void Start()
         {
-        //Connect();
         if (!Instance)
         {
             Instance = this;
         }
+        //DontDestroyOnLoad(gameObject);
         PhotonNetwork.ConnectUsingSettings(_gameVersion);
     }
 
 
     #endregion
 
-        #region Match & Lobby methods
+    #region Match & Lobby methods
 
     public void CreateMatch(string name, int playerCount)
     {
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = (byte) playerCount;
 
         if (string.IsNullOrEmpty(name))
         {
             name = "Match";
         }
 
-        //Initialize custom properties for the player
         PlayerNotReady();
 
+        RoomOptions roomOptions = new RoomOptions { MaxPlayers = (byte)playerCount };
         Hashtable matchProperties = new Hashtable() { { "MatchName", name }, { "SelectedMap", _selectedMap } };
         roomOptions.CustomRoomPropertiesForLobby = new[] {"MatchName", "SelectedMap"};
         roomOptions.CustomRoomProperties = matchProperties;
+
         if (PhotonNetwork.connected)
         {
             PhotonNetwork.CreateRoom(null, roomOptions , null);
@@ -108,12 +98,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// <param name="name">Scene name</param>
     public void SelectMap(string name)
     {
+        Debug.Log("Selected map " + name);
         _selectedMap = name;
         if (PhotonNetwork.inRoom)
         {
             Hashtable updatedProperties = new Hashtable() { { "SelectedMap", _selectedMap } };
             PhotonNetwork.room.SetCustomProperties(updatedProperties);
-            //Debug.Log("Selected map " + PhotonNetwork.room.CustomProperties["SelectedMap"]);
         }
     }
 
@@ -121,12 +111,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     public void PlayerReady()
     {
         int shipID = FindObjectOfType<ShipManager>().GetSelectedShip();
-        Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID } };
+        Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID }, {"Kills", 0 } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
 
-        //Disable player and match name changing
+        //TODO: Disable player and match name changing
 
-        //Disable ship selection
+        //TODO: Disable ship selection
     }
 
     //Sets the player's status not ready and updates the UI
@@ -135,9 +125,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
 
-        //Enable player and match name changing
+        //TODO: Enable player and match name changing
 
-        //Enable ship selection
+        //TODO: Enable ship selection
     }
 
     #endregion
@@ -152,8 +142,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("@OnJoinedRoom");
-
         GeneratePlayerNameIfEmpty();
         PlayerNotReady();
 
@@ -162,6 +150,22 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             //Update matchlist player count
             FindObjectOfType<PhotonMatchList>().UpdatePlayerCount(PhotonNetwork.room);
         }
+    }
+
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        Debug.Log("@OnLeftRoom");
+        if (SceneManager.GetActiveScene().name != "1_Main_Menu")
+        {
+            PhotonNetwork.LoadLevel("1_Main_Menu");
+        }
+    }
+
+    public override void OnLeftLobby()
+    {
+        base.OnLeftLobby();
+        Debug.Log("@OnLeftLobby");
     }
 
     /// <summary>
@@ -189,45 +193,50 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         }
     }
 
-    public override void OnLeftRoom()
-    {
-        LoadLevel("1_MainMenu");
-    }
-
     ///<summary>
     /// Called when player's custom properties are changed. Used for handling player transitions between states Ready/Not ready.
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        PhotonPlayer player = playerAndUpdatedProps[0] as PhotonPlayer;
-        Hashtable props = playerAndUpdatedProps[1] as Hashtable;
+        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu") {
+            Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
-        //Update UI
-        PhotonPlayerlist.Instance.UpdatePlayerlist();
+            //Update UI
+            PhotonPlayerlist.Instance.UpdatePlayerlist();
 
-        //Debug.Log(player.NickName + " selected ship " + props["SelectedShip"]);
-
-        //Check if all the players are ready
-        if (PhotonNetwork.inRoom && PhotonNetwork.isMasterClient) {
-            // If match is full...
-            if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
+            //Check if all the players are ready
+            if (PhotonNetwork.isMasterClient)
             {
-                //... check if all the players are now ready
-                if (props != null && props.ContainsKey("Ready"))
+                // If match is full...
+                if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
                 {
-                    bool allReady = true;
-                    foreach (var matchPlayer in PhotonNetwork.playerList)
+                    //... check if all the players are now ready
+                    if (props != null && props.ContainsKey("Ready"))
                     {
-                        if (!System.Convert.ToBoolean(matchPlayer.CustomProperties["Ready"]))
+                        bool allReady = true;
+                        foreach (var player in PhotonNetwork.playerList)
                         {
-                            allReady = false;
+                            if (!Convert.ToBoolean(player.CustomProperties["Ready"]))
+                            {
+                                allReady = false;
+                            }
                         }
-                    }
 
-                    //If all the players are ready, load the game level.
-                    if (allReady)
-                    {
-                        LoadLevel(PhotonNetwork.room.CustomProperties["SelectedMap"].ToString());
+                        //If all the players are ready, load the game level.
+                        if (allReady)
+                        {
+                            PhotonNetwork.room.IsOpen = false;
+
+                            //Masterclient sets the spawn order for the players
+                            int spawnpoint = 0;
+                            foreach (var player in PhotonNetwork.playerList)
+                            {
+                                Hashtable playerProperties = new Hashtable() { { "Spawnpoint", spawnpoint } };
+                                player.SetCustomProperties(playerProperties);
+                                spawnpoint++;
+                            }
+                            LoadLevel(PhotonNetwork.room.CustomProperties["SelectedMap"].ToString());
+                        }
                     }
                 }
             }
@@ -245,11 +254,13 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         }
     }
 
-
     public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
     {
         Debug.Log(other.NickName + " disconnected.");
-        LoadLevel("1_MainMenu");
+
+        //TODO: if master client disconnectes, switch the master client.
+
+        //TODO: make a warning that a player has been disconnected.
     }
 
     public override void OnDisconnectedFromPhoton()
