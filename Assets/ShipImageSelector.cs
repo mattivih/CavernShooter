@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class ShipImageSelector : Photon.PunBehaviour {
 
-    public HUDManager hud;
 
-    public Sprite[] discoverySprites;
-    public Sprite[] retroSprites;
-    public Sprite[] teslaSprites;
-    public Sprite[] ufoSprites;
-    public Sprite[] untiedSprites;
 
-    public int color;
-    public Sprite[] currentTable;
-    public PhotonPlayer thisPlayer;
-    public PhotonPlayer[] players;
+    public Sprite[] discoveryShuttle;
+    public Sprite[] retroWing;
+    public Sprite[] teslaRossa;
+    public Sprite[] ufo;
+    public Sprite[] untiedFighter;
+
+    private int color;
+    private Sprite[] currentTable;
+    private PhotonPlayer thisPlayer;
+    private PhotonPlayer[] players;
 
     public void GetInfo()
     {
@@ -34,23 +34,23 @@ public class ShipImageSelector : Photon.PunBehaviour {
 
         if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "2")
         {
-            currentTable = discoverySprites;
+            currentTable = discoveryShuttle;
         }
         else if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "1")
         {
-            currentTable = retroSprites;
+            currentTable = retroWing;
         }
         else if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "3")
         {
-            currentTable = ufoSprites;
+            currentTable = ufo;
         }
         else if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "4")
         {
-            currentTable = teslaSprites;
+            currentTable = teslaRossa;
         }
         else if (thisPlayer.CustomProperties["SelectedShip"].ToString() == "0")
         {
-            currentTable = untiedSprites;
+            currentTable = untiedFighter;
         }
 
         GetComponent<Image>().sprite = currentTable[color];
