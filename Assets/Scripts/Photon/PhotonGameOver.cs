@@ -69,15 +69,6 @@ public class PhotonGameOver : MonoBehaviour {
 
                 if (allReady)
                 {
-                    PhotonNetwork.room.IsOpen = false;
-
-                    int spawnpoint = 0;
-                    foreach (var player in PhotonNetwork.playerList)
-                    {
-                        Hashtable playerProperties2 = new Hashtable() { { "Spawnpoint", spawnpoint } };
-                        player.SetCustomProperties(playerProperties2);
-                        spawnpoint++;
-                    }
                     GetComponent<PhotonView>().RPC("ReloadScene", PhotonTargets.All);
                 }
             }
