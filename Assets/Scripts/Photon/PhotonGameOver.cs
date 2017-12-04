@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PhotonGameOver : MonoBehaviour {
 
@@ -7,6 +10,9 @@ public class PhotonGameOver : MonoBehaviour {
 
     public void OnEnable()
     {
+        Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
+        PhotonNetwork.player.SetCustomProperties(playerProperties);
+
         Text[] textFields = ResultList.GetComponentsInChildren<Text>();
 
         foreach (var player in PhotonNetwork.playerList)
@@ -36,4 +42,42 @@ public class PhotonGameOver : MonoBehaviour {
         PhotonNetwork.Disconnect();
         Application.Quit();
     }
+    [PunRPC]
+    public void ReloadScene()
+    {
+        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void OnClickReady()
+    {
+        Hashtable playerProperties = new Hashtable() { { "Ready", "true" } };
+        PhotonNetwork.player.SetCustomProperties(playerProperties);
+        GameObject.Find("ReadyChecks").transform.GetChild(PhotonNetwork.player.ID - 1).gameObject.SetActive(true);
+
+        if (PhotonNetwork.isMasterClient)
+        {
+            if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
+            {
+                bool allReady = true;
+                foreach (var player in PhotonNetwork.playerList)
+                {
+                    if (!Convert.ToBoolean(player.CustomProperties["Ready"]))
+                    {
+                        allReady = false;
+                    }
+                }
+
+                if (allReady)
+                {
+                    GetComponent<PhotonView>().RPC("ReloadScene", PhotonTargets.All);
+                }
+            }
+        }
+    }
+
 }
+ 
+
+
+
+

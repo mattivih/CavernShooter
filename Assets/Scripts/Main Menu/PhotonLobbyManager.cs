@@ -199,17 +199,11 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     {
         if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu")
         {
+            PhotonPlayer photonPlayer = playerAndUpdatedProps[0] as PhotonPlayer;
             Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
-            string players = "";
-            foreach (var player in PhotonNetwork.playerList)
-            {
-                players += player.NickName + " ";
-            }
-            //Debug.Log(PhotonNetwork.player + " properties changed. Players in room: " + players);
-
             //Update UI
-            PhotonPlayerlist.Instance.UpdatePlayerlist();
+            PhotonPlayerlist.Instance.UpdatePlayerStatus();
 
             //Check if all the players are ready
             if (PhotonNetwork.isMasterClient)
