@@ -21,7 +21,6 @@ public class PhotonPlayerlistEntry : MonoBehaviour
 		Player = player;
 		SetName(player.NickName);
         bool isReady = System.Convert.ToBoolean(player.CustomProperties["Ready"]);
-
         if (isReady)
         {
             PlayerReady();

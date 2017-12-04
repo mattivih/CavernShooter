@@ -37,7 +37,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
 
                 float baseHeight = 0.624321f / 2;
                 Vector3 spawnPos = Spawnpoints[spawnpoint].GetComponent<Transform>().position + Vector3.up * baseHeight;
-                Debug.Log("Spawning " + PhotonNetwork.player.NickName + " to spawnpoint " + spawnpoint);
+                //Debug.Log("Spawning " + PhotonNetwork.player.NickName + " to spawnpoint " + spawnpoint);
 
                 GameObject player = PhotonNetwork.Instantiate(shipName, spawnPos, Quaternion.identity, 0);
                 player.name = PhotonNetwork.player.NickName;
@@ -55,35 +55,38 @@ public class PhotonMatchManager : Photon.PunBehaviour
         #endregion 
     }
 
-    public void OnMasterClientOnPlayerDeath(int killerID, bool killedByEnemy)
+    public void OnMasterClientOnPlayerDeath(int playerID, int killerID, bool killedByEnemy)
     {
 
-        //Update the killer's kill count.
         PhotonPlayer killer = null;
+        PhotonPlayer player = null;
 
-        if (killedByEnemy)
+        foreach (var photonPlayer in PhotonNetwork.playerList)
         {
-            foreach (var photonPlayer in PhotonNetwork.playerList)
+            if (killedByEnemy && photonPlayer.ID == killerID)
             {
-                if (photonPlayer.ID == killerID)
-                {
-                    killer = photonPlayer;
-                }
+                killer = photonPlayer;
             }
-            if (killer != null)
+            if (photonPlayer.ID == playerID)
             {
-                Hashtable killerProperties = new Hashtable();
-                int kills = 0;
-                int.TryParse(killer.CustomProperties["Kills"].ToString(), out kills);
-                killerProperties.Add("Kills", (kills + 1));
-                killer.SetCustomProperties(killerProperties);
+                player = photonPlayer;
             }
-            //Debug.Log(PhotonNetwork.player.NickName + " killed by " + killer.NickName + ". " + killer.NickName + "'s kills: " + killer.CustomProperties["Kills"].ToString());
+        }
+
+        //Update the killer's kill count.
+        if (killedByEnemy && killer != null)
+        {
+            Hashtable killerProperties = new Hashtable();
+            int kills = 0;
+            int.TryParse(killer.CustomProperties["Kills"].ToString(), out kills);
+            killerProperties.Add("Kills", (kills + 1));
+            killer.SetCustomProperties(killerProperties);
         }
 
         //Save the dead players position.
         Hashtable playerProperties = new Hashtable { { "Position", PhotonNetwork.room.MaxPlayers - _deadPlayersCount } };
-        PhotonNetwork.player.SetCustomProperties(playerProperties);
+        player.SetCustomProperties(playerProperties);
+        //Debug.Log("Saved position " + player.CustomProperties["Position"].ToString() + " for " + player.NickName);
 
         _deadPlayersCount++;
 
@@ -99,7 +102,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
             //Set Position 1 for the winner
             Hashtable winnerProperties = new Hashtable { { "Position", 1 } };
             killer.SetCustomProperties(winnerProperties);
-
+            //Debug.Log("Saved position " + killer.CustomProperties["Position"].ToString() + " for " + killer.NickName);
             //Show game over overlay on the clients
             GameOverOverlay.SetActive(true);
             PhotonNetwork.RaiseEvent(0, null, true, null);

@@ -12,11 +12,16 @@ public class PhotonGameOver : MonoBehaviour {
         foreach (var player in PhotonNetwork.playerList)
         {
             int position = 0;
-            int.TryParse(player.CustomProperties["Position"].ToString(), out position);
+            if (player.CustomProperties.ContainsKey("Position")) {
+                int.TryParse(player.CustomProperties["Position"].ToString(), out position);
+                Debug.Log("Parsed position " + position + " for " + player.NickName);
+            }
 
             int kills = 0;
-            int.TryParse(player.CustomProperties["Kills"].ToString(), out kills);
-
+            if (player.CustomProperties.ContainsKey("Kills")) {
+                int.TryParse(player.CustomProperties["Kills"].ToString(), out kills);
+            }
+            Debug.Log(position + ". " + player.NickName + " : " + kills);
             textFields[position - 1].text = player.NickName + " : " + kills;
         }
     }

@@ -9,7 +9,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public static PhotonLobbyManager Instance;
 
-    public PhotonLogLevel Loglevel = PhotonLogLevel.ErrorsOnly;
+    public PhotonLogLevel Loglevel = PhotonLogLevel.Informational;
 
     #endregion
 
@@ -41,7 +41,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             Instance = this;
         }
-        //DontDestroyOnLoad(gameObject);
+        //sourceDontDestroyOnLoad(gameObject);
         PhotonNetwork.ConnectUsingSettings(_gameVersion);
     }
 
@@ -96,7 +96,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// <param name="name">Scene name</param>
     public void SelectMap(string name)
     {
-        Debug.Log("Selected map " + name);
+        //Debug.Log("Selected map " + name);
         _selectedMap = name;
         if (PhotonNetwork.inRoom)
         {
@@ -108,6 +108,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     //Sets the player's status ready and updates the UI
     public void PlayerReady()
     {
+        //Debug.Log(PhotonNetwork.player.NickName + " ready.");
         int shipID = FindObjectOfType<ShipManager>().GetSelectedShip();
         Hashtable playerProperties = new Hashtable() { { "Ready", "true" }, {"SelectedShip", shipID }, {"Kills", 0 } };
         PhotonNetwork.player.SetCustomProperties(playerProperties); //Callback OnPlayerPropertiesChanged
@@ -140,7 +141,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        Debug.Log(PhotonNetwork.player + " joined room.");
+        string players = "";
+        foreach (var player in PhotonNetwork.playerList) {
+            players += player.NickName + " ";
+        }
+        //Debug.Log(PhotonNetwork.player + " joined room. Players in room: " + players);
+
         GeneratePlayerNameIfEmpty();
         PlayerNotReady();
 
@@ -154,17 +160,11 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
-        Debug.Log("@OnLeftRoom");
+       //Debug.Log(PhotonNetwork.player.NickName + " left room.");
         if (SceneManager.GetActiveScene().name != "1_Main_Menu")
         {
             PhotonNetwork.LoadLevel("1_Main_Menu");
         }
-    }
-
-    public override void OnLeftLobby()
-    {
-        base.OnLeftLobby();
-        Debug.Log("@OnLeftLobby");
     }
 
     /// <summary>
@@ -197,8 +197,16 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu") {
+        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu")
+        {
             Hashtable props = playerAndUpdatedProps[1] as Hashtable;
+
+            string players = "";
+            foreach (var player in PhotonNetwork.playerList)
+            {
+                players += player.NickName + " ";
+            }
+            //Debug.Log(PhotonNetwork.player + " properties changed. Players in room: " + players);
 
             //Update UI
             PhotonPlayerlist.Instance.UpdatePlayerlist();
@@ -252,21 +260,5 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             PhotonNetwork.LoadLevel(buildIndex);
         }
     }
-
-    public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
-    {
-        Debug.Log(other.NickName + " disconnected.");
-
-        //TODO: if master client disconnectes, switch the master client.
-
-        //TODO: make a warning that a player has been disconnected.
-    }
-
-    public override void OnDisconnectedFromPhoton()
-    {
-        base.OnDisconnectedFromPhoton();
-        Debug.LogWarning("OnDisconnectedFromPhoton() was called by PUN");
-    }
-
     #endregion
 }
