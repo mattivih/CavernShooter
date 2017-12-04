@@ -20,7 +20,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public GameObject[] Firepoints;
     public GameObject PowerUpPosition;
     public GameObject ShipExplosionPrefab;
-    public AudioClip[] MusicArray;
+    public AudioClip LowHealth;
     public Transform MeshTransform;
     public Material ShipColorMaterial;
     public Color[] ShipColors;
@@ -46,13 +46,14 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     private Vector3 _originalMeshRotation;
     private Thruster _thruster;
     private GameObject _lastDamageSource;
-    private AudioSource _music;
+    private AudioSource _audioSource;
     private Rigidbody2D _rigid;
     #endregion
 
     void Awake()
     {
         _thruster = GetComponentInChildren<Thruster>();
+        _audioSource = GetComponent<AudioSource>();
 
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
@@ -150,16 +151,28 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Smoking30.Play();
             if (!Sparks30.isPlaying)
                 Sparks30.Play();
+            if (!_audioSource.isPlaying && _audioSource.clip != LowHealth)
+            {
+                _audioSource.clip = LowHealth;
+                _audioSource.loop = true;
+                _audioSource.Play();
+            }
+
         }
 
         else if (Health >= (MaxHealth * 0.3f) && Health <= (MaxHealth * 0.6f))
         {
+
             Smoking30.Stop();
             Sparks30.Stop();
             if (!Smoking60.isPlaying)
                 Smoking60.Play();
             if (!Sparks60.isPlaying)
                 Sparks60.Play();
+            if (_audioSource.isPlaying && _audioSource.clip == LowHealth)
+            {
+                _audioSource.Stop();
+            }
         }
 
         if (Health > (MaxHealth * 0.6f))
