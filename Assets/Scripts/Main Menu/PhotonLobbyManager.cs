@@ -167,12 +167,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         }
     }
 
-    public override void OnLeftLobby()
-    {
-        base.OnLeftLobby();
-        //Debug.Log(PhotonNetwork.player.NickName + " left lobby.");
-    }
-
     /// <summary>
     /// Generate an unique name for player if the player leaves the name field empty.
     /// </summary>
@@ -203,7 +197,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
     /// </summary>
     public override void OnPhotonPlayerPropertiesChanged(object[] playerAndUpdatedProps)
     {
-        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu") {
+        if (PhotonNetwork.inRoom && SceneManager.GetActiveScene().name == "1_Main_Menu")
+        {
             Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
             string players = "";
@@ -265,21 +260,5 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             PhotonNetwork.LoadLevel(buildIndex);
         }
     }
-
-    public override void OnPhotonPlayerDisconnected(PhotonPlayer other)
-    {
-        Debug.Log(other.NickName + " disconnected.");
-
-        //TODO: if master client disconnectes, switch the master client.
-
-        //TODO: make a warning that a player has been disconnected.
-    }
-
-    public override void OnDisconnectedFromPhoton()
-    {
-        base.OnDisconnectedFromPhoton();
-        Debug.LogWarning("OnDisconnectedFromPhoton() was called by PUN");
-    }
-
     #endregion
 }

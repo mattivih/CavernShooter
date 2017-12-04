@@ -86,6 +86,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
         //Save the dead players position.
         Hashtable playerProperties = new Hashtable { { "Position", PhotonNetwork.room.MaxPlayers - _deadPlayersCount } };
         player.SetCustomProperties(playerProperties);
+        //Debug.Log("Saved position " + player.CustomProperties["Position"].ToString() + " for " + player.NickName);
 
         _deadPlayersCount++;
 
@@ -101,9 +102,8 @@ public class PhotonMatchManager : Photon.PunBehaviour
             //Set Position 1 for the winner
             Hashtable winnerProperties = new Hashtable { { "Position", 1 } };
             killer.SetCustomProperties(winnerProperties);
-
+            //Debug.Log("Saved position " + killer.CustomProperties["Position"].ToString() + " for " + killer.NickName);
             //Show game over overlay on the clients
-            Debug.Log("Saved position " + player.CustomProperties["Position"].ToString() + " for " + player.NickName);
             GameOverOverlay.SetActive(true);
             PhotonNetwork.RaiseEvent(0, null, true, null);
         }

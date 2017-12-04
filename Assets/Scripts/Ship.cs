@@ -123,7 +123,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
             }
         }
-        StartCoroutine("TestDying");
+        //StartCoroutine("TestDying");
     }
 
   IEnumerator TestDying() {

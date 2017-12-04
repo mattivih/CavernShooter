@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
+using Random = System.Random;
 
 public class AudioManager : MonoBehaviour
 {
@@ -41,7 +43,12 @@ public class AudioManager : MonoBehaviour
 
 	public void OnLevelLoaded(Scene scene, LoadSceneMode mode)
 	{
-		_audioSource.clip = LevelSongs[scene.buildIndex];
-		_audioSource.Play();
+	    if (scene.name != "0_Title_Screen" && scene.name != "1_Main_Menu")
+	    {
+            Random random = new Random();
+	        int song = random.Next(0, LevelSongs.Length);
+            _audioSource.clip = LevelSongs[song];
+            _audioSource.Play();
+        }
 	}
 }
