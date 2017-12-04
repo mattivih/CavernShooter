@@ -3,18 +3,24 @@ using System.Collections;
 
 public class TextScroll : MonoBehaviour {
 
-	public float scrollSpeed = 20f;
+	public float scrollSpeed = 10f;
+    private Vector3 _pos;
+    private Vector3 _startingPosition = new Vector3(0f, 16f, 16f);
 
 	void Update()
 	{
-		Vector3 pos = transform.position;
+		_pos = transform.position;
 
 		// Vector pointing into the distance
 		Vector3 localVectorUp = transform.TransformDirection(0f, 1f, 0f);
 
 		// Move the text object into the distance
-		pos += localVectorUp * scrollSpeed * Time.deltaTime;
-		transform.position = pos;
+		_pos += localVectorUp * scrollSpeed * Time.deltaTime;
+		transform.position = _pos;
 	}
 
+    void OnEnable()
+    {
+        transform.position = _startingPosition;
+    }
 }
