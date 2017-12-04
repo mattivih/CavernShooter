@@ -15,7 +15,7 @@ public class PhotonPlayerlist : MonoBehaviour
 
     //Private variables
     private List<Transform> _positions;
-    private List<PhotonPlayerlistEntry> _playerlist;
+    private List<PhotonPlayerlistEntry> _playerlistEntries;
     private int _playerCount = 0;
 
     /// <summary>
@@ -51,7 +51,7 @@ public class PhotonPlayerlist : MonoBehaviour
         _positions.Remove(parent);
     }
 
-    public void UpdatePlayerlist()
+    public void UpdatePlayerStatus()
     {
         ClearList();
         PhotonPlayer[] playerlist = new PhotonPlayer[PhotonNetwork.playerList.Length];
