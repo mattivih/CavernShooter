@@ -32,7 +32,8 @@ public class MinePowerUp : PowerUp {
 
     public override void UseNormalPowerUp()
     {
-        var spawnPos = new Vector3(Ship.LocalPlayerInstance.transform.position.x, Ship.LocalPlayerInstance.transform.position.y, Ship.LocalPlayerInstance.transform.position.z + 1.0f);
+        float y = -Ship.LocalPlayerInstance.transform.up.normalized.y + Ship.LocalPlayerInstance.transform.position.y;
+        var spawnPos = (Ship.LocalPlayerInstance.transform.position - (Ship.LocalPlayerInstance.transform.up.normalized * 0.5f));
         GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
    
         photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
