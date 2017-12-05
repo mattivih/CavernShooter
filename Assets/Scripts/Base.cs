@@ -191,10 +191,13 @@ public class Base : Photon.PunBehaviour {
     void DestroyBase()
     {     
         if (PhotonNetwork.isMasterClient)
+        {
             PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position, gameObject.transform.rotation, 0);
             PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation, 0);
             PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation, 0);
-            PhotonNetwork.Destroy(gameObject);       
+            PhotonNetwork.Destroy(gameObject);
+        }
+           
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

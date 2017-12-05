@@ -10,6 +10,13 @@ public class PhotonGameOver : MonoBehaviour {
 
     public void OnEnable()
     {
+      
+        for (int i = 0; i < GameManager.Instance.hud.transform.childCount-1; ++i)       
+            GameManager.Instance.hud.transform.GetChild(i).gameObject.SetActive(false);
+        GameManager.Instance.hud.GetComponent<HUDManager>().enabled = false;
+        GameManager.Instance.hud.gameObject.SetActive(true);
+
+
         Hashtable playerProperties = new Hashtable() { { "Ready", "false" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties);
 
@@ -47,12 +54,16 @@ public class PhotonGameOver : MonoBehaviour {
     {
         PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().buildIndex);
     }
-
+    [PunRPC]
+    public void SignalReady(int id)
+    {
+        GameObject.Find("ReadyChecks").transform.GetChild(id).gameObject.SetActive(true);
+    }
     public void OnClickReady()
     {
         Hashtable playerProperties = new Hashtable() { { "Ready", "true" } };
         PhotonNetwork.player.SetCustomProperties(playerProperties);
-        GameObject.Find("ReadyChecks").transform.GetChild(PhotonNetwork.player.ID - 1).gameObject.SetActive(true);
+        GetComponent<PhotonView>().RPC("SignalReady", PhotonTargets.All, PhotonNetwork.player.ID - 1);
 
         if (PhotonNetwork.isMasterClient)
         {
@@ -69,6 +80,7 @@ public class PhotonGameOver : MonoBehaviour {
 
                 if (allReady)
                 {
+                    PhotonNetwork.DestroyAll();
                     GetComponent<PhotonView>().RPC("ReloadScene", PhotonTargets.All);
                 }
             }

@@ -151,12 +151,12 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Smoking30.Play();
             if (!Sparks30.isPlaying)
                 Sparks30.Play();
-            if (!_audioSource.isPlaying && _audioSource.clip != LowHealth)
+          /*  if (!_audioSource.isPlaying && _audioSource.clip != LowHealth)
             {
                 _audioSource.clip = LowHealth;
                 _audioSource.loop = true;
                 _audioSource.Play();
-            }
+            }*/
 
         }
 
@@ -169,10 +169,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Smoking60.Play();
             if (!Sparks60.isPlaying)
                 Sparks60.Play();
-            if (_audioSource.isPlaying && _audioSource.clip == LowHealth)
+           /* if (_audioSource.isPlaying && _audioSource.clip == LowHealth)
             {
                 _audioSource.Stop();
-            }
+            }*/
         }
 
         if (Health > (MaxHealth * 0.6f))
@@ -386,7 +386,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             }
 
             GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
-            PhotonNetwork.Destroy (gameObject);
+            PhotonNetwork.Destroy(gameObject);
         }
     }
 

@@ -15,11 +15,11 @@ public class PhotonMatchManager : Photon.PunBehaviour
 
     public void Start()
     {
+      
         if (Instance == null)
         {
             Instance = this;
         }
-
         PhotonNetwork.OnEventCall += this.OnEvent;
 
         #region Instantiate the player
@@ -115,8 +115,9 @@ public class PhotonMatchManager : Photon.PunBehaviour
     public void OnEvent(byte eventcode, object content, int senderID)
     {
         if (eventcode == 0) {
-            //All but 1 player is dead, end the match.
-            GameOverOverlay.SetActive(true);
+            //All but 1 player is dead, end the match.   
+            GameObject.Find("GameOver").transform.GetChild(0).gameObject.SetActive(true);
+           // GameOverOverlay.SetActive(true);
         }
     }
 
