@@ -63,7 +63,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
 
         foreach (var photonPlayer in PhotonNetwork.playerList)
         {
-            if (killedByEnemy && photonPlayer.ID == killerID)
+            if (photonPlayer.ID == killerID && killedByEnemy)
             {
                 killer = photonPlayer;
             }
@@ -74,7 +74,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
         }
 
         //Update the killer's kill count.
-        if (killedByEnemy && killer != null)
+        if (killedByEnemy && killer != null && killer != player)
         {
             Hashtable killerProperties = new Hashtable();
             int kills = 0;
