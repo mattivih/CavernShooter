@@ -40,8 +40,9 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     #region Private variables
     private int _laserCounter;
-
+    private int shipNumber;
     private float _timer = 0f;
+    private bool dead = false;
 
     private Vector3 _originalMeshRotation;
     private Thruster _thruster;
@@ -114,6 +115,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     void Start()
     {
+        shipNumber = GameManager.Instance.AddShipToList(gameObject);
+
         if (photonView.isMine)
         {
             foreach (GameObject o in GameObject.FindGameObjectsWithTag("Background"))
@@ -222,16 +225,11 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             #region Bank the ship
             if (horizontal != 0)
             {
-                transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
-                //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
-                Vector3 bank = _originalMeshRotation;
-                bank.y += Mathf.Sign(horizontal) * -MaxRotation;
-                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
+                photonView.RPC("BankShip", PhotonTargets.All, horizontal);
             }
             else
             {
-                Vector3 bankNone = _originalMeshRotation;
-                MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
+                photonView.RPC("ResetShipBank", PhotonTargets.All);
             }
             #endregion
   
@@ -283,6 +281,22 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         _thruster.ThrusterOff();
     }
 
+    [PunRPC]
+    void BankShip(float horizontal)
+    {
+        transform.Rotate(Vector3.forward * Rotation * -horizontal * Time.deltaTime);
+        //_rigid.AddTorque(Rotation * -horizontal, ForceMode2D.Force);
+        Vector3 bank = _originalMeshRotation;
+        bank.y += Mathf.Sign(horizontal) * -MaxRotation;
+        MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bank), Time.deltaTime * (Rotation / 150));
+    }
+
+    [PunRPC]
+    void ResetShipBank()
+    {
+        Vector3 bankNone = _originalMeshRotation;
+        MeshTransform.localRotation = Quaternion.Lerp(MeshTransform.localRotation, Quaternion.Euler(bankNone), Time.deltaTime * (Rotation / 120));
+    }
     #endregion
 
 
@@ -342,7 +356,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     /// <param name="damage">float damage amount</param>
     public void TakeDamage(float damage, GameObject source)
     {
-        if (!photonView.isMine)
+
+        if (!photonView.isMine || dead)
         {
             return;
         }
@@ -353,6 +368,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         {
             if (damage > Health)
             {
+                dead = true;
                 Health = 0;
             }
             else
@@ -365,28 +381,27 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (Health <= 0)
         {
-
+            GameManager.Instance.RemoveShipFromList(shipNumber);
+            
             if (source != null && source.GetComponent<Ship>())
             {
                 //If killed by another player
-                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, source.GetPhotonView().ownerId, true);
-                GameManager.Instance.Player = source;
-                LocalPlayerInstance = source;
-                Camera.main.GetComponent<CameraController>().FollowShip(source.transform);
+                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, source.GetPhotonView().ownerId, true);
+                GameManager.Instance.SpectateSpecific(source.gameObject, source.GetComponent<Ship>().shipNumber);
             }
 
             else
             {
                 //If killed by something else i. e. environment
-                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, 0, false);
-                GameObject shipToFollow = FindObjectOfType<Ship>().gameObject;
-                GameManager.Instance.Player = shipToFollow;
-                LocalPlayerInstance = shipToFollow;
-                Camera.main.GetComponent<CameraController>().FollowShip(shipToFollow.transform);
+                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, 0, false);
+                GameManager.Instance.SpectateFirst();
             }
 
+            GameManager.Instance.spectating = true;
+
             GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
-            PhotonNetwork.Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject.GetPhotonView());
+
         }
     }
 
