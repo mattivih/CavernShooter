@@ -13,7 +13,6 @@ public class MinePowerUp : PowerUp {
         mode = PowerUpMode.Spawn;
     }
 
-
     [PunRPC]
     public void assignSource(int viewId, int objectId)
     {
@@ -38,22 +37,16 @@ public class MinePowerUp : PowerUp {
     }
 
     public override void UseNormalPowerUp()
-    {
-        float y = -Ship.LocalPlayerInstance.transform.up.normalized.y + Ship.LocalPlayerInstance.transform.position.y;
+    {             
         var spawnPos = (Ship.LocalPlayerInstance.transform.position - (Ship.LocalPlayerInstance.transform.up.normalized * 0.5f));
-        GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
+        int layerMask = 1 << 10;
+        Collider2D[] cols = Physics2D.OverlapCircleAll(new Vector2(spawnPos.x, spawnPos.y), 1.2f * 0.15f, layerMask);
+        if (cols.Length > 0)
+            spawnPos = Ship.LocalPlayerInstance.transform.position;
 
-        photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
-        
+        GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
+        photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);  
         Units--;
     }
-
-   //  [ClientRpc]
-    //  public override void RpcSpawnPowerUp(GameObject controller, NetworkInstanceId id) {
-    //      player = ClientScene.FindLocalObject(id);
-    //      controller.GetComponent<UseMine>().source = player;
-    //      Debug.Log("player: " + player + ", id: " + id.Value + ", controller:" + controller);
-    //      controller.GetComponent<SpriteRenderer>().sprite = playerTextures[player.GetComponent<Ship>().playerNum];
-    //controller.transform.position = new Vector3 (controller.transform.position.x, controller.transform.position.y, MinePrefab.transform.position.z);
-    //  }
+ 
 }
