@@ -4,13 +4,17 @@ using UnityEngine.UI;
 public class PlayerCountSelector : MonoBehaviour
 {
 	public static int PlayersSelected = 2;
+    public AudioClip ChooseSFX;
 	public Sprite Active, Unactive, ActiveHover, UnactiveHover;
 	private Image _image;
+    private AudioSource _audioSource;
 
 	void Start()
 	{
 		_image = GetComponent<Image>();
-	}
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = ChooseSFX;
+    }
 
 	//Start hoovering
 	void OnMouseEnter()
@@ -55,11 +59,21 @@ public class PlayerCountSelector : MonoBehaviour
 			ChangeSprites(Unactive);
 			PlayersSelected--;
 		}
+        _audioSource.Play();
 	}
 
 	public void ChangeSprites(Sprite sprite)
 	{
 		_image.sprite = sprite;
 	}
+
+    public void Disable() {
+        GetComponent<Collider2D>().enabled = false;
+    }
+
+    public void Enable()
+    {
+        GetComponent<Collider2D>().enabled = true;
+    }
 
 }

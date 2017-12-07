@@ -5,23 +5,29 @@ public class PhotonMapManager : MonoBehaviour
 {
 
 	public GameObject[] Maps;
+    public AudioSource NextSource, PrevSource;
+    public AudioClip NextClip, PrevClip;
 	private Text _mapName;
 	private int _currentMap = 0;
 
 	void Start()
 	{
 		_mapName = GetComponent<Text>();
-		ChangeMap(0);
+        NextSource.clip = NextClip;
+        PrevSource.clip = PrevClip;
+        ChangeMap(0);
 	}
 
-	public void NextMap()
+	public void OnClickNextMap()
 	{
+        NextSource.Play();
 		ChangeMap(+1);
 	}
 
-	public void PrevMap()
+	public void OnClickPrevMap()
 	{
-		ChangeMap(-1);
+        PrevSource.Play();
+        ChangeMap(-1);
 	}
 
 	private void ChangeMap(int direction)

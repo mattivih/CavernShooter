@@ -5,8 +5,10 @@ using UnityEngine.UI;
 public class ShipManager : MonoBehaviour
 {
 
-	[Tooltip("Ensimmäinen strenght-palkki")]
-	public GameObject FirstBar;
+    [Tooltip("Ensimmäinen strenght-palkki")]
+    public GameObject FirstBar;
+    public GameObject NextShipButton, PrevShipButton;
+    public AudioClip NextSFX, PrevSFX;
 
 
 	public GameObject AttrOn, AttrOff;
@@ -26,6 +28,7 @@ public class ShipManager : MonoBehaviour
 	private List<int[]> _attributeList = new List<int[]>();
 	private List<GameObject> _deleteAttributes = new List<GameObject>();
 	private List<GameObject> _wireframeShips, _attributeBars;
+    private AudioSource _nextAudioSource, _prevAudioSource;
 
 	void Start()
 	{
@@ -51,7 +54,12 @@ public class ShipManager : MonoBehaviour
 			_attributeBars.Add(child.gameObject);
 		}
 		ChangeShip(0);
-	}
+
+        _nextAudioSource = NextShipButton.GetComponent<AudioSource>();
+        _nextAudioSource.clip = NextSFX;
+        _prevAudioSource = PrevShipButton.GetComponent<AudioSource>();
+        _prevAudioSource.clip = PrevSFX;
+    }
 
 	void Update()
 	{
@@ -61,15 +69,17 @@ public class ShipManager : MonoBehaviour
 		}
 	}
 
-	public void NextShip()
+	public void OnClickNextShip()
 	{
 		ChangeShip(+1);
+        _nextAudioSource.Play();
 	}
 
-	public void PrevShip()
+	public void OnClickPrevShip()
 	{
 		ChangeShip(-1);
-	}
+        _prevAudioSource.Play();
+    }
 
 	private void ChangeShip(int direction)
 	{
@@ -137,4 +147,14 @@ public class ShipManager : MonoBehaviour
 			}
 		}
 	}
+
+    public void DisableShipSelection() {
+        NextShipButton.SetActive(false);
+        PrevShipButton.SetActive(false);
+    }
+
+    public void EnableShipSelection() {
+        NextShipButton.SetActive(true);
+        PrevShipButton.SetActive(true);
+    }
 }

@@ -8,30 +8,24 @@ using UnityEngine.UI;
 public class PhotonMatchListEntry : MonoBehaviour
 {
 
-	public Text MatchNameText, Players;
+	public Text MatchNameText, PlayerCountText;
 	public Button JoinButton;
 
     public string MatchName { get; private set; }
+    public int PlayerCount { get; private set; }
+    public int MaxPlayers { get; private set; }
     public string ViewName { get; private set; }
-
-    private RoomInfo _match;
 
 	/// <summary>
 	/// Add a match's information to the UI's match list.
 	/// </summary>
-	public void FillMatchListEntry(RoomInfo match)
+	public void FillMatchListEntry(string name, string viewName, int playerCount, int maxPlayers)
 	{
-		_match = match;
-        MatchName = match.Name;
-        if (match.CustomProperties.ContainsKey("MatchName"))
-        {
-            ViewName = match.CustomProperties["MatchName"].ToString();
-        }
-        else {
-            ViewName = "Match";
-        }
+        MatchName = name;
+        ViewName = viewName;
+        MaxPlayers = maxPlayers;
 	    MatchNameText.text = ViewName;
-        UpdatePlayerCount(match.PlayerCount);
+        UpdatePlayerCount(playerCount);
 		JoinButton.onClick.RemoveAllListeners();
 		JoinButton.onClick.AddListener(JoinButtonListener);
 	}
@@ -39,17 +33,23 @@ public class PhotonMatchListEntry : MonoBehaviour
     /// <summary>
 	/// Button listener for Join Button.
 	/// </summary>
-	void JoinButtonListener()
+	private void JoinButtonListener()
 	{
-		JoinButton.GetComponentInChildren<Text>().text = "JOINED";
-		JoinButton.interactable = false;
-		JoinButton.onClick.RemoveListener(JoinButtonListener);
-        FindObjectOfType<MenuManager>().OnClickJoinMatchButton();
-        PhotonLobbyManager.Instance.JoinMatch(_match.Name);
+		JoinButton.GetComponentInChildren<Text>().text = "LEAVE";
+        JoinButton.onClick.RemoveAllListeners();
+        JoinButton.onClick.AddListener(LeaveButtonListener);
+        FindObjectOfType<MenuManager>().OnClickJoinMatchButton(MatchName);
 	}
+    private void LeaveButtonListener() {
+        JoinButton.GetComponentInChildren<Text>().text = "JOIN";
+        JoinButton.onClick.RemoveAllListeners();
+        JoinButton.onClick.AddListener(JoinButtonListener);
+        FindObjectOfType<MenuManager>().OnClickLeaveMatchButton();
+    }
+
 
     public void UpdatePlayerCount(int playerCount) {
-        Players.text = playerCount + "/" + _match.MaxPlayers;
+        PlayerCountText.text = playerCount + "/" + MaxPlayers;
     }
 
     public void UpdateMatchName(string name)

@@ -53,7 +53,12 @@ public class MenuManager : MonoBehaviour
 
     public void OpenJoinGame() {
         JoinGame.SetActive(true);
+        ShowSelectMatchTextOnCenterButton();
+    }
+
+    public void ShowSelectMatchTextOnCenterButton() {
         _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton.onClick.RemoveAllListeners();
         _centerButton.GetComponentInChildren<Text>().text = "PLEASE\nSELECT\nMATCH";
         _centerButton.interactable = false;
     }
@@ -84,6 +89,7 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
+        _centerButton.GetComponent<AudioSource>().Play();   
 	    string matchName = "";
 	    if (customMatchName)
 	    {
@@ -93,6 +99,10 @@ public class MenuManager : MonoBehaviour
 	    {
 	        MatchName.text = "";
 	    }
+        PlayerCountSelector[] playerCounts = FindObjectsOfType<PlayerCountSelector>();
+        foreach (var icon in playerCounts) {
+            icon.Disable();
+        }
 	    PhotonLobbyManager.Instance.CreateMatch(matchName, PlayerCountSelector.PlayersSelected);
         MatchInProgress = true;
         MatchName.interactable = false;
@@ -111,9 +121,14 @@ public class MenuManager : MonoBehaviour
 
     //------------------ Join Game Buttons ------------------
 
-    public void OnClickJoinMatchButton() {
-        //Debug.Log("@OnClickJoinMatchButton");
+    public void OnClickJoinMatchButton(string name) {
+        PhotonLobbyManager.Instance.JoinMatch(name);
         AddReadyListener();
+    }
+
+    public void OnClickLeaveMatchButton() {
+        PhotonLobbyManager.Instance.LeaveMatch();
+        ShowSelectMatchTextOnCenterButton();
     }
 
     //------------------ Helper Functions ------------------

@@ -16,6 +16,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     #region Private Variables
     private string _selectedMap = "1_Nort"; //Default level
+    private PhotonMatchList _matchlist;
 
     /// <summary>
     /// This client's game version number. Users are separated from each other by game version (which allows you to make breaking changes).
@@ -41,7 +42,6 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         {
             Instance = this;
         }
-        //sourceDontDestroyOnLoad(gameObject);
         PhotonNetwork.ConnectUsingSettings(_gameVersion);
     }
 
@@ -90,6 +90,53 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         PhotonNetwork.JoinRoom(matchName);
     }
 
+    public void LeaveMatch()
+    {
+        if (PhotonNetwork.player.IsLocal && _matchlist) // = Player is in the Join Game menu
+        {
+            //Update matchlist player count
+            _matchlist.UpdatePlayerCount(PhotonNetwork.room.Name, PhotonNetwork.room.PlayerCount);
+        }
+        PhotonNetwork.LeaveRoom();
+    }
+
+    /// <summary>
+    /// Called on the local player when the player lefts room. 
+    /// On other clients, OnPhotonPlayerDisconnected callback is called when another player lefts the room.
+    /// </summary>
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        if (SceneManager.GetActiveScene().name != "1_Main_Menu")
+        {
+            PhotonNetwork.LoadLevel("1_Main_Menu");
+        }
+        else {
+            PhotonPlayerlist playerlist = FindObjectOfType<PhotonPlayerlist>();
+            if (playerlist)
+            {
+                playerlist.ClearList();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called on other clients when player lefts the room.
+    /// OnLeftRoom is called on the local player when the player lefts room. 
+    /// </summary>
+    public override void OnPhotonPlayerDisconnected(PhotonPlayer otherPlayer)
+    {
+        base.OnPhotonPlayerDisconnected(otherPlayer);
+        if (SceneManager.GetActiveScene().name == "1_Main_Menu")
+        {
+            if (_matchlist)
+            {
+                _matchlist.UpdatePlayerCount(PhotonNetwork.room.Name, PhotonNetwork.room.PlayerCount);
+            }
+            FindObjectOfType<PhotonPlayerlist>().UpdatePlayerlist();
+        }
+    }
+
     /// <summary>
     /// Changes the selected map.
     /// </summary>
@@ -115,7 +162,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
         //TODO: Disable player and match name changing
 
-        //TODO: Disable ship selection
+        //Disable ship selection
+        FindObjectOfType<ShipManager>().DisableShipSelection();
     }
 
     //Sets the player's status not ready and updates the UI
@@ -126,7 +174,8 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
         //TODO: Enable player and match name changing
 
-        //TODO: Enable ship selection
+        //Enable ship selection
+        FindObjectOfType<ShipManager>().EnableShipSelection();
     }
 
     #endregion
@@ -141,29 +190,12 @@ public class PhotonLobbyManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        string players = "";
-        foreach (var player in PhotonNetwork.playerList) {
-            players += player.NickName + " ";
-        }
-        //Debug.Log(PhotonNetwork.player + " joined room. Players in room: " + players);
-
         GeneratePlayerNameIfEmpty();
         PlayerNotReady();
-
-        if (PhotonNetwork.player.IsLocal && !PhotonNetwork.isMasterClient) // = Player is in the Join Game menu
+        _matchlist = FindObjectOfType<PhotonMatchList>();
+        if (PhotonNetwork.player.IsLocal && _matchlist) // = Player is in the Join Game menu
         {
-            //Update matchlist player count
-            FindObjectOfType<PhotonMatchList>().UpdatePlayerCount(PhotonNetwork.room);
-        }
-    }
-
-    public override void OnLeftRoom()
-    {
-        base.OnLeftRoom();
-       //Debug.Log(PhotonNetwork.player.NickName + " left room.");
-        if (SceneManager.GetActiveScene().name != "1_Main_Menu")
-        {
-            PhotonNetwork.LoadLevel("1_Main_Menu");
+                _matchlist.UpdatePlayerCount(PhotonNetwork.room.Name, PhotonNetwork.room.PlayerCount);
         }
     }
 
@@ -203,7 +235,7 @@ public class PhotonLobbyManager : Photon.PunBehaviour
             Hashtable props = playerAndUpdatedProps[1] as Hashtable;
 
             //Update UI
-            PhotonPlayerlist.Instance.UpdatePlayerStatus();
+            FindObjectOfType<PhotonPlayerlist>().UpdatePlayerlist();
 
             //Check if all the players are ready
             if (PhotonNetwork.isMasterClient)

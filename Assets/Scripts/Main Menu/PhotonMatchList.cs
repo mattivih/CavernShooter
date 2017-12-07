@@ -42,19 +42,14 @@ public class PhotonMatchList : MonoBehaviour
 		_positions.Remove(parent);
 	}
 
-	public void AddOrUpdateMatch(RoomInfo match)
+	public void AddOrUpdateMatch(string name, string viewName, int playerCount, int maxPlayers)
 	{
 	    PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
 	    bool nameChanged = false;
-	    string viewName = null;
-	    if (match.CustomProperties.ContainsKey("MatchName"))
-	    {
-	        viewName = match.CustomProperties["MatchName"].ToString();
-	    }
 	    PhotonMatchListEntry matchInList = null;
 	    foreach (var entry in matchlist)
 	    {
-	        if (entry.MatchName == match.Name)
+	        if (entry.MatchName == name)
 	        {
 	            matchInList = entry;
                 if (!string.IsNullOrEmpty(viewName) && entry.ViewName != viewName)
@@ -63,24 +58,25 @@ public class PhotonMatchList : MonoBehaviour
 	            }
 	        }
 	    }
-	    if (!matchInList)
-	    {
+        if (!matchInList)
+        {
             //Add match
             GameObject matchListEntry = Instantiate(MatchListEntryPrefab, _positions[_matchCount].transform.position, Quaternion.identity, _positions[_matchCount]);
-            matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(match);
+            matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(name, viewName, playerCount, maxPlayers);
             _matchCount++;
-        } else if (nameChanged)
+        }
+        else if (nameChanged)
         {
             //Update match details
             matchInList.UpdateMatchName(viewName);
         }
 	}
 
-    public void UpdatePlayerCount(RoomInfo match) {
+    public void UpdatePlayerCount(string matchName, int playerCount) {
         PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
         foreach (var entry in matchlist) {
-            if (entry.MatchNameText.text == match.CustomProperties["MatchName"].ToString()) {
-                entry.UpdatePlayerCount(PhotonNetwork.room.PlayerCount);
+            if (entry.MatchName == matchName) {
+                entry.UpdatePlayerCount(playerCount);
             }
         }
     }
