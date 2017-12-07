@@ -388,6 +388,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
         if (Health <= 0)
         {
+            if (GetComponent<PowerUpHandler>().CurrentPowerUp)
+                GetComponent<PowerUpHandler>().Stop();
             GameManager.Instance.RemoveShipFromList(shipNumber);
             
             if (source != null && source.GetComponent<Ship>())
