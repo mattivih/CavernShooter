@@ -187,24 +187,37 @@ public class PowerUpSpawn : Photon.PunBehaviour
     }
     
 
-    public string NewPickUp()
+    public int NewPickUp()
     {
         int random = Random.Range(0, PowerUpPrefabs.Count);
-        return PowerUpPrefabs[random].name;
+        return random;
     }
 
     public void NewCenterSpawn()
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[3].name, CenterSpawn.position, Quaternion.identity, 0);
-        pickup.transform.SetParent(CenterSpawn);
-        CenterTimer = CenterTime;
+        if (CenterSpawn.childCount == 0)
+        {
+            int random = NewPickUp();
+            photonView.RPC("InstantiatePowerUp", PhotonTargets.All, random, CenterSpawn.gameObject.name, null);
+            CenterTimer = CenterTime;
+        }
     }
 
     public void NewSpawn(Transform spawn, PowerUp.SpawnLocation location)
     {
-        GameObject pickup = PhotonNetwork.Instantiate(NewPickUp(), spawn.transform.position, Quaternion.identity, 0);
-        pickup.transform.SetParent(spawn.transform);
-        pickup.gameObject.GetComponent<PowerUp>().location = location;
+        if (spawn.childCount == 0)
+        {
+            int random = NewPickUp();
+            photonView.RPC("InstantiatePowerUp", PhotonTargets.All, random, spawn.gameObject.name, (byte)location);
+        }
+    }
+
+    [PunRPC]
+    public void InstantiatePowerUp(int powerup, string spawnPointName, byte loc)
+    {
+        Transform spawn = GameObject.Find(spawnPointName).transform;
+        GameObject pickup = Instantiate(PowerUpPrefabs[powerup], spawn, false);
+        pickup.GetComponent<PowerUp>().location = (PowerUp.SpawnLocation)loc;
     }
 
     public void ClaimPowerUp(int location)

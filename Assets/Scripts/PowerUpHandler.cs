@@ -100,7 +100,7 @@ public class PowerUpHandler : Photon.PunBehaviour
                             CurrentPowerUp = powerup;
                             powerup.GetComponent<PowerUp>().Units = powerup.GetComponent<PowerUp>().MaxUnits;
                             ClaimPrefab(collider.gameObject);
-                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.All, collider.transform.parent.gameObject.name);
                         }
                     }
                 }
@@ -113,18 +113,18 @@ public class PowerUpHandler : Photon.PunBehaviour
                         case PowerUp.StackMode.Add:
                             powerup.Units = collider.GetComponent<PowerUp>().MaxUnits;
                             ClaimPrefab(collider.gameObject);
-                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.All, collider.transform.parent.gameObject.name);
                             break;
                         case PowerUp.StackMode.None:
                             break;
                         case PowerUp.StackMode.Shield:
                             ClaimPrefab(collider.gameObject);
-                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.All, collider.transform.parent.gameObject.name);
                             break;
                         case PowerUp.StackMode.ZeroGravity:
                             powerup.Units = collider.GetComponent<PowerUp>().MaxUnits;
                             ClaimPrefab(collider.gameObject);
-                            photonView.RPC("DestroyPickUp", PhotonTargets.MasterClient, collider.gameObject.GetComponent<PhotonView>().viewID);
+                            photonView.RPC("DestroyPickUp", PhotonTargets.All, collider.transform.parent.gameObject.name);
                             break;
                         default:
                             break;
@@ -174,9 +174,10 @@ public class PowerUpHandler : Photon.PunBehaviour
     }
 
     [PunRPC]
-    public void DestroyPickUp(int viewID)
+    public void DestroyPickUp(string parent)
     {
-        PhotonNetwork.Destroy(PhotonView.Find(viewID));
+        GameObject spawnParent = GameObject.Find(parent);
+        Destroy(spawnParent.GetComponentInChildren<PowerUp>().gameObject);
     }
 
     [PunRPC]
