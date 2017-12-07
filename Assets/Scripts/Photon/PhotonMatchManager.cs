@@ -46,10 +46,10 @@ public class PhotonMatchManager : Photon.PunBehaviour
             //Instantiate bases
             if (PhotonNetwork.isMasterClient)
             {
-                PhotonNetwork.Instantiate("Base", new Vector3(16.065f, 12.403f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(15.89226f, -17.77634f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0);
-                PhotonNetwork.Instantiate("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0);
+                PhotonNetwork.InstantiateSceneObject("Base", new Vector3(16.065f, 12.403f, 0f), Quaternion.identity, 0, null);
+                PhotonNetwork.InstantiateSceneObject("Base", new Vector3(15.89226f, -17.77634f, 0f), Quaternion.identity, 0, null);
+                PhotonNetwork.InstantiateSceneObject("Base", new Vector3(-16.34225f, 12.38098f, 0f), Quaternion.identity, 0, null);
+                PhotonNetwork.InstantiateSceneObject("Base", new Vector3(-16.142f, -17.785f, 0f), Quaternion.identity, 0, null);
             }
         }
         #endregion 
@@ -91,7 +91,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
         _deadPlayersCount++;
 
         //If all but 1 player is dead, end the match.
-        if (_deadPlayersCount == PhotonNetwork.room.MaxPlayers - 1)
+        if (_deadPlayersCount == PhotonNetwork.playerList.Length - 1)
         {
             //If the player was killed by something else than other ship the last man standing is the winner. Find the winner's game object.
             if (!killedByEnemy)

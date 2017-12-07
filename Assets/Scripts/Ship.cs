@@ -386,14 +386,14 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             if (source != null && source.GetComponent<Ship>())
             {
                 //If killed by another player
-                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, source.GetPhotonView().ownerId, true);
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, source.GetPhotonView().ownerId, true);
                 GameManager.Instance.SpectateSpecific(source.gameObject, source.GetComponent<Ship>().shipNumber);
             }
 
             else
             {
                 //If killed by something else i. e. environment
-                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, 0, false);
+                photonView.RPC("PlayerIsDead", PhotonTargets.MasterClient, photonView.owner.ID, 0, false);
                 GameManager.Instance.SpectateFirst();
             }
 
