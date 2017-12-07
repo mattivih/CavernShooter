@@ -54,8 +54,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     void Awake()
     {
         _thruster = GetComponentInChildren<Thruster>();
-        _audioSource = GetComponent<AudioSource>();
-
+        
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
             GameManager.Instance.Player = LocalPlayerInstance;
@@ -127,6 +126,10 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 o.transform.position = new Vector3(xOffset, yOffset, o.transform.position.z);
             }
         }
+
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.loop = true;
+        _audioSource.clip = LowHealth;
         //StartCoroutine("TestDying");
     }
 
@@ -154,12 +157,13 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Smoking30.Play();
             if (!Sparks30.isPlaying)
                 Sparks30.Play();
-          /*  if (!_audioSource.isPlaying && _audioSource.clip != LowHealth)
+            if (photonView.isMine)
             {
-                _audioSource.clip = LowHealth;
-                _audioSource.loop = true;
-                _audioSource.Play();
-            }*/
+                if (!_audioSource.isPlaying)
+                {
+                    _audioSource.Play();
+                }
+            }
 
         }
 
@@ -172,10 +176,13 @@ public class Ship : Photon.PunBehaviour, IPunObservable
                 Smoking60.Play();
             if (!Sparks60.isPlaying)
                 Sparks60.Play();
-           /* if (_audioSource.isPlaying && _audioSource.clip == LowHealth)
+            if (photonView.isMine)
             {
-                _audioSource.Stop();
-            }*/
+                if (_audioSource.isPlaying)
+                {
+                    _audioSource.Stop();
+                }
+            }
         }
 
         if (Health > (MaxHealth * 0.6f))
