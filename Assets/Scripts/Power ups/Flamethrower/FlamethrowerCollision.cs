@@ -172,14 +172,17 @@ public class FlamethrowerCollision : ProjectilesBase {
 	/// Starts the flamethrower effect.
 	/// </summary>
 	/// <param name="flamethrower">Flamethrower.</param>
-	public void BeginEffect(GameObject flamethrower)
+    public void BeginEffect(GameObject flamethrower)
 	{
         _isFiring = true;
-        if(audioFire)
-        audioFire.Play();
-		_flamethrower = flamethrower;
+        _flamethrower = flamethrower;
+        gameObject.GetPhotonView().RPC("PlayAudio", PhotonTargets.All);
+    }
 
-		// set the start point near the player
-	}
-
+    [PunRPC]
+    public void PlayAudio()
+    {
+        if (audioFire)
+            audioFire.Play();
+    }
 }
