@@ -37,6 +37,7 @@ public class ShieldEffect : MonoBehaviour {
         float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
         GetComponentInParent<Ship>().Shield = false;
         parent.alreadyOn = null;
+        yield return new WaitForSeconds(2);
         PhotonNetwork.Destroy(gameObject);
     }
 
