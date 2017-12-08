@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MineWarning : MonoBehaviour
+public class MineWarning : Photon.PunBehaviour
 {
     public GameObject source = null;
     public AudioClip Warning;
@@ -19,7 +19,7 @@ public class MineWarning : MonoBehaviour
         _audioSource.clip = Warning;
     }
 
-    void OnTriggerEnter2D(Collider2D collider)
+    void OnTriggerStay2D(Collider2D collider)
     {
         if (collider.gameObject.GetComponent<Ship>() && collider.gameObject != source)
         {
@@ -34,10 +34,12 @@ public class MineWarning : MonoBehaviour
                     MineLight.color = new Color(255, 0, 0);
                 else if (GetComponentInParent<SpriteRenderer>().sprite.name == "mine2-turquise")
                     MineLight.color = new Color(0, 255, 255);
-                    
-                if (!_audioSource.isPlaying)
-                {
-                    _audioSource.Play();
+                if (collider.gameObject.GetPhotonView().isMine)
+                { 
+                    if (!_audioSource.isPlaying)
+                    {
+                        _audioSource.Play();
+                    }
                 }
             }
         }
@@ -47,16 +49,18 @@ public class MineWarning : MonoBehaviour
     {
         if (collider.gameObject.GetComponent<Ship>() && collider.gameObject != source)
         {
-            _shipsInside = _shipsInside - 1;
+            /*_shipsInside = _shipsInside - 1;
             if (_shipsInside == 0)
+            {*/
+            MineLight.color = new Color(0, 0, 0);
+            if (collider.gameObject.GetPhotonView().isMine)
             {
-                MineLight.color = new Color(0, 0, 0);
-
                 if (_audioSource.isPlaying)
                 {
                     _audioSource.Stop();
                 }
             }
+            //}
         }
     }
 }
