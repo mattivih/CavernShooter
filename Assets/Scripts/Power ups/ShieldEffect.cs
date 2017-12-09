@@ -32,12 +32,12 @@ public class ShieldEffect : MonoBehaviour {
     public IEnumerator Die() {
         audioActivateShield.Play();
         yield return new WaitForSeconds(parent.shieldDuration);
-        emission.rateOverTime = noEmission;
         audioShieldEnd.Play();
-        float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
+        emission.rateOverTime = noEmission;
+        //float time = Mathf.Max(GetComponent<ParticleSystem>().main.duration, clipShieldEnd.length);
         GetComponentInParent<Ship>().Shield = false;
         parent.alreadyOn = null;
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1.5f);
         PhotonNetwork.Destroy(gameObject);
     }
 

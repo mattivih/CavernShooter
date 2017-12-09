@@ -353,7 +353,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 	[PunRPC]
 	void DestroyShip(int viewId)
 	{
-		GameObject explosion = Instantiate(ShipExplosionPrefab, PhotonView.Find(viewId).transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
+        Instantiate(ShipExplosionPrefab, PhotonView.Find(viewId).transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))));
 	}
 
 
@@ -408,7 +408,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
             GameManager.Instance.spectating = true;
 
-            GameObject explosion = PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
+            PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
             PhotonNetwork.Destroy(gameObject.GetPhotonView());
 
         }

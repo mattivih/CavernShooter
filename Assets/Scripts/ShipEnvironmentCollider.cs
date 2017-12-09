@@ -21,14 +21,15 @@ public class ShipEnvironmentCollider : Photon.PunBehaviour {
 	void OnCollisionEnter2D(Collision2D collision) {
 		if (GetComponentInParent<PhotonView>().isMine && collision.relativeVelocity.sqrMagnitude > HitVelocityThreshold) {
             audioCollide.pitch = 0.5f;
-			float damage = collision.relativeVelocity.sqrMagnitude * HitDamageScale;
+            float damage = collision.relativeVelocity.sqrMagnitude * HitDamageScale;
 			//Debug.Log("hit wall! damage: " + damage);
 			GetComponentInParent<Ship>().TakeDamage(damage, null);
 		} else {
             audioCollide.pitch = 1f;
         }
-        audioCollide.Play();
-
+        
+        if (GetComponentInParent<PhotonView>().isMine)
+            audioCollide.Play();
     }
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {

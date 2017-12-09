@@ -12,7 +12,7 @@ public class PhotonPlaceHolderLobbyManager : Photon.PunBehaviour
 
 
     #region Private Variables
-    bool isConnecting = false;
+    //bool isConnecting = false;
 
     /// <summary>
     /// This client's game version number. Users are separated from each other by game version (which allows you to make breaking changes).

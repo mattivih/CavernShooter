@@ -10,10 +10,9 @@ public class Base : Photon.PunBehaviour {
     public ParticleSystem BaseSmoke60;
     public ParticleSystem BaseSmoke301;
     public ParticleSystem BaseSmoke302;
-    Light[] lights;
     private Color _color;
-    private bool _isCollidingPlayer = false;
-    private bool _isCollidingEnemy = false;
+    //private bool _isCollidingPlayer = false;
+    //private bool _isCollidingEnemy = false;
     
 
     //[SyncVar]
@@ -27,7 +26,6 @@ public class Base : Photon.PunBehaviour {
     /// </summary>
     void Start() {
 		BaseHealth = MaxBaseHealth;
-        lights = GetComponentsInChildren<Light>();
         GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All, null);
     }
 
@@ -140,10 +138,10 @@ public class Base : Photon.PunBehaviour {
     /// <param name="collision">Collision.</param>
     void OnCollisionStay2D(Collision2D collision) {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy") {
-            if (collision.gameObject.tag == "Player")
-                _isCollidingPlayer = true;
-            if(collision.gameObject.tag == "Enemy")
-                _isCollidingEnemy = true;
+            //if (collision.gameObject.tag == "Player")
+            //    _isCollidingPlayer = true;
+            //if(collision.gameObject.tag == "Enemy")
+            //    _isCollidingEnemy = true;
 
             collision.gameObject.GetComponent<Ship>().IncreaseHealth(HealthRegen * Time.deltaTime);
           

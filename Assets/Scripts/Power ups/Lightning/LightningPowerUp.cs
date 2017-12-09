@@ -18,7 +18,6 @@ public class LightningPowerUp : PowerUp {
     {
         GameObject prefab = PhotonNetwork.Instantiate("Lightning", Ship.LocalPlayerInstance.transform.position, Quaternion.identity, 0);
         prefab.transform.SetParent(Ship.LocalPlayerInstance.transform);
-        LightningController lightning = Ship.LocalPlayerInstance.GetComponentInChildren<LightningController>();
         
         photonView.RPC("StartLightning", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, prefab.GetPhotonView().viewID);
         Units--;

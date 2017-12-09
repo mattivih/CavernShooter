@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -40,9 +41,9 @@ public class PhotonGameOver : MonoBehaviour {
     }
     public void OnClickBackToMainMenu()
     {
-        PhotonNetwork.LeaveRoom();
-        PhotonNetwork.LeaveLobby();
-    }
+        PhotonNetwork.Disconnect();
+        SceneManager.LoadScene(1);
+    } 
 
     public void OnClickQuit()
     {

@@ -24,16 +24,20 @@ public class Thruster : MonoBehaviour {
     void Awake() {
         thruster = GetComponentInChildren<ParticleSystem>();
         audioThruster = AddAudio(clipThruster, true, false, 0f);
-    }
-    void Start() {
+
+        if (GetComponentInParent<PhotonView>().isMine)
+            audioThruster.Play();
+
         _velocityOverLifetime = thruster.velocityOverLifetime;
         _emission = thruster.emission;
         _originalEmissionRate = thruster.emission.rateOverTime;
-        audioThruster.Play();
+    }
+    void Start() {
+
     }
 
     void Update() {
-        float frac = _emission.rateOverTime.constantMax / _originalEmissionRate.constantMax;
+        //float frac = _emission.rateOverTime.constantMax / _originalEmissionRate.constantMax;
         //Debug.Log(audioFraction);
         audioThruster.volume = audioFraction;
         audioThruster.pitch = audioFraction+0.5f;
@@ -42,8 +46,8 @@ public class Thruster : MonoBehaviour {
     public void ThrusterOn() {
         timer += Time.deltaTime;
         _thrusterOnOff.constantMax = Mathf.Lerp(_thrusterOnOff.constantMax, MaxThrusterVelocity, Time.deltaTime*4);
-        //_thrusterOnOff.constantMax = MaxThrusterVelocity * curve.Evaluate(timer/timeToMax);
-        //_emissionRate.constantMax = _originalEmissionRate.constantMax * curve.Evaluate(timer / timeToMax);
+        _thrusterOnOff.constantMax = MaxThrusterVelocity * curve.Evaluate(timer/timeToMax);
+        _emissionRate.constantMax = _originalEmissionRate.constantMax * curve.Evaluate(timer / timeToMax);
         //Debug.Log("timer: " + timer + " max:" + timeToMax + " frac: " + (timer/timeToMax) + " curve: " +  curve.Evaluate(timer / timeToMax));
         _emissionRate.constantMax = Mathf.Lerp(_emissionRate.constantMax, _originalEmissionRate.constantMax, Time.deltaTime*4);
         _emission.rateOverTime = _emissionRate;
@@ -54,7 +58,6 @@ public class Thruster : MonoBehaviour {
         timer -= Time.deltaTime;
         if (timer < 0) timer = 0;
         _thrusterOnOff.constantMax = 0;
-        _velocityOverLifetime.z = _thrusterOnOff;
         _emissionRate.constantMax = Mathf.Lerp(_emissionRate.constantMax, 0, Time.deltaTime * 10);
         _emission.rateOverTime = _emissionRate;
         audioFraction = Mathf.Lerp(audioFraction, 0, Time.deltaTime);

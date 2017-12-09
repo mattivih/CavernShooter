@@ -8,8 +8,8 @@ public class Laser : ProjectilesBase {
     public CircleCollider2D DestructionCircle;
 
     public bool clientSide = false;
-    float distanceThreshold = 0.01f;
-    float toofarThreshold = 1f;
+    //float distanceThreshold = 0.01f;
+    //float toofarThreshold = 1f;
 
     public GameObject Source;
 

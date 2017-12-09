@@ -22,7 +22,7 @@ public class PhotonGameManager : Photon.PunBehaviour {
         {
             //TODO: replace vector3 with one of the spawn points
             //Debug.LogError("Instantiating player.");
-            GameObject player = PhotonNetwork.Instantiate(PlayerPrefab.name, Vector3.zero, Quaternion.identity, 0);         
+            PhotonNetwork.Instantiate(PlayerPrefab.name, Vector3.zero, Quaternion.identity, 0);         
         }
     }
 

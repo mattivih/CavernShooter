@@ -22,7 +22,7 @@ public class UseLaserBeam : MonoBehaviour {
     public GameObject SparksPrefab;
     GameObject sparksObject;
     ParticleSystem sparkParticleSystem;
-    ParticleSystem.EmissionModule sparkParticleEmission;
+    //ParticleSystem.EmissionModule sparkParticleEmission;
     ParticleSystem.MinMaxCurve sparkEmissionNone = new ParticleSystem.MinMaxCurve();
 
     public float DPS;
@@ -77,7 +77,7 @@ public class UseLaserBeam : MonoBehaviour {
     {
         sparksObject = PhotonNetwork.Instantiate("Sparks", _endPoint, Quaternion.identity, 0);
         sparkParticleSystem = sparksObject.GetComponent<ParticleSystem>();
-        sparkParticleEmission = sparkParticleSystem.emission;
+        //sparkParticleEmission = sparkParticleSystem.emission;
         sparkEmissionNone.constantMax = 0;
         _haveSparks = true;
     }
