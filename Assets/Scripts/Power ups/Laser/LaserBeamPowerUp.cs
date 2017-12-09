@@ -39,8 +39,10 @@ public class LaserBeamPowerUp : PowerUp
         {
             _endPoint = hit.point;
             if (hit.collider.GetComponent<Ship>() || hit.collider.transform.root.gameObject.GetComponent<Ship>())
+            {
                 PhotonView.Find(hit.collider.transform.root.gameObject.GetComponent<PhotonView>().viewID).gameObject.GetComponent<Ship>().TakeDamage(o.GetComponent<UseLaserBeam>().DPS, i);
-
+                o.GetComponent<UseLaserBeam>().audioHitPlayer.Play();
+            }
             else if (hit.collider.GetComponent<Base>())
                 hit.collider.GetComponent<Base>().TakeDamage(o.GetComponent<UseLaserBeam>().DPS);
 

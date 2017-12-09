@@ -33,13 +33,15 @@ public class UseLaserBeam : Photon.PunBehaviour {
     public Vector3 _endPoint;
 
     public AudioClip clipFire, clipHitPlayer;
-    private AudioSource audioFire, audioHitPlayer;
+    public AudioSource audioHitPlayer;
+    private AudioSource audioFire;
+
 
     void Awake() {
         audioFire = AddAudio(clipFire, true, false, 1f);
         audioFire.spatialBlend = 1f;
         audioFire.dopplerLevel = 1f;
-        audioFire.maxDistance = 25f;
+        audioFire.maxDistance = 35f;
         audioHitPlayer = AddAudio(clipHitPlayer, false, false, 1f);
         audioHitPlayer.spatialBlend = 1f;
         audioHitPlayer.dopplerLevel = 0.1f;
@@ -121,7 +123,7 @@ public class UseLaserBeam : Photon.PunBehaviour {
     /// </summary>
     public void Stop() {
         _isFiring = false;
-        photonView.RPC("StopLaserSound", PhotonTargets.All);
+        //photonView.RPC("StopLaserSound", PhotonTargets.All);
         if (sparksObject)
         {        
             PhotonNetwork.Destroy(sparksObject);
@@ -140,7 +142,7 @@ public class UseLaserBeam : Photon.PunBehaviour {
 
     IEnumerator DestroyThis()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.25f);
         PhotonNetwork.Destroy(gameObject);
     }
 

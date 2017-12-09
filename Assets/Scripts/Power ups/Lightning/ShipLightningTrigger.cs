@@ -17,7 +17,7 @@ public class ShipLightningTrigger : MonoBehaviour {
 
     void Start()
     {
-        _audioSource = AddAudio(HitByDistortion, false, false, 1f);
+        _audioSource = AddAudio(HitByDistortion, false, false, 0.5f);
         _audioSource.spatialBlend = 1f;
         _audioSource.dopplerLevel = 0.1f;
         _audioSource.maxDistance = 15f;
