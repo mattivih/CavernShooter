@@ -66,26 +66,26 @@ public class PhotonGameOver : MonoBehaviour {
         PhotonNetwork.player.SetCustomProperties(playerProperties);
         GetComponent<PhotonView>().RPC("SignalReady", PhotonTargets.All, PhotonNetwork.player.ID - 1);
 
-        if (PhotonNetwork.isMasterClient)
+        bool allReady = true;
+        foreach (var player in PhotonNetwork.playerList)
         {
-            if (PhotonNetwork.playerList.Length == PhotonNetwork.room.MaxPlayers)
+            if (!Convert.ToBoolean(player.CustomProperties["Ready"]))
             {
-                bool allReady = true;
-                foreach (var player in PhotonNetwork.playerList)
-                {
-                    if (!Convert.ToBoolean(player.CustomProperties["Ready"]))
-                    {
-                        allReady = false;
-                    }
-                }
-
-                if (allReady)
-                {
-                    PhotonNetwork.DestroyAll();
-                    GetComponent<PhotonView>().RPC("ReloadScene", PhotonTargets.All);
-                }
+                allReady = false;
             }
         }
+
+        if (allReady)
+        {
+            GetComponent<PhotonView>().RPC("MasterRestartMatch", PhotonTargets.MasterClient);
+        }
+    }
+
+    [PunRPC]
+    void MasterRestartMatch()
+    {
+        PhotonNetwork.DestroyAll();
+        GetComponent<PhotonView>().RPC("ReloadScene", PhotonTargets.All);
     }
 
 }

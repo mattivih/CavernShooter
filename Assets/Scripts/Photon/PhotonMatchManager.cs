@@ -91,7 +91,7 @@ public class PhotonMatchManager : Photon.PunBehaviour
         _deadPlayersCount++;
 
         //If all but 1 player is dead, end the match.
-        if (_deadPlayersCount == PhotonNetwork.room.MaxPlayers - 1)
+        if (_deadPlayersCount == PhotonNetwork.playerList.Length - 1)
         {
             //If the player was killed by something else than other ship the last man standing is the winner. Find the winner's game object.
             if (!killedByEnemy)
