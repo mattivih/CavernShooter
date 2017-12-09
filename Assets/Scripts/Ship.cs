@@ -127,9 +127,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
             }
         }
 
-        _audioSource = GetComponent<AudioSource>();
-        _audioSource.loop = true;
-        _audioSource.clip = LowHealth;
+        _audioSource = AddAudio(LowHealth, true, false, 1f);
         //StartCoroutine("TestDying");
     }
 

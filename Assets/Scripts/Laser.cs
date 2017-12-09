@@ -16,7 +16,7 @@ public class Laser : ProjectilesBase {
     public Color myColor = Color.white;
 
     public AudioClip clipHitTerrain, clipHitShip;
-    private AudioSource audioHitTerrain, audioHitShip;
+    private AudioSource[] audioSources;
 
     #region To be deleted: Old Unet variables
     //public GameObject serverObj = null;
@@ -28,8 +28,7 @@ public class Laser : ProjectilesBase {
 
 
     void Awake() {
-        audioHitTerrain = AddAudio(clipHitTerrain, false, false, 1f);
-        audioHitShip = AddAudio(clipHitShip, false, false, 1f);
+        audioSources = GetComponents<AudioSource>();
     }   
 
 
@@ -75,18 +74,18 @@ public class Laser : ProjectilesBase {
             GetComponent<Renderer>().enabled = false;
             //GetComponent<SpriteRenderer>().enabled = false;
             //Debug.Log("Laser hit terrain");
-            audioHitTerrain.Play();
-            Destroy(gameObject, audioHitTerrain.clip.length);
+            audioSources[1].Play();
+            Destroy(gameObject, audioSources[1].clip.length);
         } else if (collider.GetComponent<Ship>()) {
             //Debug.Log("Laser of " + Source.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " hit player " + collider.GetComponent<Ship>().GetComponent<PhotonView>().viewID + " Laser layer: " + LayerMask.LayerToName(gameObject.layer) + " Target layer: " + LayerMask.LayerToName(collider.gameObject.layer));
-            audioHitShip.Play();
+            audioSources[2].Play();
             //Debug.Log("Damage player");
             float dmgMultiplier = Source.GetComponent<Ship>().DamageMultiplier;
             collider.GetComponent<Ship>().TakeDamage(Damage * dmgMultiplier, Source);
             GetComponent<Collider2D>().enabled = false;
             GetComponent<Rigidbody2D>().isKinematic = true;
             GetComponent<Renderer>().enabled = false;
-            Destroy(gameObject, audioHitShip.clip.length);
+            Destroy(gameObject, audioSources[2].clip.length);
         } else {
             Destroy(gameObject);
         }

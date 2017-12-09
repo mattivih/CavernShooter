@@ -22,6 +22,9 @@ public class FlamethrowerCollision : ProjectilesBase {
 
     void Awake() {
         audioFire = AddAudio(clipFire, true, false, 1f);
+        audioFire.spatialBlend = 1f;
+        //audioFire.dopplerLevel = 0.1f;
+        audioFire.maxDistance = 25f;
     }
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();

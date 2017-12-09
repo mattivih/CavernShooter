@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UseLaserBeam : MonoBehaviour {
+public class UseLaserBeam : Photon.PunBehaviour {
 
     public float Duration = 0.5f;
     [Tooltip("Max possible distance of the laser ray")]
@@ -37,7 +37,13 @@ public class UseLaserBeam : MonoBehaviour {
 
     void Awake() {
         audioFire = AddAudio(clipFire, true, false, 1f);
+        audioFire.spatialBlend = 1f;
+        audioFire.dopplerLevel = 1f;
+        audioFire.maxDistance = 25f;
         audioHitPlayer = AddAudio(clipHitPlayer, false, false, 1f);
+        audioHitPlayer.spatialBlend = 1f;
+        audioHitPlayer.dopplerLevel = 0.1f;
+        audioHitPlayer.maxDistance = 25f;
     }
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
@@ -108,13 +114,14 @@ public class UseLaserBeam : MonoBehaviour {
     /// </summary>
     public void Fire() {
         _isFiring = true;
-        audioFire.Play();
+        photonView.RPC("StartLaserSound", PhotonTargets.All);
     }
     /// <summary>
     /// Disables the laser
     /// </summary>
     public void Stop() {
         _isFiring = false;
+        photonView.RPC("StopLaserSound", PhotonTargets.All);
         if (sparksObject)
         {        
             PhotonNetwork.Destroy(sparksObject);
@@ -122,8 +129,8 @@ public class UseLaserBeam : MonoBehaviour {
             sparksObject = null;
         }
         GetComponent<Renderer>().enabled = false;
-        audioFire.Stop();
-        PhotonNetwork.Destroy(gameObject);
+        if (photonView.isMine)
+            StartCoroutine(DestroyThis());
     }
     void OnApplicationFocus(bool hasFocus)
     {
@@ -131,4 +138,21 @@ public class UseLaserBeam : MonoBehaviour {
             Stop();
     }
 
+    IEnumerator DestroyThis()
+    {
+        yield return new WaitForSeconds(0.5f);
+        PhotonNetwork.Destroy(gameObject);
+    }
+
+    [PunRPC]
+    public void StartLaserSound()
+    {
+        audioFire.Play();
+    }
+
+    [PunRPC]
+    public void StopLaserSound()
+    {
+        audioFire.Stop();
+    }
 }

@@ -45,6 +45,7 @@ public class MinePowerUp : PowerUp {
             spawnPos = Ship.LocalPlayerInstance.transform.position;
 
         GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
+        go.GetComponent<AudioSource>().Play();
         photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);  
         Units--;
     }

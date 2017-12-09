@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class LightningController : NetworkBehaviour {
+public class LightningController : Photon.PunBehaviour {
 
     public List<Transform> targets;
     public int LightningCount = 3;
@@ -42,8 +41,8 @@ public class LightningController : NetworkBehaviour {
         }
     }
 
-    public AudioClip clipFire, clipHitPlayer;
-    private AudioSource audioFire, audioHitPlayer;
+    public AudioClip clipFire;
+    private AudioSource audioFire;
 
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();
@@ -55,8 +54,7 @@ public class LightningController : NetworkBehaviour {
     }
 
     void Awake() {
-        audioFire = AddAudio(clipFire, false, false, 1f);
-        audioHitPlayer = AddAudio(clipHitPlayer, false, false, 1f);
+        audioFire = GetComponent<AudioSource>();
         debugPoints = new List<pointPair>();
         targets = new List<Transform>();
         polycol = GetComponent<PolygonCollider2D>(); 
@@ -132,13 +130,11 @@ public class LightningController : NetworkBehaviour {
                 SummonLightning(ellipsePoint + Vector3.up * distance, true);
             }
         } else {
+            audioFire.Play();
             DistanceRandomnessPercentage = 0;
             foreach (Transform target in targets) {
                 SummonLightning(transform.InverseTransformPoint(target.position), false);
-                AudioSource.PlayClipAtPoint(clipHitPlayer, target.position);
-
             }
-
         }
         lightningsDone++;
     }
