@@ -158,7 +158,7 @@ public class PowerUpHandler : Photon.PunBehaviour
     }
     public void Use()
     {
-        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units > 0.99)
+        if (CurrentPowerUp && CurrentPowerUp.GetComponent<PowerUp>().Units > 0.0f)
         {
             CurrentPowerUp.GetComponent<PowerUp>().Use();
         }
