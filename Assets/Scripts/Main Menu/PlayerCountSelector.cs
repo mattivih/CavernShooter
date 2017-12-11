@@ -45,9 +45,17 @@ public class PlayerCountSelector : MonoBehaviour
 		if (_image.sprite.name == "BTN-ship-UNACTIVE-HOVER-01" ||
 		_image.sprite.name == "BTN-ship-UNACTIVE-01")
 		{
-			ChangeSprites(Active);
-			PlayersSelected++;
-		}
+            ChangeSprites(Active);
+            if (gameObject.name == "Player 4")
+            {
+                PlayersSelected = 4;
+                if (GameObject.Find("Player 3").GetComponent<Image>().sprite.name == "BTN-ship-UNACTIVE-01")
+                    GameObject.Find("Player 3").GetComponent<Image>().sprite = Active;
+            }               
+            else           
+                PlayersSelected++;
+                     
+        }
 		else if (_image.sprite.name == "BTN-ship-ACTIVE-HOVER-01" ||
 	   _image.sprite.name == "BTN-ship-ACTIVE-01")
 		{
