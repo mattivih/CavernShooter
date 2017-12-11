@@ -35,12 +35,14 @@ public class PhotonMatchListEntry : MonoBehaviour
 	/// </summary>
 	private void JoinButtonListener()
 	{
-		JoinButton.GetComponentInChildren<Text>().text = "LEAVE";
+        ButtonSoundPlayer.Instance.PlayNextSound();
+        JoinButton.GetComponentInChildren<Text>().text = "LEAVE";
         JoinButton.onClick.RemoveAllListeners();
         JoinButton.onClick.AddListener(LeaveButtonListener);
         FindObjectOfType<MenuManager>().OnClickJoinMatchButton(MatchName);
 	}
     private void LeaveButtonListener() {
+        ButtonSoundPlayer.Instance.PlayPrevSound();
         JoinButton.GetComponentInChildren<Text>().text = "JOIN";
         JoinButton.onClick.RemoveAllListeners();
         JoinButton.onClick.AddListener(JoinButtonListener);

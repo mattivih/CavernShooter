@@ -39,6 +39,11 @@ public class PhotonPlayerlist : MonoBehaviour
         _positions.Remove(parent);
     }
 
+    public void OnEnable()
+    {
+        ClearList();
+    }
+
     /// <summary>
     /// Updates the player list - adds and removes players if necessary
     /// </summary>

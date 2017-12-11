@@ -9,11 +9,11 @@ using UnityEngine.Networking.Match;
 public class PhotonMatchList : MonoBehaviour
 {
 
-	public GameObject MatchListEntryPrefab, NoMatchesFoundPrefab, LoadingPrefab;
+	public GameObject MatchListEntryPrefab, MatchCancelledPrefab, LoadingPrefab;
 
 	public MatchInfoSnapshot SelectedMatch { get; set; }
 
-	private GameObject _errorNoMatchesFound, _loading;
+    private GameObject _loading;
 	private List<Transform> _positions;
 	private int _matchCount = 0;
 
@@ -22,10 +22,6 @@ public class PhotonMatchList : MonoBehaviour
 		_loading = Instantiate(LoadingPrefab);
 		_loading.SetActive(true);
 		_loading.transform.SetParent(transform, false);
-
-		_errorNoMatchesFound = Instantiate(NoMatchesFoundPrefab);
-		_errorNoMatchesFound.SetActive(false);
-		_errorNoMatchesFound.transform.SetParent(transform, false);
 
 		//Get the matchlist entry transform positions
 		_positions = GetComponentsInChildren<Transform>(true).ToList();
@@ -40,22 +36,17 @@ public class PhotonMatchList : MonoBehaviour
 			}
 		}
 		_positions.Remove(parent);
-	}
+    }
 
-	public void AddOrUpdateMatch(string name, string viewName, int playerCount, int maxPlayers)
+    public void AddOrUpdateMatch(string name, string viewName, int playerCount, int maxPlayers)
 	{
 	    PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
-	    bool nameChanged = false;
 	    PhotonMatchListEntry matchInList = null;
 	    foreach (var entry in matchlist)
 	    {
 	        if (entry.MatchName == name)
 	        {
 	            matchInList = entry;
-                if (!string.IsNullOrEmpty(viewName) && entry.ViewName != viewName)
-	            {
-	                nameChanged = true;
-	            }
 	        }
 	    }
         if (!matchInList)
@@ -65,37 +56,18 @@ public class PhotonMatchList : MonoBehaviour
             matchListEntry.GetComponent<PhotonMatchListEntry>().FillMatchListEntry(name, viewName, playerCount, maxPlayers);
             _matchCount++;
         }
-        else if (nameChanged)
-        {
-            //Update match details
-            matchInList.UpdateMatchName(viewName);
-        }
 	}
 
     public void UpdatePlayerCount(string matchName, int playerCount) {
         PhotonMatchListEntry[] matchlist = GetComponentsInChildren<PhotonMatchListEntry>();
-        foreach (var entry in matchlist) {
-            if (entry.MatchName == matchName) {
+        foreach (var entry in matchlist)
+        {
+            if (entry.MatchName == matchName)
+            {
                 entry.UpdatePlayerCount(playerCount);
             }
         }
     }
-
-    /// <summary>
-	/// Show message "No matches found" if no matches are found.
-	/// </summary>
-	public void ShowNoMatchesFound()
-	{
-		_errorNoMatchesFound.SetActive(true);
-	}
-
-	/// <summary>
-	/// Hide message "No matches found".
-	/// </summary>
-	public void HideNoMatchesFound()
-	{
-		_errorNoMatchesFound.SetActive(false);
-	}
 
 	/// <summary>
 	/// Show loading icon.

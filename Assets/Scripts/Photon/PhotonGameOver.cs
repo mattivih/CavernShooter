@@ -27,14 +27,12 @@ public class PhotonGameOver : MonoBehaviour {
             int position = 0;
             if (player.CustomProperties.ContainsKey("Position")) {
                 int.TryParse(player.CustomProperties["Position"].ToString(), out position);
-                Debug.Log("Parsed position " + position + " for " + player.NickName);
             }
 
             int kills = 0;
             if (player.CustomProperties.ContainsKey("Kills")) {
                 int.TryParse(player.CustomProperties["Kills"].ToString(), out kills);
             }
-            Debug.Log(position + ". " + player.NickName + " : " + kills);
             textFields[position - 1].text = player.NickName + " : " + kills;
         }
     }

@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class PhotonPlayerName : MonoBehaviour
 {
+    public void OnEnable()
+    {
+        GetComponent<InputField>().text = "";
+    }
 
     public void SetPlayerName()
     {

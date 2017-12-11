@@ -23,7 +23,9 @@ public class PhotonJoinMatch : Photon.PunBehaviour
             for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
             {
                 RoomInfo match = matches[i];
-                _matchList.AddOrUpdateMatch(match.Name, match.CustomProperties["MatchName"].ToString(), match.PlayerCount, match.MaxPlayers);
+                if (match.IsOpen) {
+                    _matchList.AddOrUpdateMatch(match.Name, match.CustomProperties["MatchName"].ToString(), match.PlayerCount, match.MaxPlayers);
+                }
             }
         }
     }

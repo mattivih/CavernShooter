@@ -4,12 +4,11 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     public GameObject MainMenu, Controls, Credits, HostGame, JoinGame;
-    public GameObject ConnectingToServer, MatchInProgressError, CreditsBackground;
+    public GameObject ConnectingToServer, CreditsBackground;
+    public InputField HostMatchNameInput;
     private Button _centerButton; //Create Match in Host Game Menu, Select Match in Join Game menu.
-	public InputField MatchName;
-	public bool MatchInProgress { private get; set; }
     private bool _hosting;
-    private bool customMatchName;
+    private bool _customMatchName;
 
 	private float _ortoSize;
 
@@ -17,8 +16,7 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickHostGameButton()
 	{
-		MainMenu.SetActive(false);
-
+        MainMenu.SetActive(false);
         if (PhotonNetwork.connectedAndReady)
         {
             OpenHostGame();
@@ -30,15 +28,16 @@ public class MenuManager : MonoBehaviour
     }
 
     public void OpenHostGame() {
+        HostMatchNameInput.text = "";
         HostGame.SetActive(true);
-        _centerButton = GameObject.Find("Center Button").GetComponent<Button>();
+        _centerButton = HostGame.GetComponent<ButtonManager>().GetCenterButton();
         _centerButton.GetComponentInChildren<Text>().text = "CREATE\nMATCH";
         _centerButton.onClick.RemoveAllListeners();
         _centerButton.onClick.AddListener(OnClickCreateMatchButton);
         _centerButton.interactable = true;
     }
 
-	public void OnClickJoinGameButton()
+    public void OnClickJoinGameButton()
 	{
 		MainMenu.SetActive(false);
         if (PhotonNetwork.connectedAndReady)
@@ -53,6 +52,7 @@ public class MenuManager : MonoBehaviour
 
     public void OpenJoinGame() {
         JoinGame.SetActive(true);
+        _centerButton = JoinGame.GetComponent<ButtonManager>().GetCenterButton();
         ShowSelectMatchTextOnCenterButton();
     }
 
@@ -72,7 +72,6 @@ public class MenuManager : MonoBehaviour
 	public void OnClickCreditsButton()
 	{
 		MainMenu.SetActive(false);
-		AudioManager.Instance.OnEnterCreditsMenu();
 		Credits.SetActive(true);
         CreditsBackground.SetActive(true);
         _ortoSize = Camera.main.orthographicSize;
@@ -89,34 +88,28 @@ public class MenuManager : MonoBehaviour
 
 	public void OnClickCreateMatchButton()
 	{
-        _centerButton.GetComponent<AudioSource>().Play();   
 	    string matchName = "";
-	    if (customMatchName)
+	    if (_customMatchName)
 	    {
-	        matchName = MatchName.text;
-	    }
-	    if (MatchName.text == "Enter name...")
-	    {
-	        MatchName.text = "";
+	        matchName = HostMatchNameInput.text;
 	    }
         PlayerCountSelector[] playerCounts = FindObjectsOfType<PlayerCountSelector>();
         foreach (var icon in playerCounts) {
-            icon.Disable();
+            icon.SetInteractable(false);
         }
 	    PhotonLobbyManager.Instance.CreateMatch(matchName, PlayerCountSelector.PlayersSelected);
-        MatchInProgress = true;
-        MatchName.interactable = false;
+        HostMatchNameInput.interactable = false;
         AddReadyListener();
 	}
 
     public void OnMatchNameEdit()
     {
-        customMatchName = true;
+        _customMatchName = true;
     }
 
-    public void SetMatchName(string name)
+    public void OnMatchCreate(string name)
     {
-        MatchName.text = name;
+        HostMatchNameInput.text = name;
     }
 
     //------------------ Join Game Buttons ------------------
@@ -167,21 +160,18 @@ public class MenuManager : MonoBehaviour
 			string name = canvas.gameObject.name;
 			if (name == "Credits")
 			{
-				AudioManager.Instance.OnEnterMainMenu();
 				Camera.main.orthographic = true;
 				Camera.main.orthographicSize = _ortoSize;
 
 			}
 			else if (name == "HostGame" || name == "JoinGame")
 			{
-				if (MatchInProgress)
+				if (PhotonNetwork.inRoom)
 				{
-					//Can't exit, show error
-					MatchInProgressError.SetActive(true);
-					Invoke("HideError", 1f);
-				}
+                    PhotonLobbyManager.Instance.LeaveMatch();
+                }
 			}
-			if (!MatchInProgress && name != "Background")
+			if (name != "Background")
 			{
 				canvas.gameObject.SetActive(false);
 				MainMenu.SetActive(true);
@@ -200,10 +190,4 @@ public class MenuManager : MonoBehaviour
             OpenJoinGame();
         }
     }
-
-    void HideError()
-	{
-		MatchInProgressError.SetActive(false);
-	}
-
 }

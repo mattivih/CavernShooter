@@ -11,7 +11,7 @@ public class AudioManager : MonoBehaviour
 	public AudioClip TitleScreen, MenuMusic;
 	public AudioClip[] LevelSongs;
 
-	private AudioSource _audioSource;
+	private AudioSource _levelAudio, _nextAudio, _prevAudio, _startAudio;
 
 	void Awake()
 	{
@@ -20,20 +20,11 @@ public class AudioManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(gameObject);
 		}
-		_audioSource = GetComponent<AudioSource>();
-		_audioSource.loop = true;
-        _audioSource.clip = TitleScreen;
-        _audioSource.Play();
+		_levelAudio = GetComponent<AudioSource>();
+		_levelAudio.loop = true;
+        _levelAudio.clip = TitleScreen;
+        _levelAudio.Play();
         SceneManager.sceneLoaded += OnLevelLoaded;
-	}
-
-	public void OnEnterMainMenu()
-	{
-        //TODO: Don't change clip if it's already playing.
-        if (_audioSource.clip != MenuMusic) {
-            _audioSource.clip = MenuMusic;
-            _audioSource.Play();
-        }
 	}
 
 	public void OnEnterCreditsMenu()
@@ -43,12 +34,21 @@ public class AudioManager : MonoBehaviour
 
 	public void OnLevelLoaded(Scene scene, LoadSceneMode mode)
 	{
-	    if (scene.name != "0_Title_Screen" && scene.name != "1_Main_Menu")
-	    {
+        if (scene.name != "0_Title_Screen" && scene.name != "1_Main_Menu")
+        {
+            //Level scene loaded
             Random random = new Random();
-	        int song = random.Next(0, LevelSongs.Length);
-            _audioSource.clip = LevelSongs[song];
-            _audioSource.Play();
+            int song = random.Next(0, LevelSongs.Length);
+            _levelAudio.clip = LevelSongs[song];
+            _levelAudio.Play();
+        }
+        else if (scene.name == "1_Main_Menu")
+        {
+            if (_levelAudio.clip != MenuMusic)
+            {
+                _levelAudio.clip = MenuMusic;
+                _levelAudio.Play();
+            }
         }
 	}
 }
