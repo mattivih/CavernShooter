@@ -106,7 +106,7 @@ public class Base : Photon.PunBehaviour {
         foreach (var light in lights)
         {
             light.color = color;
-            light.intensity = 0.05f;
+            light.intensity = 0.025f;
         }
     }
 
@@ -118,7 +118,7 @@ public class Base : Photon.PunBehaviour {
         foreach (var light in lights)
         {
             light.color = color;
-            light.intensity = 0.05f;
+            light.intensity = 0.025f;
         }
     }
 
@@ -128,7 +128,7 @@ public class Base : Photon.PunBehaviour {
         var lights = GetComponentsInChildren<Light>();
         foreach (var light in lights)
         {
-            light.intensity = 0.20f;
+            light.intensity = 0.05f;
         }
     }
 
@@ -190,12 +190,29 @@ public class Base : Photon.PunBehaviour {
     {     
         if (PhotonNetwork.isMasterClient)
         {
-            PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position, gameObject.transform.rotation, 0);
+            GameObject explosion = PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position, gameObject.transform.rotation, 0);
+            photonView.RPC("BaseExplosionSound", PhotonTargets.All, explosion.GetPhotonView().viewID);
             PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(1, 0, 0), gameObject.transform.rotation, 0);
             PhotonNetwork.Instantiate("BaseExplosion", gameObject.transform.position + new Vector3(-1, 0, 0), gameObject.transform.rotation, 0);
             PhotonNetwork.Destroy(gameObject);
-        }
-           
+        } 
+    }
+
+    [PunRPC]
+    public void BaseExplosionSound(int viewid)
+    {
+        PhotonView.Find(viewid).gameObject.GetComponent<AudioSource>().Play();
+    }
+
+
+    public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol)
+    {
+        AudioSource newAudio = gameObject.AddComponent<AudioSource>();
+        newAudio.clip = clip;
+        newAudio.loop = loop;
+        newAudio.playOnAwake = playAwake;
+        newAudio.volume = vol;
+        return newAudio;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
