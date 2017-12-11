@@ -103,7 +103,7 @@ public class FlamethrowerCollision : ProjectilesBase {
     [PunRPC]
     public void PunTakeDamageFromFire(int viewId, int sourceId, float deltaTime)
     {
-        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(Damage * deltaTime, PhotonView.Find(sourceId).gameObject);
+        PhotonView.Find(viewId).GetComponent<Ship>().TakeDamage(3.0f * Damage * deltaTime, PhotonView.Find(sourceId).gameObject);
     }
 
 
