@@ -21,9 +21,10 @@ public class FlamethrowerCollision : ProjectilesBase {
     private AudioSource audioFire;
 
     void Awake() {
-        audioFire = AddAudio(clipFire, true, false, 1f);
-        audioFire.spatialBlend = 1f;
-        //audioFire.dopplerLevel = 0.1f;
+        audioFire = AddAudio(clipFire, true, false, 0.5f);
+        audioFire.rolloffMode = AudioRolloffMode.Linear;
+        audioFire.spatialBlend = 1.0f;
+        audioFire.dopplerLevel = 0.1f;
         audioFire.maxDistance = 25f;
     }
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol) {
