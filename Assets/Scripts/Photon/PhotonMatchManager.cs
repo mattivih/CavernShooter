@@ -46,10 +46,20 @@ public class PhotonMatchManager : Photon.PunBehaviour
             //Instantiate bases
             if (PhotonNetwork.isMasterClient)
             {
-                PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[0].transform.position, Quaternion.identity, 0, null);
-                PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[1].transform.position, Quaternion.identity, 0, null);
-                PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[2].transform.position, Quaternion.identity, 0, null);
-                PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[3].transform.position, Quaternion.identity, 0, null);
+                if (PhotonNetwork.room.CustomProperties["SelectedMap"].ToString() == "3_Limbo")
+                {
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[0].transform.position, Spawnpoints[0].transform.rotation, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[1].transform.position, Spawnpoints[1].transform.rotation, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[2].transform.position, Spawnpoints[2].transform.rotation, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[3].transform.position, Spawnpoints[3].transform.rotation, 0, null);
+                }
+                else
+                {
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[0].transform.position, Quaternion.identity, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[1].transform.position, Quaternion.identity, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[2].transform.position, Quaternion.identity, 0, null);
+                    PhotonNetwork.InstantiateSceneObject("Base", Spawnpoints[3].transform.position, Quaternion.identity, 0, null);
+                }
             }
         }
         #endregion 

@@ -38,11 +38,13 @@ public class UseLaserBeam : Photon.PunBehaviour {
 
 
     void Awake() {
-        audioFire = AddAudio(clipFire, true, false, 1f);
-        audioFire.spatialBlend = 1f;
+        audioFire = AddAudio(clipFire, true, false, 0.7f);
+        audioFire.rolloffMode = AudioRolloffMode.Linear;
+        audioFire.spatialBlend = 1.0f;
         audioFire.dopplerLevel = 1f;
-        audioFire.maxDistance = 35f;
+        audioFire.maxDistance = 25f;
         audioHitPlayer = AddAudio(clipHitPlayer, false, false, 1f);
+        audioFire.rolloffMode = AudioRolloffMode.Linear;
         audioHitPlayer.spatialBlend = 1f;
         audioHitPlayer.dopplerLevel = 0.1f;
         audioHitPlayer.maxDistance = 25f;
