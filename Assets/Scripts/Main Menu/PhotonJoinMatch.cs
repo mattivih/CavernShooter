@@ -2,7 +2,7 @@
 
 public class PhotonJoinMatch : Photon.PunBehaviour
 {
-    public int MaxMatchesToList = 4;
+    public int MaxMatchesToList = 4; 
 
     private PhotonMatchList _matchList;
 
@@ -22,7 +22,10 @@ public class PhotonJoinMatch : Photon.PunBehaviour
             _matchList.HideLoadingIcon();
             for (int i = 0; i < matches.Length && i < MaxMatchesToList; i++)
             {
-                _matchList.AddOrUpdateMatch(matches[i]);
+                RoomInfo match = matches[i];
+                if (match.IsOpen) {
+                    _matchList.AddOrUpdateMatch(match.Name, match.CustomProperties["MatchName"].ToString(), match.PlayerCount, match.MaxPlayers);
+                }
             }
         }
     }

@@ -5,8 +5,9 @@ using UnityEngine.UI;
 public class ShipManager : MonoBehaviour
 {
 
-	[Tooltip("Ensimmäinen strenght-palkki")]
-	public GameObject FirstBar;
+    [Tooltip("Ensimmäinen strenght-palkki")]
+    public GameObject FirstBar;
+    public GameObject NextShipButton, PrevShipButton;
 
 
 	public GameObject AttrOn, AttrOff;
@@ -51,7 +52,7 @@ public class ShipManager : MonoBehaviour
 			_attributeBars.Add(child.gameObject);
 		}
 		ChangeShip(0);
-	}
+    }
 
 	void Update()
 	{
@@ -61,15 +62,15 @@ public class ShipManager : MonoBehaviour
 		}
 	}
 
-	public void NextShip()
+	public void OnClickNextShip()
 	{
 		ChangeShip(+1);
 	}
 
-	public void PrevShip()
+	public void OnClickPrevShip()
 	{
 		ChangeShip(-1);
-	}
+    }
 
 	private void ChangeShip(int direction)
 	{
@@ -137,4 +138,14 @@ public class ShipManager : MonoBehaviour
 			}
 		}
 	}
+
+    public void DisableShipSelection() {
+        NextShipButton.SetActive(false);
+        PrevShipButton.SetActive(false);
+    }
+
+    public void EnableShipSelection() {
+        NextShipButton.SetActive(true);
+        PrevShipButton.SetActive(true);
+    }
 }

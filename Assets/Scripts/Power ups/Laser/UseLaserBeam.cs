@@ -59,6 +59,8 @@ public class UseLaserBeam : Photon.PunBehaviour {
         return newAudio;
     }
 
+
+
     [PunRPC]
     public void FireLaser(Vector3 endpoint, int viewId)
     {  
@@ -83,6 +85,8 @@ public class UseLaserBeam : Photon.PunBehaviour {
             _lineRenderer.SetPosition(1, endpoint);
         }
     }
+
+
     public void CreateSparks()
     {
         sparksObject = PhotonNetwork.Instantiate("Sparks", _endPoint, Quaternion.identity, 0);
@@ -110,7 +114,12 @@ public class UseLaserBeam : Photon.PunBehaviour {
                           
             gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint, transform.root.gameObject.GetComponent<PhotonView>().viewID);
         }
-   
+
+        if (_lineRenderer.enabled)
+        {
+            _lineRenderer.SetPosition(0, Firepoint.position);
+        }
+
     }
 
     /// <summary>

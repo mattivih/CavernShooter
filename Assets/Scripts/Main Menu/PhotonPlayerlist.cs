@@ -5,29 +5,17 @@ using UnityEngine;
 
 /// <summary>
 /// UI script: handles the Players Joined & Connection status-list.
-/// Note: this handles only the UI list, the list of lobby player objects and their status is handled in MyLobbyManager script.
+/// Note: this handles only the UI list, the list of lobby player objects and their status is handled in PhotonLobbyManager script.
 /// </summary>
 public class PhotonPlayerlist : MonoBehaviour
 {
     //Public variables
-    public static PhotonPlayerlist Instance = null;
     public GameObject PlayerListEntryPrefab;
 
     //Private variables
     private List<Transform> _positions;
     private List<PhotonPlayerlistEntry> _playerlistEntries;
     private int _playerCount = 0;
-
-    /// <summary>
-    /// Make the PlayerList instance a singleton.
-    /// </summary>
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
 
     /// <summary>
     /// Create a list for the players that join the match's lobby.
@@ -51,7 +39,15 @@ public class PhotonPlayerlist : MonoBehaviour
         _positions.Remove(parent);
     }
 
-    public void UpdatePlayerStatus()
+    public void OnEnable()
+    {
+        ClearList();
+    }
+
+    /// <summary>
+    /// Updates the player list - adds and removes players if necessary
+    /// </summary>
+    public void UpdatePlayerlist()
     {
         ClearList();
         var playerlist = PhotonNetwork.playerList.OrderBy(p => p.ID).ToList();
@@ -65,7 +61,7 @@ public class PhotonPlayerlist : MonoBehaviour
     /// <summary>
     ///Adds player to the Players Joined & Connection status-list
     /// </summary>
-    public void AddPlayer(PhotonPlayer player)
+    private void AddPlayer(PhotonPlayer player)
     {
         GameObject playerlistEntry = Instantiate(PlayerListEntryPrefab);
         playerlistEntry.GetComponent<PhotonPlayerlistEntry>().FillPlayerListEntry(player);
@@ -78,7 +74,11 @@ public class PhotonPlayerlist : MonoBehaviour
         }
     }
 
-    public PhotonPlayerlistEntry[] GetPlayerlist()
+    /// <summary>
+    /// Finds all the existing playerlist entries.
+    /// </summary>
+    /// <returns></returns>
+    private PhotonPlayerlistEntry[] GetPlayerlist()
     {
         return GetComponentsInChildren<PhotonPlayerlistEntry>();
     }
@@ -87,7 +87,7 @@ public class PhotonPlayerlist : MonoBehaviour
     /// <summary>
     /// Clears the whole list
     /// </summary>
-    private void ClearList()
+    public void ClearList()
     {
         _playerCount = 0;
         PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
@@ -97,24 +97,4 @@ public class PhotonPlayerlist : MonoBehaviour
         }
     }
 }
-
-    //public void DeletePlayer(PhotonPlayer player)
-    //{
-    //    _playerCount--;
-    //    if (_playerCount <= 0)
-    //    {
-    //        ClearList();
-    //    }
-    //    else
-    //    {
-    //        PhotonPlayerlistEntry[] playerlist = GetPlayerlist();
-    //        foreach (var entry in playerlist)
-    //        {
-    //            if (entry.Player.ID == player.ID)
-    //            {
-    //                Destroy(entry.gameObject);
-    //            }
-    //        }
-    //    }
-    //}
 

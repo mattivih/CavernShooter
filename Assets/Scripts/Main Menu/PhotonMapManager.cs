@@ -8,20 +8,20 @@ public class PhotonMapManager : MonoBehaviour
 	private Text _mapName;
 	private int _currentMap = 0;
 
-	void Start()
+	void OnEnable()
 	{
 		_mapName = GetComponent<Text>();
-		ChangeMap(0);
+        ChangeMap(0);
 	}
 
-	public void NextMap()
+	public void OnClickNextMap()
 	{
 		ChangeMap(+1);
 	}
 
-	public void PrevMap()
+	public void OnClickPrevMap()
 	{
-		ChangeMap(-1);
+        ChangeMap(-1);
 	}
 
 	private void ChangeMap(int direction)
