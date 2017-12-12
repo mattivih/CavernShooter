@@ -42,7 +42,9 @@ public class AudioManager : MonoBehaviour
             //Level scene loaded
             if (PhotonNetwork.inRoom)
             {
-                _levelAudio.clip = LevelSongs[(int)PhotonNetwork.room.CustomProperties["Song"]];
+                Random r = new Random();
+                int rnd = r.Next(0, 3);
+                _levelAudio.clip = LevelSongs[rnd];
                 _levelAudio.Play();
             }
         }

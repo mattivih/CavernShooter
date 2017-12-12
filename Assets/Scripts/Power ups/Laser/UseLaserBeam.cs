@@ -115,9 +115,9 @@ public class UseLaserBeam : Photon.PunBehaviour {
             gameObject.GetComponent<PhotonView>().RPC("FireLaser", PhotonTargets.All, _endPoint, transform.root.gameObject.GetComponent<PhotonView>().viewID);
         }
 
-        if (_lineRenderer.enabled)
+        if (GetComponent<LineRenderer>().enabled)
         {
-            _lineRenderer.SetPosition(0, Firepoint.position);
+            GetComponent<LineRenderer>().SetPosition(0, Firepoint.position);
         }
 
     }
