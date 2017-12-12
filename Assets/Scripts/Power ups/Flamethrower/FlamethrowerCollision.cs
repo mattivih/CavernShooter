@@ -61,8 +61,6 @@ public class FlamethrowerCollision : ProjectilesBase {
     /// <param name="other">Other.</param>
     void OnParticleCollision(GameObject other) {
         ParticleCount++;
-        if (ParticleCount <= 30)
-            return;
         if (other.transform.root.gameObject.GetComponent<Ship>() && other != transform.root.gameObject)
         {
             gameObject.GetPhotonView().RPC("PunTakeDamageFromFire", PhotonTargets.All, other.gameObject.GetPhotonView().viewID, transform.root.gameObject.GetPhotonView().viewID, Time.deltaTime);

@@ -8,19 +8,19 @@ public class PowerUpSpawn : Photon.PunBehaviour
     private bool _firstspawn = true;
     public List<GameObject> PowerUpPrefabs;
     public Transform CenterSpawn;
-    public float CenterTimer = 10.0f;
-    public float InnerTimer = 20.0f;
-    public float OuterTimer = 30.0f;
+    private float CenterTimer = 5.0f;
+    private float InnerTimer = 20.0f;
+    private float OuterTimer = 30.0f;
 
-    public float[] InnerTimers = new float[4] { 5f, 5f, 5f, 5f };
-    public float[] OuterTimers = new float[4] { 5f, 5f, 5f, 5f };
+    private float[] InnerTimers = new float[4] { 10f, 10f, 10f, 10f };
+    private float[] OuterTimers = new float[4] { 15f, 15f, 15f, 15f, };
 
-    public float[] FirstInnerTimers = new float[4] { 5f, 10f, 15f, 20f };
-    public float[] FirstOuterTimers = new float[4] { 5f, 10f, 15f, 20f };
+    private float[] FirstInnerTimers = new float[4] { 10f, 20f, 30f, 40f };
+    private float[] FirstOuterTimers = new float[4] { 15f, 30f, 45f, 60f };
 
-    public float CenterTime = 10.0f;
-    public float InnerTime = 20.0f;
-    public float OuterTime = 30.0f;
+    private float CenterTime = 5.0f;
+    private float InnerTime = 10f;
+    private float OuterTime = 15f;
 
     public List<Transform> InnerSpawnPoints;
     public List<Transform> OuterSpawnPoints;
@@ -195,7 +195,7 @@ public class PowerUpSpawn : Photon.PunBehaviour
 
     public void NewCenterSpawn()
     {
-        GameObject pickup = PhotonNetwork.Instantiate(PowerUpPrefabs[2].name, CenterSpawn.position, Quaternion.identity, 0);
+        GameObject pickup = PhotonNetwork.Instantiate(NewPickUp(), CenterSpawn.position, Quaternion.identity, 0);
         pickup.transform.SetParent(CenterSpawn);
         CenterTimer = CenterTime;
     }
