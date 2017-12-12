@@ -27,13 +27,16 @@ public class AudioManager : MonoBehaviour
         SceneManager.sceneLoaded += OnLevelLoaded;
 	}
 
-	public void OnEnterCreditsMenu()
-	{
-        //Not used currently
-	}
-
 	public void OnLevelLoaded(Scene scene, LoadSceneMode mode)
 	{
+        if (scene.name == "1_Main_Menu")
+        {
+            if (_levelAudio.clip != MenuMusic)
+            {
+                _levelAudio.clip = MenuMusic;
+                _levelAudio.Play();
+            }
+        }
         if (scene.name != "0_Title_Screen" && scene.name != "1_Main_Menu")
         {
             //Level scene loaded
@@ -41,14 +44,6 @@ public class AudioManager : MonoBehaviour
             int song = random.Next(0, LevelSongs.Length);
             _levelAudio.clip = LevelSongs[song];
             _levelAudio.Play();
-        }
-        else if (scene.name == "1_Main_Menu")
-        {
-            if (_levelAudio.clip != MenuMusic)
-            {
-                _levelAudio.clip = MenuMusic;
-                _levelAudio.Play();
-            }
         }
 	}
 }

@@ -12,8 +12,18 @@ public class PlayerCountSelector : MonoBehaviour
 		_image = GetComponent<Image>();
 	}
 
-	//Start hoovering
-	void OnMouseEnter()
+    public void OnEnable()
+    {
+        GetComponent<Collider2D>().enabled = true;
+    }
+
+    public void SetInteractable(bool interactable)
+    {
+        GetComponent<Collider2D>().enabled = interactable;
+    }
+
+    //Start hoovering
+    void OnMouseEnter()
 	{
 		if (_image.sprite.name == "BTN-ship-UNACTIVE-01")
 		{
@@ -51,6 +61,7 @@ public class PlayerCountSelector : MonoBehaviour
                 PlayersSelected = 4;
                 if (GameObject.Find("Player 3").GetComponent<Image>().sprite.name == "BTN-ship-UNACTIVE-01")
                     GameObject.Find("Player 3").GetComponent<Image>().sprite = Active;
+                ButtonSoundPlayer.Instance.PlayNextSound();
             }               
             else           
                 PlayersSelected++;                   
@@ -60,6 +71,7 @@ public class PlayerCountSelector : MonoBehaviour
 	   _image.sprite.name == "BTN-ship-ACTIVE-01")
 		{
             ChangeSprites(Unactive);
+            ButtonSoundPlayer.Instance.PlayPrevSound();
             if (gameObject.name == "Player 3" && GameObject.Find("Player 4").GetComponent<Image>().sprite.name == "BTN-ship-ACTIVE-01")
             {
                 GameObject.Find("Player 4").GetComponent<Image>().sprite = Unactive;
