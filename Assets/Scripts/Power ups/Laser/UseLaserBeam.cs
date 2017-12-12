@@ -75,8 +75,8 @@ public class UseLaserBeam : Photon.PunBehaviour {
                     color = mat.color;
 
             }
+            mats[0].SetColor("_MKGlowColor", color);
             mats[0].SetColor("_TintColor", color);
-           // mats[0].SetColor("_MKGlowColor", color);
 
 
             _lineRenderer = GetComponent<LineRenderer>();

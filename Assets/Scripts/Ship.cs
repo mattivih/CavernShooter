@@ -58,6 +58,7 @@ public class Ship : Photon.PunBehaviour, IPunObservable
         if (photonView.isMine) {
             LocalPlayerInstance = gameObject;
             GameManager.Instance.Player = LocalPlayerInstance;
+            GameManager.Instance.spectating = false;
         }
     }
 
@@ -145,7 +146,8 @@ public class Ship : Photon.PunBehaviour, IPunObservable
 
     void Update()
     {
-        
+
+
         #region Ship damage indicators (smokes and sparks)
         if (Health < (MaxHealth * 0.3f))
         {
@@ -362,54 +364,65 @@ public class Ship : Photon.PunBehaviour, IPunObservable
     public void TakeDamage(float damage, GameObject source)
     {
 
-        if (!photonView.isMine || dead)
+        if (dead)
         {
             return;
         }
        // Debug.Log(gameObject.name + " taking damage for " + damage + " from " + source);
 
-
-        if (!Shield)
+        if (photonView.isMine)
         {
-            if (damage > Health)
+            if (!Shield)
             {
-                dead = true;
-                Health = 0;
+                if (damage > Health)
+                {
+                    dead = true;
+                    Health = 0;
+                }
+                else
+                {
+                    Health -= damage;
+                }
+                GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
             }
-            else
+
+
+
+            if (Health <= 0)
             {
-                Health -= damage;
+                //GameManager.Instance.RemoveShipFromList(shipNumber);
+
+                if (GetComponent<PowerUpHandler>().CurrentPowerUp)
+                    GetComponent<PowerUpHandler>().Stop();
+
+
+                if (source != null && source.GetComponent<Ship>())
+                {
+                    //If killed by another player
+                    photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, source.GetPhotonView().ownerId, true);
+                    GameManager.Instance.SpectateSpecific(source.gameObject, source.GetComponent<Ship>().shipNumber);
+                }
+
+                else
+                {
+                    //If killed by something else i. e. environment
+                    photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, 0, false);
+                    GameManager.Instance.SpectateFirst();
+                }
+
+                GameManager.Instance.spectating = true;
+
+                PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
+                PhotonNetwork.Destroy(gameObject.GetPhotonView());
+
             }
-            GameManager.Instance.UpdateHealthBar(Health, MaxHealth);
         }
-        
+    }
 
-        if (Health <= 0)
-        {
-            if (GetComponent<PowerUpHandler>().CurrentPowerUp)
-                GetComponent<PowerUpHandler>().Stop();
-            GameManager.Instance.RemoveShipFromList(shipNumber);
-            
-            if (source != null && source.GetComponent<Ship>())
-            {
-                //If killed by another player
-                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, source.GetPhotonView().ownerId, true);
-                GameManager.Instance.SpectateSpecific(source.gameObject, source.GetComponent<Ship>().shipNumber);
-            }
-
-            else
-            {
-                //If killed by something else i. e. environment
-                photonView.RPC("PlayerIsDead", PhotonTargets.All, photonView.owner.ID, 0, false);
-                GameManager.Instance.SpectateFirst();
-            }
-
-            GameManager.Instance.spectating = true;
-
-            PhotonNetwork.Instantiate("ShipExlosionPrefab", transform.position + new Vector3(0f, 0f, -1f), Quaternion.Euler(new Vector3(0, 0, UnityEngine.Random.Range(0, 360))), 0);
-            PhotonNetwork.Destroy(gameObject.GetPhotonView());
-
-        }
+    [PunRPC]
+    public void RemoveFromShipList(int shipNumber)
+    {
+        GameManager.Instance.RemoveShipFromList(shipNumber);
     }
 
 

@@ -18,20 +18,21 @@ public class HUDManager : MonoBehaviour
     public GameObject player2;
     public GameObject player3;
     public GameObject player4;
-    public PhotonPlayer[] players;
+    GameObject PlayerList;
+    Text[] playerNames;
 
   
     void Start()
     {
-        //GameObject p3 = player3.gameObject;
-        //GameObject p4 = player4.gameObject;
-
-        SetPlayerNames();
+        PlayerList = GameObject.Find("PlayerList");
+        playerNames = PlayerList.GetComponentsInChildren<Text>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        SetPlayerNames();
+
         if (GameManager.Instance.Player && GameManager.Instance.Player.GetPhotonView().isMine)
         {
             if (CurrentPU)
@@ -159,52 +160,21 @@ public class HUDManager : MonoBehaviour
 
     public void SetPlayerNames()
     {
-        #region enable texts based on the number of players and input playernames based on spawnpoints
-        players = PhotonNetwork.playerList;
 
-        if (players.Length == 4)
+        if (PhotonNetwork.playerList.Length == 3)
         {
-            foreach (PhotonPlayer p in players)
-            {
-                if (p.ID == 1)
-                    player1.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 2)
-                    player2.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 3)
-                    player3.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 4)
-                    player4.GetComponent<Text>().text = p.NickName;
-            }
-
+            playerNames[3].gameObject.SetActive(false);
         }
-        else if (players.Length == 3)
+        if (PhotonNetwork.playerList.Length == 2)
         {
-            player4.SetActive(false);
-
-            foreach (PhotonPlayer p in players)
-            {
-                if (p.ID == 1)
-                    player1.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 2)
-                    player2.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 3)
-                    player3.GetComponent<Text>().text = p.NickName;
-            }
+            playerNames[3].gameObject.SetActive(false);
+            playerNames[2].gameObject.SetActive(false);
         }
-        else
+
+        for (int i = 0; i < PhotonNetwork.playerList.Length; i++)
         {
-            player3.SetActive(false);
-            player4.SetActive(false);
-
-            foreach (PhotonPlayer p in players)
-            {
-                if (p.ID == 1)
-                    player1.GetComponent<Text>().text = p.NickName;
-                if (p.ID == 2)
-                    player2.GetComponent<Text>().text = p.NickName;
-            }
+            playerNames[i].text = PhotonNetwork.playerList[i].NickName;
         }
-        #endregion
 
         foreach (ShipImageSelector s in GetComponentsInChildren<ShipImageSelector>())
         {

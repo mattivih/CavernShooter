@@ -10,6 +10,7 @@ public class GameManager : Photon.PunBehaviour {
     //Register an active player game object in the scene
     public GameObject Player;
     public GameObject Background;
+
     public enum powerupPickups
     {
         DistortionRayPowerUp = 0,
@@ -35,8 +36,8 @@ public class GameManager : Photon.PunBehaviour {
     public static GameManager Instance = null;
     public static Level02SpriteManager SpriteManager = null;
 
-    private List<GameObject> shipList;
-    private int spectateIndex;
+    public List<GameObject> shipList;
+    public int spectateIndex;
 
 
 
@@ -58,6 +59,9 @@ public class GameManager : Photon.PunBehaviour {
     {
         if (Instance.spectating)
         {
+            if (Instance.Player == null)
+                Instance.SpectateFirst();
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (Instance.spectateIndex == (shipList.Count - 1))
@@ -103,7 +107,15 @@ public class GameManager : Photon.PunBehaviour {
 
     public void SpectateFirst()
     {
-        Instance.Player = shipList[0];
+        for (int i = 0; i < shipList.Count; i++)
+        {
+            if (shipList[i] != null)
+            {
+                Instance.Player = shipList[i];
+                spectateIndex = i;
+                break;
+            }
+        }
         Camera.main.GetComponent<CameraController>().FollowShip(Instance.Player.transform);
     }
 

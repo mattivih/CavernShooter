@@ -73,29 +73,6 @@ public class Base : Photon.PunBehaviour {
                 LightTimer = 0.1f;
             }
         }
-
-        if (GameObject.FindWithTag("Player")  && GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Player").GetComponentInChildren<CircleCollider2D>()) && !_lightToggle)
-        {
-            GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All);
-        }
-
-
-        else if (!GameObject.FindWithTag("Enemy"))
-        {
-            if (!_lightToggle)
-                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All);
-        }
-
-        else if (GameObject.FindWithTag("Enemy"))
-        {
-            if (GetComponent<BoxCollider2D>().IsTouching(GameObject.FindWithTag("Enemy").GetComponentInChildren<CircleCollider2D>()) && !_lightToggle)
-            {
-                GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All);
-            }
-            else
-                if (!_lightToggle)
-                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All);
-        }
     }
 
     [PunRPC]
@@ -130,6 +107,17 @@ public class Base : Photon.PunBehaviour {
         {
             light.intensity = 0.05f;
         }
+        StartCoroutine(ResetLightIntensity());
+    }
+
+    public IEnumerator ResetLightIntensity()
+    {
+        yield return new WaitForSeconds(0.01f);
+        var lights = GetComponentsInChildren<Light>();
+        foreach (var light in lights)
+        {
+            light.intensity = 0.025f;
+        }
     }
 
     /// <summary>
@@ -137,11 +125,7 @@ public class Base : Photon.PunBehaviour {
     /// </summary>
     /// <param name="collision">Collision.</param>
     void OnCollisionStay2D(Collision2D collision) {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy") {
-            //if (collision.gameObject.tag == "Player")
-            //    _isCollidingPlayer = true;
-            //if(collision.gameObject.tag == "Enemy")
-            //    _isCollidingEnemy = true;
+        if (collision.gameObject.GetComponent<Ship>()) {
 
             collision.gameObject.GetComponent<Ship>().IncreaseHealth(HealthRegen * Time.deltaTime);
           
@@ -151,13 +135,29 @@ public class Base : Photon.PunBehaviour {
             }
         }
     }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<Ship>())
+        {
+            if (!_lightToggle)
+                GetComponent<PhotonView>().RPC("LightsOff", PhotonTargets.All);
+        }
+    }
     
     /// <summary>
     /// Call for Base to take damage if hit by a projectile.
     /// </summary>
     /// <param name="collision">Collision.</param>
     void OnCollisionEnter2D(Collision2D collision) {
-    if (collision.gameObject.GetComponent<ProjectilesBase>()) {
+        if (collision.gameObject.GetComponent<Ship>())
+        { 
+            if (!_lightToggle)
+            {
+                GetComponent<PhotonView>().RPC("LightsOn", PhotonTargets.All);
+            }
+        }
+        if (collision.gameObject.GetComponent<ProjectilesBase>()) {
             TakeDamage(collision.gameObject.GetComponent<ProjectilesBase>().Damage);
             //GetComponent<PhotonView>().RPC("BlinkLights", PhotonTargets.All, null);
            // _lightToggle = true;
