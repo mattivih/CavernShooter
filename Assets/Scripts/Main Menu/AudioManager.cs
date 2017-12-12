@@ -40,10 +40,11 @@ public class AudioManager : MonoBehaviour
         if (scene.name != "0_Title_Screen" && scene.name != "1_Main_Menu")
         {
             //Level scene loaded
-            Random random = new Random();
-            int song = random.Next(0, LevelSongs.Length);
-            _levelAudio.clip = LevelSongs[song];
-            _levelAudio.Play();
+            if (PhotonNetwork.inRoom)
+            {
+                _levelAudio.clip = LevelSongs[(int)PhotonNetwork.room.CustomProperties["Song"]];
+                _levelAudio.Play();
+            }
         }
 	}
 }

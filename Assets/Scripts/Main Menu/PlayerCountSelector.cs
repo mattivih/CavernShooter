@@ -56,12 +56,12 @@ public class PlayerCountSelector : MonoBehaviour
 		_image.sprite.name == "BTN-ship-UNACTIVE-01")
 		{
             ChangeSprites(Active);
+            ButtonSoundPlayer.Instance.PlayNextSound();
             if (gameObject.name == "Player 4")
             {
                 PlayersSelected = 4;
                 if (GameObject.Find("Player 3").GetComponent<Image>().sprite.name == "BTN-ship-UNACTIVE-01")
                     GameObject.Find("Player 3").GetComponent<Image>().sprite = Active;
-                ButtonSoundPlayer.Instance.PlayNextSound();
             }               
             else           
                 PlayersSelected++;                   

@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using Random = System.Random;
 
 public class PhotonLobbyManager : Photon.PunBehaviour
 {
@@ -61,7 +62,9 @@ public class PhotonLobbyManager : Photon.PunBehaviour
         PlayerNotReady();
 
         RoomOptions roomOptions = new RoomOptions { MaxPlayers = (byte)playerCount };
-        Hashtable matchProperties = new Hashtable() { { "MatchName", name }, { "SelectedMap", _selectedMap } };
+        Random random = new Random();
+        int song = random.Next(0, AudioManager.Instance.LevelSongs.Length);
+        Hashtable matchProperties = new Hashtable() { { "MatchName", name }, { "SelectedMap", _selectedMap }, {"Song", song} };
         roomOptions.CustomRoomPropertiesForLobby = new[] { "MatchName", "SelectedMap" };
         roomOptions.CustomRoomProperties = matchProperties;
 
