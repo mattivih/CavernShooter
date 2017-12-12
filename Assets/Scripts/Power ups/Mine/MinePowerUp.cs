@@ -5,6 +5,7 @@ using UnityEngine;
 public class MinePowerUp : PowerUp {
 
 	public GameObject MinePrefab;
+    private bool delay = false;
     
     public Sprite[] playerTextures;
     void Awake() {
@@ -38,14 +39,24 @@ public class MinePowerUp : PowerUp {
 
     public override void UseNormalPowerUp()
     {             
-        var spawnPos = (Ship.LocalPlayerInstance.transform.position - (Ship.LocalPlayerInstance.transform.up.normalized * 0.5f));
-        int layerMask = 1 << 10;
-        Collider2D[] cols = Physics2D.OverlapCircleAll(new Vector2(spawnPos.x, spawnPos.y), 1.2f * 0.15f, layerMask);
-        if (cols.Length > 0)
-            spawnPos = Ship.LocalPlayerInstance.transform.position;
+        if (!delay)
+        {
+            var spawnPos = (Ship.LocalPlayerInstance.transform.position - (Ship.LocalPlayerInstance.transform.up.normalized * 0.5f));
+            int layerMask = 1 << 10;
+            Collider2D[] cols = Physics2D.OverlapCircleAll(new Vector2(spawnPos.x, spawnPos.y), 1.2f * 0.15f, layerMask);
+            if (cols.Length > 0)
+                spawnPos = Ship.LocalPlayerInstance.transform.position;
+            GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
+            delay = true;
+            StartCoroutine(MineDelay());
+            photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);
+            Units--;
+        }
+    }
 
-        GameObject go = PhotonNetwork.Instantiate("Mine", spawnPos, Quaternion.identity, 0);
-        photonView.RPC("assignSource", PhotonTargets.All, Ship.LocalPlayerInstance.GetPhotonView().viewID, go.GetPhotonView().viewID);  
-        Units--;
+    public IEnumerator MineDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
+        delay = false;
     }
 }
