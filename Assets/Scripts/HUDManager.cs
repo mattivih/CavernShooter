@@ -31,7 +31,17 @@ public class HUDManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SetPlayerNames();
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (PlayerList.activeSelf)
+                PlayerList.SetActive(false);
+            else
+                PlayerList.SetActive(true);
+        }
+
+        if (PlayerList.activeSelf)
+            SetPlayerNames();
+
 
         if (GameManager.Instance.Player && GameManager.Instance.Player.GetPhotonView().isMine)
         {
